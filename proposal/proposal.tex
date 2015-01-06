@@ -34,7 +34,7 @@
   Co-advisor:	& Soto, Juan @ TU Berlin \\
   Official Supervisor: &	Prof. Dr. Markl, Volker @ TU Berlin \\
   Planned period: & February 2015 - August 2015 \\
-  Version: & 0.7 \\
+  Version: & 0.8 \\
   \hline
 \end{tabular}
 
@@ -42,37 +42,22 @@
 \section{Background}
 \subsection{Introduction}
 
-A \emph{namespace}, in general, refers to a collection of identifiers that are grouped together, because they share functionality or purpose \cite{source:wiki-namespace}.
-In computer science, namespaces are typically used for providing modularity and for resolving name conflicts \cite{source:wikitionary-namespace}.
-For example, XML uses namespaces to prefix element names to ensure uniqueness and remove ambiguity between them~\cite{source:xml_bray99}, and the Java programming language uses packages to organize identifiers into namespaces to provide modularity~\cite{source:java_gosling14}.
+In computer science, a \emph{namespace} refers to a collection of terms that are managed together because they share functionality or purpose, typically for providing modularity and resolving name conflicts \cite{source:duval02}. For example, XML uses namespaces to prefix element names to ensure uniqueness and remove ambiguity between them~\cite{source:xml_bray99}, and the Java programming language uses packages to organize identifiers into namespaces for modularity~\cite{source:java_gosling14}.
 
-In this thesis we will extend the notion of namespaces to mathematical formulae.
-Even though formally, from the first order logic point of view, the identifier symbols can be chosen arbitrarily. However, there are common mathematical notations that are used by different research communities.
+In this thesis we will extend the notion of namespaces to mathematical formulae. 
 
-%TODO: This need to be rewritten. Maybe you can introduce the definition of a formula in FOL and
-% cite references from the logic course you had in your bachelor studies.
-% Second, distinguish the kind of formula we are going to investigate that are
-% more like natural language expressions.
 
+In logic, a \emph{formula} is defined recursively, and, in essence, it is a collection of variables, functions and other formulas. Formally, the symbols for the variables and functions can be chosen arbitrarily \cite{source:barwise02-logic}. However, in contrast to first order logic, in this work we are interested in the symbols in formulae and in mathematical notations that are used by different research communities. 
 For example, in physics it is common to write the energy-mass relation as $E=mc^2$ rather than $x=yz^2$.
 % But in mathematics there are many different areas such as linear algebra, statistics or
 % physics, and each of them uses different notation.
-However, the same identifier may be used in different areas but denote different things: For example, $E$ may refer to ``energy", ``expected value" or ``elimination matrix", depending on the domain of the article. Thus, we can say that these identifiers form namespaces, and we refer to such namespaces as \emph{identifier namespaces}, and the process of discovering identifier namespaces as \emph{namespace disambiguation}.
+However, the same identifier may be used in different areas but denote different things: For example, $E$ may refer to ``energy", ``expected value" or ``elimination matrix", depending on the domain of the article. Thus, we can note that these identifiers form namespaces, and we refer to such namespaces as \emph{identifier namespaces}, and the process of discovering identifier namespaces as \emph{namespace disambiguation}.
 
 % TODO: related works
 % https://www.lrde.epita.fr/dload/20080116-Seminar/durlin-disamb.pdf
 
 
-There could be several approaches for namespace disambiguation. One way is to assume that there is a strong correlation between identifiers in a document and the namespace of the document, and this correlation can be exploited to categorize documents and thus discover namespaces.
-
-% TODO: This should be written more clearly. In the thesis we compare different approaches... 1) 2) 3)
-% Alexey: the clearer description I think should go to the realization part, shouldn't it?
-% and here we concentrate on the main idea...
-
-To use it, we first need to map identifiers to their definitions, and this can be done by extracting the definitions from the text that surrounds the formula \cite{source:mlpp}. Then, the process of categorization may be formalized as follows: Let $D$ denote a document and $Z(D)$ denote the category of the document. A document can be seen as a collection of identifiers, so $D = \{ X_1, ..., X_N \}$, where each $X_j$ is a probability distribution over possible definition assignment. Then we can classify a document based on $\text{arg} \, \max_z P(Z=z \mid X_1=x_1, \ ... \ ,  X_N=x_N)$. For example, if in a document we observe $E$ assigned to ``energy'' and $m$ assigned to ``mass'', then $P(\text{``physics''} \mid E=\text{``energy''}, m=\text{``mass''}) > P(\text{``statistics''} \mid E=\text{``energy''}, m=\text{``mass''})$ and we may conclude that the identifiers in the document are likely to belong to the ``physics'' namespace.
-
-% TODO: This is also some text that could be used in the thesis itself.
-% You can just describe the example with natural language for this proposal.
+In this thesis we compare different approaches for namespace disambiguation. The first approach is to assume that there is a strong correlation between identifiers in a document and the namespace of the document, and this correlation can be exploited to categorize documents and thus discover namespaces. For example, if we observe a document with two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more likely that the document belongs to the ``physics'' namespace rather than to ``statistics''. To use it, we need to map identifiers to their definitions, and this can be done by extracting the definitions from the text that surrounds the formula \cite{source:mlpp}.
 
 
 \subsection{Related Work}
@@ -95,10 +80,6 @@ In computational linguistics there is a related concept called \emph{semantic fi
 
 The main objective of this study is to discover identifier namespace in mathematical formulae.
 We aim to find \emph{meaningful} namespaces, in the sense that they can be related to a real-world area of knowledge, such as physics, linear algebra or statistics.
-Thus, our second objective is to find the best way of categorizing a document corpus such that the found identifier namespaces are meaningful.
-
-% TODO: This has already been said?
-% Alexey: to discuss
 
 % Additionally, we believe that formulae comprise an integral part of a mathematical corpus,
 % namespaces should be discovered based on these formulae
@@ -112,20 +93,11 @@ Once such namespaces are found, they can give good categorization of scientific 
 
 We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{source:xml_bray99} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
 
-%TODO: So what's the goal here?
-
-
-We also expect that using namespaces is beneficial for relating identifiers to definitions.
-
-Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{source:mlpp}
-%TODO: If you took the definition of the wolska thesis you should add a citation here
-% Alexey: nope, it's from the MLP paper
-- identifiers that are used in formulae but never defined in the document.
+We also expect that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{source:mlpp} - identifiers that are used in formulae but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
 
 %TODO: Here you mean the category? We should keep the analogy to computer science,
 % where commands like "import" or "declare default namespace" are used to keep the notation short.
 
-Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
 
 \ \\
 
@@ -136,10 +108,12 @@ To achieve these objectives we define the following research tasks:
 
   \item To identify similarities with computational linguistics, computer science and mathematics
   \item To study existing solutions for clustering textual and mathematical data and how to use them to discover meaningful namespaces
+  \item To implement promising approaches to namespace disambiguition 
   \item To evaluate these approaches in order to find the best
-  \item To incorporate the found namespaces to the existing MLP framework (described in \cite{source:mlpp})
+  \item To incorporate the found namespaces to the existing MLP framework (described in \cite{source:mlpp}) 
 \end{enumerate}
 
+These tasks are explained in details in the next section.
 
 %TODO: Add more description here. And keep focussed on the goals.
 % For example "To incorporate the found namespaces to the existing MLP framework"
@@ -148,19 +122,17 @@ To achieve these objectives we define the following research tasks:
 
 
 \section{Realization}
-\subsection{Some subsection name?}
+\subsection{Namespace disambiguation}
 
 To accomplish the proposed goal, we plan the following.
 
-First, we would like to study and analyze existing approaches
-% approaches of what?  
-and recognize similarities and differences with identifier namespaces. From the linguistics point of view, the theory of semantic fields \cite{source:vassilyev74} and semantic domains \cite{source:gliozzo09} are the most related areas. Then, namespaces are well studied in computer science, e.g. in programming languages such as Java \cite{source:java_gosling14} or markup languages such as XML \cite{source:xml_bray99}. XML is an especially interesting in this respect, because it serves as the foundation for knowledge representation languages like OWL (Web Ontology Language) \cite{source:xml_mcguinnes04} that use the notion of namespaces as well.
+First, we would like to study and analyze existing approaches and recognize similarities and differences with identifier namespaces. From the linguistics point of view, the theory of semantic fields \cite{source:vassilyev74} and semantic domains \cite{source:gliozzo09} are the most relevant areas. Then, namespaces are well studied in computer science, e.g. in programming languages such as Java \cite{source:java_gosling14} or markup languages such as XML \cite{source:xml_bray99}. XML is an especially interesting in this respect, because it serves as the foundation for knowledge representation languages like OWL (Web Ontology Language) \cite{source:xml_mcguinnes04} that use the notion of namespaces as well.
 
-The process of manual categorization of mathematical corpus is quite time consuming. What is more, scientific fields are becoming more and more interconnected, and sometimes it is hard even for human experts to categorize an article. Thus, we believe that the namespaces should be discovered in an unsupervised manner.
+The process of manual categorization of mathematical corpus is quite time consuming. What is more, scientific fields are becoming more and more interconnected, and sometimes it is hard even for human experts to categorize an article. Therefore, we believe that the namespaces should be discovered in an unsupervised manner.
 
 Thus, we would like to try the following methods for finding namespaces: categorization based on the textual data \cite{source:sebastiani02}, on semantic domains \cite{source:gliozzo09}, on keywords extracted from the documents \cite{source:schoneberg14} or on definitions extracted from the formulae in the documents \cite{source:mlpp}.
 
-The data set that we plan to use is a subset of English wikipedia articles - all those that contain the \texttt{<math>} tag. The textual dataset can potentially be quite big: for example, the English wikipedia contains 4.5 million articles, and many thousands of them contain mathematical formulae. This is why it is important to think of ways to parallelize it. Thus, the algorithms will be implemented in Apache Flink \cite{source:flink}. Additionally, wikipedia articles are already categorized and this may be useful for evaluating the quality of namespaces.
+The data set that we plan to use is a subset of English wikipedia articles - all those that contain the \texttt{<math>} tag. The textual dataset can potentially be quite big: for example, the English wikipedia contains 4.5 million articles, and many thousands of them contain mathematical formulae. This is why it is important to think of ways to parallelize it, and therefore the algorithms will be implemented in Apache Flink \cite{source:flink}.
 
 
 % \ \\
@@ -180,20 +152,20 @@ The data set that we plan to use is a subset of English wikipedia articles - all
 
 The meaningfulness of discovered namespaces can be evaluated by sampling some documents of the same category and examining them manually. We expect that within one discovered category we should be able to observe documents that can be related to some real-world domain. For example, if we sample two documents and get ``Ordinary Least Squares" and ``Kernel Regression", then we can relate them to the same area (e.g. ``Statistics'') and this is the result we would like to achieve. On the other hand, if we observe ``Ordinary Least Squares" and ``Dirac comb'' within the same category, then it will make it harder to explain such categorization.
 
+Many wikipedia articles have been manually categorized and it is possible to exploit that. For example, many articles on Machine Learning contain a special macro \texttt{\{\{Machine learning bar\}\}} that renders a list of links to related articles. Thus, if we see such a macro at one page, we expect to observe it on another page within the same namespace. Unfortunately, the way of categorizing is not always consistent, and in some cases the macros look quite differently. For example, for statistical articles the macro is \texttt{\{\{Statistics|correlation|state=collapsed\}\}}. This makes it impossible to use it for automatic evaluation, however, it does provide good help in manual evaluation of results.
+
 
 Additionally, we plan to see to what extent the namespaces are beneficial for the keyword extraction, and therefore, we plan to incorporate them into the MLP framework \cite{source:mlpp} to see if the results give better precision and recall. Thus, the results by Pagel and Schubotz \cite{source:mlpp} will serve as the baseline for this evaluation.
 
+
+Lastly, it can also be interesting to take advantage of so-called \emph{interlanguage links} that link one page in wikipedia in one language to the equivalent pages in another languages. Mathematical notation may be consistent across multiple languages, and this can be used in the evaluation of the results. For example, we can take an article and check how similar are discovered namespaces in different wikipedias. Furthermore, it is also possible to make use of machine translation techniques and see whether the description of common identifiers are the same or not. 
 
 
 \section{Bibliography}
 
 \begin{thebibliography}{50}
 
-\bibitem{source:wiki-namespace}
-``Namespace.'' Wikipedia: The Free Encyclopedia. Wikimedia Foundation. Last edit 30 December 2014, Web. 4 January 2015. \url{http://en.wikipedia.org/wiki/Namespace?oldid=640244351}
-
-\bibitem{source:wikitionary-namespace}
-``namespace.'' Wikitionary, n.d. Web. 4 January 2015. \url{http://en.wiktionary.org/wiki/namespace?oldid=27772839}
+\bibitem{source:duval02}  Duval, E., Hodgins, W., Sutton, S., Weibel, S. L. (2002). Metadata principles and practicalities. \emph{D-lib Magazine}, 8(4), 16.
 
 \bibitem{source:mlpp} Pagael, R., Schubotz, M. (2014). Mathematical Language Processing Project. \emph{arXiv preprint} arXiv:1407.0167.
 
@@ -222,6 +194,12 @@ Additionally, we plan to see to what extent the namespaces are beneficial for th
 \bibitem{source:java_gosling14} Gosling J., Joy B., Steele G., Bracha G., Buckley A. (2014) The Java® Language Specification, Java SE 8 Edition. In \emph{Java Series}. Addison-Wesley Professional.
 
 \bibitem{source:vassilyev74} Vassilyev, L. M. (1974). The theory of semantic fields: A survey. \emph{Linguistics}, 12(137), 79-94.
+
+\bibitem{source:barwise02-logic} Barwise, J., Etchemendy, J., Allwein, G., Barker-Plummer, D., Liu, A. (2000). Language, proof and logic. CSLI publications.
+
+% \bibitem{source:wolska13-thesis} Wolska, M. A. (2013). 
+% Student’s Language in Computer-Assisted Tutoring of Mathematical Proofs
+%  (Doctoral dissertation, PhD thesis. ComputerLinguistik, Saarland University).
 
 \end{thebibliography}
 

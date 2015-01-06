@@ -1,0 +1,4 @@
+ Then, the process of categorization may be formalized as follows: Let $D$ denote a document and $Z(D)$ denote the category of the document. A document can be seen as a collection of identifiers, so $D = \{ X_1, ..., X_N \}$, where each $X_j$ is a probability distribution over possible definition assignment. Then we can classify a document based on $\text{arg} \, \max_z P(Z=z \mid X_1=x_1, \ ... \ ,  X_N=x_N)$. For example, if in a document we observe $E$ assigned to ``energy'' and $m$ assigned to ``mass'', then $P(\text{``physics''} \mid E=\text{``energy''}, m=\text{``mass''}) > P(\text{``statistics''} \mid E=\text{``energy''}, m=\text{``mass''})$ and we may conclude that the identifiers in the document are likely to belong to the ``physics'' namespace.
+
+
+To use it, we first need to map identifiers to their definitions, and this can be done by extracting the definitions from the text that surrounds the formula \cite{source:mlpp}.

@@ -1,0 +1,27 @@
+
+
+\section{Realization}
+\subsection{Namespace disambiguation}
+
+To accomplish the proposed goal, we plan the following.
+
+First, we would like to study and analyze existing approaches and recognize similarities and differences with identifier namespaces. From the linguistics point of view, the theory of semantic fields \cite{vassilyev1974theory} and semantic domains \cite{gliozzo2009semantic} are the most relevant areas. Then, namespaces are well studied in computer science, e.g. in programming languages such as Java \cite{gosling2014java} or markup languages such as XML \cite{bray1999namespaces}. XML is an especially interesting in this respect, because it serves as the foundation for knowledge representation languages like OWL (Web Ontology Language) \cite{mcguinness2004owl} that use the notion of namespaces as well.
+
+The process of manual categorization of mathematical corpus is quite time consuming. What is more, scientific fields are becoming more and more interconnected, and sometimes it is hard even for human experts to categorize an article. Therefore, we believe that the namespaces should be discovered in an unsupervised manner.
+
+Thus, we would like to try the following methods for finding namespaces: categorization based on the textual data \cite{sebastiani2002machine}, on semantic domains \cite{gliozzo2009semantic}, on keywords extracted from the documents \cite{schoneberg2014pos} or on definitions extracted from the formulae in the documents \cite{pagael2014mlp}.
+
+The data set that we plan to use is a subset of English wikipedia articles - all those that contain the \texttt{<math>} tag. The textual dataset can potentially be quite big: for example, the English wikipedia contains 4.5 million articles, and many thousands of them contain mathematical formulae. This is why it is important to think of ways to parallelize it, and therefore the algorithms will be implemented in Apache Flink \cite{source:flink}.
+
+
+% \ \\
+% At the end, we expect the following deliverables:
+%\begin{enumerate}
+%\itemsep1pt\parskip0pt\parsep0pt
+% \item List of possible ways to cluster documents
+% \item Implementation of promising algorithms on Apache Flink
+% \item Implementation of the MLP project that includes the found namespaces
+% \end{enumerate}
+%TODO: Is that list required? If not delete it.
+% There is only one deliverable, the master thesis. Don't promise too much in the beginning.
+

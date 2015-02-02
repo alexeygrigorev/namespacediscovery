@@ -1,0 +1,13 @@
+
+\subsection{Evaluation}
+
+
+The meaningfulness of discovered namespaces can be evaluated by sampling some documents of the same category and examining them manually. We expect that within one discovered category we should be able to observe documents that can be related to some real-world domain. For example, if we sample two documents and get ``Ordinary Least Squares" and ``Kernel Regression", then we can relate them to the same area (e.g. ``Statistics'') and this is the result we would like to achieve. On the other hand, if we observe ``Ordinary Least Squares" and ``Dirac comb'' within the same category, then it will make it harder to explain such categorization.
+
+Many wikipedia articles have been manually categorized and it is possible to exploit that. For example, many articles on Machine Learning contain a special macro \texttt{\{\{Machine learning bar\}\}} that renders a list of links to related articles. Thus, if we see such a macro at one page, we expect to observe it on another page within the same namespace. Unfortunately, the way of categorizing is not always consistent, and in some cases the macros look quite differently. For example, for statistical articles the macro is \texttt{\{\{Statistics|correlation|state=collapsed\}\}}. This makes it impossible to use it for automatic evaluation, however, it does provide good help in manual evaluation of results.
+
+
+Additionally, we plan to see to what extent the namespaces are beneficial for the keyword extraction, and therefore, we plan to incorporate them into the MLP framework \cite{pagael2014mlp} to see if the results give better precision and recall. Thus, the results by Pagel and Schubotz \cite{pagael2014mlp} will serve as the baseline for this evaluation.
+
+
+Lastly, it can also be interesting to take advantage of so-called \emph{interlanguage links} that link one page in wikipedia in one language to the equivalent pages in another languages. Mathematical notation may be consistent across multiple languages, and this can be used in the evaluation of the results. For example, we can take an article and check how similar are discovered namespaces in different wikipedias. Furthermore, it is also possible to make use of machine translation techniques and see whether the description of common identifiers are the same or not.

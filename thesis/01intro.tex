@@ -1,38 +1,47 @@
+\section{Introduction}
 
-\section{Background}
-\subsection{Introduction}
-
-In computer science, a \emph{namespace} refers to a collection of terms that are managed together because they share functionality or purpose, typically for providing modularity and resolving name conflicts \cite{duval2002metadata}. For example, XML uses namespaces to prefix element names to ensure uniqueness and remove ambiguity between them~\cite{bray1999namespaces}, and the Java programming language uses packages to organize identifiers into namespaces for modularity~\cite{gosling2014java}.
+In computer science, a \emph{namespace} refers to a collection of terms that are managed 
+together because they share functionality or purpose, typically for providing modularity 
+and resolving name conflicts \cite{duval2002metadata}. For example, XML uses namespaces 
+to prefix element names to ensure uniqueness and remove ambiguity between
+them~\cite{bray1999namespaces}, and the Java programming language uses packages to organize
+identifiers into namespaces for modularity~\cite{gosling2014java}.
 
 In this thesis we will extend the notion of namespaces to mathematical formulae.
 
 
-In logic, a \emph{formula} is defined recursively, and, in essence, it is a collection of variables, functions and other formulas, and formally the symbols for the variables and functions can be chosen arbitrarily \cite{barwise2000language}. However, in contrast to first order logic, in this work we are interested in the symbols in formulae and in mathematical notations that are used by different research communities.
-For example, in physics it is common to write the energy-mass relation as $E=mc^2$ rather than $x=yz^2$.
-% But in mathematics there are many different areas such as linear algebra, statistics or
-% physics, and each of them uses different notation.
-However, the same identifier may be used in different areas but denote different things: For example, $E$ may refer to ``energy", ``expected value" or ``elimination matrix", depending on the domain of the article. Thus, we can note that these identifiers form namespaces, and we refer to such namespaces as \emph{identifier namespaces}, and to the process of discovering identifier namespaces as \emph{namespace disambiguation}.
+In logic, a \emph{formula} is defined recursively, and, in essence, 
+it is a collection of variables, functions and other formulas, and formally the symbols for
+the variables and functions can be chosen arbitrarily \cite{barwise2000language}. 
+However, in contrast to first order logic, in this work we are interested in the symbols 
+in formulae and in mathematical notations that are used by different research communities.
+For example, in physics it is common to write the energy-mass relation as $E=mc^2$ rather 
+than $x=yz^2$.
 
-% TODO: related works
-% https://www.lrde.epita.fr/dload/20080116-Seminar/durlin-disamb.pdf
-
-
-In this thesis we compare different approaches for namespace disambiguation. The first approach is to assume that there is a strong correlation between identifiers in a document and the namespace of the document, and this correlation can be exploited to categorize documents and thus discover namespaces. For example, if we observe a document with two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more likely that the document belongs to the ``physics'' namespace rather than to ``statistics''. To use it, we need to map identifiers to their definitions, and this can be done by extracting the definitions from the text that surrounds the formula \cite{pagael2014mlp}. Other approaches are based on the text of the documents, rather on the formulae \cite{sebastiani2002machine}, but nonetheless we believe that there is a correlation between the textual content of a document and the namespace of its identifiers.
+Identifier 
 
 
-\subsection{Related Work}
+However, the same identifier may be used in different areas but denote different things: 
+For example, $E$ may refer to ``energy", ``expected value" or ``elimination matrix", depending on
+the domain of the article. Thus, we can note that these identifiers form namespaces, and we 
+refer to such namespaces as \emph{identifier namespaces}, and to the process of discovering
+identifier namespaces as \emph{namespace disambiguation}.
 
-Kristianto et al \cite{kristianto2014extracting} highlight the importance of interlinking the scientific documents and in their study they do it through annotating mathematical formulae and finding the documents that share the same identifiers. Sch\"oneberg et al \cite{schoneberg2014pos} propose mathematical-aware part of speech tagger and they discuss how it can be applied for classifying scientific publications.
 
-There are several researches related to extracting textual description of mathematical formulae. One of the earliest works is by Grigore et al \cite{grigore2009towards} that focuses on disambiguation,
-%TODO: I'd cite this work when you introduce our disambiguation process
-and Yokoi et al \cite{yokoi2011contextual} that focuses on advanced mathematical search.
+In this thesis we compare different approaches for namespace disambiguation. 
+The first approach is to assume that there is a strong correlation between identifiers in 
+a document and the namespace of the document, and this correlation can be exploited to 
+categorize documents and thus discover namespaces. For example, if we observe a document with 
+two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more 
+likely that the document belongs to the ``physics'' namespace rather than to ``statistics''. 
+To use it, we need to map identifiers to their definitions, and this can be done by extracting 
+the definitions from the text that surrounds the formula \cite{pagael2014mlp}. Other approaches 
+are based on the text of the documents, rather on the formulae \cite{sebastiani2002machine}, 
+but nonetheless we believe that there is a correlation between the textual content of a document 
+and the namespace of its identifiers.
 
-Pagel and Schubotz \cite{pagael2014mlp} suggest a Mathematical Language Processing framework - a statistical approach for relating identifiers to definitions. Similar approach is suggested in \cite{yokoi2011contextual}, \cite{kristianto2014extracting} and \cite{kristianto2012extracting}, where the authors use machine learning methods for extracting the definitions.
 
-Some work is also done in clustering mathematical formulae by Ma et al \cite{ma2010feature} to facilitate formula search where they propose features that can be extracted from the formulae.
 
-In computational linguistics there is a related concept called \emph{semantic field} or \emph{semantic domain}: it describes a group of terms that are highly related and often are used together. Words that appear frequently in same documents are likely to be in the same semantic field, and this idea is successfully used for text categorization and word disambiguation \cite{gliozzo2009semantic}.
 
 
 
@@ -41,41 +50,9 @@ In computational linguistics there is a related concept called \emph{semantic fi
 The main objective of this study is to discover identifier namespace in mathematical formulae.
 We aim to find \emph{meaningful} namespaces, in the sense that they can be related to a real-world area of knowledge, such as physics, linear algebra or statistics.
 
-% Additionally, we believe that formulae comprise an integral part of a mathematical corpus,
-% namespaces should be discovered based on these formulae
-
 Once such namespaces are found, they can give good categorization of scientific documents based on formulae and notation used in them.
-
-% TODO: We need more explaination here. We assume that different formula of a document
-% use identifiers from the same namespace. Thus we can generalize from the namespace
-% of the formula to a namespace of the document. This namespace can be regared as
-% categorization (or maybe classification) of the document.
 
 We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{bray1999namespaces} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
 
 We also expect that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{pagael2014mlp} - identifiers that are used in formulae but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
 
-%TODO: Here you mean the category? We should keep the analogy to computer science,
-% where commands like "import" or "declare default namespace" are used to keep the notation short.
-
-
-\ \\
-
-To achieve these objectives we define the following research tasks:
-
-\begin{enumerate}
-\itemsep1pt\parskip0pt\parsep0pt
-
-  \item To identify similarities with computational linguistics, computer science and mathematics
-  \item To study existing solutions for clustering textual and mathematical data and how to use them to discover meaningful namespaces
-  \item To implement promising approaches to namespace disambiguition
-  \item To evaluate these approaches in order to find the best
-  \item To incorporate the found namespaces to the existing MLP framework (described in \cite{source:mlpp})
-\end{enumerate}
-
-These tasks are explained in details in the next section.
-
-%TODO: Add more description here. And keep focussed on the goals.
-% For example "To incorporate the found namespaces to the existing MLP framework"
-% reads like a programming and not like a research task. The significant research output
-% is an improvement w.r.t precision and recall compared to the current MLP system baseline.

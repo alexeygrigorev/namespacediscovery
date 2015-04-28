@@ -4,7 +4,7 @@ In computer science, a \emph{namespace} refers to a collection of terms that are
 together because they share functionality or purpose, typically for providing modularity 
 and resolving name conflicts \cite{duval2002metadata}. For example, XML uses namespaces 
 to prefix element names to ensure uniqueness and remove ambiguity between
-them~\cite{bray1999namespaces}, and the Java programming language uses packages to organize
+them~\cite{}, and the Java programming language uses packages to organize
 identifiers into namespaces for modularity~\cite{gosling2014java}.
 
 In this thesis we will extend the notion of namespaces to mathematical formulae.
@@ -52,7 +52,7 @@ We aim to find \emph{meaningful} namespaces, in the sense that they can be relat
 
 Once such namespaces are found, they can give good categorization of scientific documents based on formulae and notation used in them.
 
-We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{bray1999namespaces} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
+We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{xmlnamespaces} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
 
 We also expect that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{pagael2014mlp} - identifiers that are used in formulae but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
 

@@ -1,0 +1,66 @@
+\section{Document Clustering Techniques}
+
+Scatter/Gather - first successful document clustering for information retrieval \cite{cutting1992scatter}
+
+
+Types of clustering techniques:
+\begin{itemize}
+  \item hierarchical 
+  \item partitioning
+  \item density-based
+  \item etc
+\end{itemize}
+
+
+\subsection{Hierarchical clustering}
+
+
+\cite{steinbach2000comparison} - not always good for document clustering 
+because they make mistakes at early iterations that are impossible 
+to correct afterwards
+
+
+\subsection{K-Means}
+
+
+Often K-Means shows the best results \cite{hall2012evaluating} \cite{steinbach2000comparison}, but it takes long for large collections.
+
+Solution: minibatch K-means (web-scale k-means clustering paper) \cite{sculley2010web}
+
+
+
+\subsection{Extensions of K-Means}
+
+Scatter/Gather \cite{cutting1992scatter} 
+
+Bisecting K-Means \cite{steinbach2000comparison} 
+
+Center adjustment (vector average dumping) \cite{larsen1999fast}
+
+Smart seed selection \cite{cutting1992scatter} \cite{larsen1999fast}
+
+
+
+\subsection{DBSCAN}
+
+describe the algo \cite{ester1996density}
+
+
+pseudocode 
+
+Can be adapted to take similarity measure instead of distance
+
+
+\subsection{Extensions of DBSCAN}
+
+SNN Clustering: \cite{ertoz2003finding}
+
+Different similarity measure
+
+Applicable to document clustering and discovering topics \cite{ertoz2004finding}
+
+
+
+\subsection{Scaling?}
+
+LSH etc

@@ -1,0 +1,48 @@
+\section{Introduction}
+
+
+\subsection{Namespaces}
+
+Problem statement
+
+CS: problem of name collisions
+
+Namespaces: to solve the problem and encapsulate items
+
+example: OS, folders to group related files
+
+XML, Programming languages, java: packages are namespaces. 
+
+\ \\
+
+Here: extend this to mathematical formulas
+
+
+
+Usage: gives a way to distinguish between physics.$E$ and statistics.$E$.
+
+
+
+\section{Document clustering}
+
+
+
+So the algorithm:
+
+\begin{itemize}
+  \item  find clusters
+  \item evaluate purity of each cluster (keeping these clusters big enough to form a meaningful namespace)
+  \item keep only pure ones
+  \item postprocess pure cluster to form namespaces from them (maybe even hierarchically)
+\end{itemize}
+
+
+
+
+Clustering algorithms used: DBScan, Shared Nearest Neighborhood Clustering (SNN Clustering), K-means, Mini-Batch K-means, Bisecting K-means, Latent Semantic Analysis + K-Means
+Also SNN on LSA with cosine.
+
+Similarity/distance measures: jaccard, cosine, euclidean
+
+
+

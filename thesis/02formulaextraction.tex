@@ -1,16 +1,16 @@
-\section{Mathematical Definition Extraction}
-Mathematical expressions are hard to understand without the natural language description, 
-so we want to find identifiers in the mathematical expressions and extract their 
+\section{Mathematical Definition Extraction} \label{section:definitionextraction}
+Mathematical expressions are hard to understand without the natural language description,
+so we want to find identifiers in the mathematical expressions and extract their
 definition from the surrounding text
 
 Example:
 
-The precision $P$ is defined as $P = \cfrac{w}{w + y}$ where $w$ is the number of 
+The precision $P$ is defined as $P = \cfrac{w}{w + y}$ where $w$ is the number of
 correctly labeled pairs and $y$ is the number of incorrectly labeled pairs
 
 We want to extract:
 
-($P$, "precision"), 
+($P$, "precision"),
 ($w$, "the number of correctly labeled pairs"),
 ($y$, "the number of incorrectly labeled pairs")
 
@@ -19,33 +19,33 @@ Another example: "Let $e$ be the base of natural logarithm"
 want to extract ($e$, "the base of natural logarithm")
 
 
-A phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}: 
+A phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
 
 \begin{itemize}
   \item \emph{definiendum}, a mathematical expression or identifier, is the term to be defined;
   \item \emph{definiens} is the definition itself: it is the word or phrase that defines the definiendum in a definition.
   \item \emph{definitor} is a relator verb that links definiendum and definiens.
 \end{itemize}
- 
-In this work we are interested only in first two parts: definiendum and definiens. 
-Thus we define a \emph{relation} as a pair (definiendum, definiens). Since we are 
+
+In this work we are interested only in first two parts: definiendum and definiens.
+Thus we define a \emph{relation} as a pair (definiendum, definiens). Since we are
 interested in finding definitions only for identifiers, we restrict ourselves only
 to (identifier, definition) relations.
 
 
-% TODO: 
-An identifier is a mathematical ...
+% TODO:
+An \emph{identifier} is a mathematical ...
 
 
 \subsection{Formula Representation: MathML}
 
-MathML \cite{mathml} stands for ``Mathematical Markup Language'' 
+MathML \cite{mathml} stands for ``Mathematical Markup Language''
 It is is a standard for mathematical
 expressions defined by W3C that browsers should support to render math
 formulas. There are two types of MathML: Presentation MathML, which describes
-how mathematical expressions should be displayed, and Content MathML, which 
+how mathematical expressions should be displayed, and Content MathML, which
 focuses on the meaning of mathematical expressions. In this section, we will discuss
-Presentation MathML . 
+Presentation MathML .
 
 
 A \emph{token} in MathML is an individual symbol, name or number. Tokens
@@ -125,7 +125,7 @@ expression. This is also true for the MathML representation:
 \ \\
 
 
-Token Elements 
+Token Elements
 
 \ \\
 
@@ -250,7 +250,7 @@ There are more complex elements such as \texttt{mtable}.
 
 MathML presentation elements only suggest specific ways of rendering
 
-Math Entities 
+Math Entities
 
 Certain characters are used to name identifiers or operators that in
 traditional notation render the same as other symbols or usually
@@ -289,7 +289,7 @@ The typical (see e.g. \cite{kristianto2012extracting, pagael2014mlp} (more?)) pi
 
 \begin{itemize}
   \item Read corpus of documents in some markup language, e.g. Mediawiki or Latex
-  \item Translate all formulas in the documents into MathML 
+  \item Translate all formulas in the documents into MathML
   \item Process MathML formulas
   \item Replace formulas with some placeholder
   \item Annotate text ([[Math-Aware POS Tagging]])
@@ -318,22 +318,22 @@ ID for identifiers (e.g. "... where $E$ stands for energy", $E$ should be tagged
 \verb|MATH| for formulas (e.g. "$E = mc^2$ is the mass-energy equivalence formula", "$E = mc^2$ should be tagged as \verb|MATH|)
 
 Mathematical expressions are usually contained within special tags, e.g. inside
-tag \verb|<math>...</math>| for wikipedia, or inside \verb|$...$| for 
+tag \verb|<math>...</math>| for wikipedia, or inside \verb|$...$| for
 latex documents.
 
 We find all such mathematical expressions and replace each with a unique single token \verb|MATH_mathID|
 
-the \verb|mathID| could be a randomly generated string or result of some hash function 
-applied to the content of formula. The latter approach is preferred when we want 
+the \verb|mathID| could be a randomly generated string or result of some hash function
+applied to the content of formula. The latter approach is preferred when we want
 to have consistent strings across several runs.
 
-Then we apply traditional [[POS Tagging]] (e.g. via Stanford 
+Then we apply traditional [[POS Tagging]] (e.g. via Stanford
 CoreNLP \cite{manning2014stanford})
 techniques to the textual data. They typically will annotate such \verb|MATH_mathID|
 tokens as nouns
 
-after that we may want to re-annotate all math tokens: if it contains only 
-one identifier, we label it as \verb|ID|, if several - as \verb|MATH|. But in some cases 
+after that we may want to re-annotate all math tokens: if it contains only
+one identifier, we label it as \verb|ID|, if several - as \verb|MATH|. But in some cases
 we want to keep original annotation
 
 after that we can bring the mathematical content back to the document
@@ -352,8 +352,11 @@ This way it only can be compound nouns without additional phrases.
 
 
 E.g:
-* "In other words, the bijection $\sigma$ normalizes $G$ in ..."
-* It will extract relations ($\sigma$, "bijection")
+
+\begin{itemize}
+  \item "In other words, the bijection $\sigma$ normalizes $G$ in ..."
+  \item It will extract relations ($\sigma$, "bijection")
+\end{itemize}
 
 
 
@@ -375,7 +378,7 @@ For example,
 
 
 Patterns taken from
-\cite{trzeciak1995writing} (TODO: mention who exactly did that)
+\cite{trzeciak1995writing} (\textbf{TODO}: mention who exactly did that)
 and sentence patterns from Graphs and Combinatorics papers from Springer
 
 Used in \cite{quoc2010mining}
@@ -414,8 +417,8 @@ Classifiers:
 
 
 \subsubsection{Probabilistic Approaches}
-Mathematical Language Processing (MLP) Approach \cite{pagael2014mlp}: Statistical definition discovery: rank candidate definitions by probability and design an 
-information extraction system that shots the most relevant (i.e. probable) 
+Mathematical Language Processing (MLP) Approach \cite{pagael2014mlp}: Statistical definition discovery: rank candidate definitions by probability and design an
+information extraction system that shots the most relevant (i.e. probable)
 definition to the reader to facilitate reading scientific texts with mathematics.
 
 
@@ -428,9 +431,9 @@ extract identifiers from MathML
 Two assumptions
 
 \begin{itemize}
-  \item identifier and its definition occur in the same sentence, so the candidates are 
+  \item identifier and its definition occur in the same sentence, so the candidates are
   taken only from the same sentences (as in the ML approach)
-  \item definitions are likely occur earlier in the document when authors introduce 
+  \item definitions are likely occur earlier in the document when authors introduce
   the meaning of an identifier, in subsequent uses the definition is typically not repeated
 \end{itemize}
 
@@ -445,9 +448,10 @@ where
 $t$ is the candidate term,
 $s$ set of sentences in the document,
 $\Delta$ is the distance (the amount of word tokens) between identifier and the candidate term $t$,
-$n$ what is n??? % TODO
+$n$ n is the number of sentences between the formula where the identifier is used and
+the place where the definition candidate is found.
 
-The distances modeled with Gaussians (instead of taking the raw ones)
+The distances modeled with Gaussian (instead of taking the raw ones)
 
 $$R_{\sigma}(\Delta) = \exp \left( -\cfrac{1}{2} \cdot {\Delta^2 - 1}{\sigma_2} \right)$$
 
@@ -457,21 +461,21 @@ Finding Parameters $\sigma_d$ and $\sigma_s$
 
 $\sigma_d$ - the standard deviation of Gaussian that models the distance to definition candidate
 manual evaluation showed that $R_{\sigma_d}(1) \approx R_{\sigma_d}(5)$,
-i.e. it's two times more likely to find the real definition at distance $\Delta=1$ 
+i.e. it's two times more likely to find the real definition at distance $\Delta=1$
 than at distance $\Delta=5$.
 thus $\sigma_d = \sqrt{\cfrac{12}{\ln 2}}$
 
 
 % TODO: check that
-$\sigma_s$ - the standard deviation of the Gaussian that models the distance 
+$\sigma_s$ - the standard deviation of the Gaussian that models the distance
 from the beginning of document
-% 
+%
 $\sigma_s = 2 \sqrt{\cfrac{1}{\ln 2}}$
 
 
 weights $\alpha, \beta, \gamma$:
-$\alpha = \beta = 1$ and 
-$\gamma = 0.1$ because some valid definitions may occur more often than other 
+$\alpha = \beta = 1$ and
+$\gamma = 0.1$ because some valid definitions may occur more often than other
 valid definitions, e.g. "length" vs "Hamiltonian"
 
 
@@ -479,11 +483,17 @@ valid definitions, e.g. "length" vs "Hamiltonian"
 Translation of mathematical formulas to English using machine-translation techniques
 \cite{nghiem2012towards}
 
+Expand or delete?
+
 
 \subsection{Performance Measures}
+
+TODO: Write more about this
 
 \begin{itemize}
   \item Precision: no of math expresssion with correctly extracted definitions / no of extracted definitions
   \item Recall: no of math expresssion with correctly extracted definitions / no of expressions with definitions
-  \item F1 = 2PR / (P + R): harmonic mean between P and R
+  \item $F_1 = 2PR / (P + R)$: harmonic mean between P and R
 \end{itemize}
+
+

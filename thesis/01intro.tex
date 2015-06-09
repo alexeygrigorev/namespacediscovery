@@ -1,51 +1,139 @@
 \section{Introduction}
 
-In computer science, a \emph{namespace} refers to a collection of terms that are managed 
-together because they share functionality or purpose, typically for providing modularity 
-and resolving name conflicts \cite{duval2002metadata}. For example, XML uses namespaces 
-to prefix element names to ensure uniqueness and remove ambiguity between
-them~\cite{}, and the Java programming language uses packages to organize
-identifiers into namespaces for modularity~\cite{gosling2014java}.
+Some introductory stuff?
+
+\subsection{Namespaces in Computer Science}
+
+In computer science, a \emph{namespace} refers to a collection of terms that are managed
+together because they share functionality or purpose, typically for providing modularity
+and resolving name conflicts \cite{duval2002metadata}.
+
+
+In operation systems, files are organized into directories that are used to group related
+files together. To refer to a particular file we use the full name, e.g. 
+\verb|/home/user/documents/doc.txt| or \verb|C:\\Users\\Username\\Documents\\doc.txt|. 
+The same directory cannot contain a file with the same name, and we typically store closery
+related files in the same directory, so we can see file system directories as namespaces. 
+
+
+XML uses namespaces to prefix element names to ensure uniqueness and remove 
+ambiguity between them~\cite{xmlnamespaces}. 
+
+Add examples (from the XML course)
+
+Ralf's comment: ``namespaces" were deeply studied mainly in
+the field of distributed systems/ middleware (like DCE, CORBA, etc.) in the middle
+of the 80s/ 90s ...
+
+
+
+In programming languages it is a good design to put related objects
+into the same namespace, and namespaces give a way to achieve better modularity.
+There are design principles that tell the best way of grouping objects to
+achieve the low coupling between packages and high cohesion within packages~\cite{larman2005applying}.
+
+Usually we group items 
+
+\begin{itemize}
+  \item that share the same functionality  (e.g. objects for database access put into one package)
+  \item that are about the same domain (can cite DDD)
+\end{itemize}
+
+In the Java programming language~\cite{gosling2014java} packages are used to organize identifiers 
+into namespaces. 
+Packages solve the problem of ambiguity: for example, we have several classes with 
+name \texttt{Date}: \texttt{java.util.Date} and  \texttt{java.sql.Date} or 
+\texttt{java.util.List} and \texttt{java.awt.List}.
+
+Modularity of packages allows safely plug in libraries and use the code from there.
+
+
+The programmer, when creating a method in a java class, can use all classes in the package. 
+However, if they need to refer to a class in another package, they either have 
+to use a fully qualified name, e.g. \texttt{java.sql.Date} instead of \texttt{Date}
+or add an import statement \texttt{import java.sql.Date} in the header of the java 
+class and use the alias  \texttt{Date} in the class.  (cite JLS~\cite{gosling2014java} 7.5 Import Declarations)
+
+
+
+
+\subsection{Namespaces in Mathematical Notation}
 
 In this thesis we will extend the notion of namespaces to mathematical formulae.
 
-
-In logic, a \emph{formula} is defined recursively, and, in essence, 
+In logic, a \emph{formula} is defined recursively, and, in essence,
 it is a collection of variables, functions and other formulas, and formally the symbols for
-the variables and functions can be chosen arbitrarily \cite{barwise2000language}. 
-However, in contrast to first order logic, in this work we are interested in the symbols 
+the variables and functions can be chosen arbitrarily \cite{barwise2000language}.
+However, in contrast to first order logic, in this work we are interested in the symbols
 in formulae and in mathematical notations that are used by different research communities.
-For example, in physics it is common to write the energy-mass relation as $E=mc^2$ rather 
+For example, in physics it is common to write the energy-mass relation as $E=mc^2$ rather
 than $x=yz^2$.
 
-Identifier 
+TODO: define what \emph{identifier} is
 
 
-However, the same identifier may be used in different areas but denote different things: 
-For example, $E$ may refer to ``energy", ``expected value" or ``elimination matrix", depending on
-the domain of the article. Thus, we can note that these identifiers form namespaces, and we 
-refer to such namespaces as \emph{identifier namespaces}, and to the process of discovering
-identifier namespaces as \emph{namespace disambiguation}.
+define \emph{identifier namespaces} as a coherent structure where each identifier is used only once and has a unique definition
+the process of discovering identifier namespaces is \emph{namespace disambiguation}.
 
 
-In this thesis we compare different approaches for namespace disambiguation. 
-The first approach is to assume that there is a strong correlation between identifiers in 
-a document and the namespace of the document, and this correlation can be exploited to 
-categorize documents and thus discover namespaces. For example, if we observe a document with 
-two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more 
-likely that the document belongs to the ``physics'' namespace rather than to ``statistics''. 
-To use it, we need to map identifiers to their definitions, and this can be done by extracting 
-the definitions from the text that surrounds the formula \cite{pagael2014mlp}. Other approaches 
-are based on the text of the documents, rather on the formulae \cite{sebastiani2002machine}, 
-but nonetheless we believe that there is a correlation between the textual content of a document 
-and the namespace of its identifiers.
+Example:
+$E$ may refer to ``energy", ``expected value" or ``elimination matrix".
 
+In this thesis we compare different approaches for namespace disambiguation.
+
+How do we construct a namespace? 
+
+How to find a namespace? Can be constructed manually using existent category information
+(refer to that list of categories of scientific articles)
+
+But it's very time consuming. Our approach: use ML techniques to automatically discover
+the namespaces from corpus with mathematical formulas.
 
 
 
+\textbf{Assumptions:}
 
 
-\section{Goals}
+\begin{enumerate}
+ \item documents are "mixtures" of namespaces: they take identifiers from several namespaces
+ \item there are some documents are more "pure" than others: they either take identifiers exclusively from one namespace or from few very related namespaces
+ \item there's a correlation between a category of a document and the namespaces
+the document uses
+\end{enumerate}
+
+
+Under these assumptions: can approximate namespaces discovery by finding groups of "pure" documents. can evaluate purity by using category information and retain only pure ones
+
+(or: that there is a strong correlation between identifiers in
+a document and the namespace of the document, and this correlation can be exploited to
+categorize documents and thus discover namespaces)
+
+Assumptions:
+
+
+For example, if we observe a document with
+two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more
+likely that the document belongs to the ``physics'' namespace rather than to ``statistics''.
+
+Then, the process of cauterization may be formalized as follows: 
+Let $D$ denote a document and $Z(D)$ denote the category of the document. A document can be 
+seen as a collection of identifiers, so $D = \{ X_1, ..., X_N \}$, where 
+each $X_j$ is a probability distribution over possible definition assignment. 
+Then we can classify a document based on 
+$\text{arg} \, \max_z P(Z=z \mid X_1=x_1, \ ... \ ,  X_N=x_N)$. For example, if in a document 
+we observe $E$ assigned to ``energy'' and $m$ assigned to ``mass'', then 
+$P(\text{``physics''} \mid E=\text{``energy''}, m=\text{``mass''}) > P(\text{``statistics''} \mid E=\text{``energy''}, m=\text{``mass''})$ 
+and we may conclude that the identifiers in the document are likely to belong to 
+the ``physics'' namespace.
+
+To use it, we first need to map identifiers to their definitions, and this can be done by
+extracting the definitions from the text that surrounds the formula. We explore these methods 
+in section \ref{section:definitionextraction}.
+
+
+
+
+\subsection{Goals}
 
 The main objective of this study is to discover identifier namespace in mathematical formulae.
 We aim to find \emph{meaningful} namespaces, in the sense that they can be related to a real-world area of knowledge, such as physics, linear algebra or statistics.
@@ -55,4 +143,15 @@ Once such namespaces are found, they can give good categorization of scientific 
 We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{xmlnamespaces} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
 
 We also expect that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{pagael2014mlp} - identifiers that are used in formulae but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
+
+
+To accomplish the proposed goal, we plan the following.
+
+First, we would like to study and analyze existing approaches and recognize similarities and differences with identifier namespaces. From the linguistics point of view, the theory of semantic fields \cite{vassilyev1974theory} and semantic domains \cite{gliozzo2009semantic} are the most relevant areas. Then, namespaces are well studied in computer science, e.g. in programming languages such as Java \cite{gosling2014java} or markup languages such as XML \cite{xmlnamespaces}. XML is an especially interesting in this respect, because it serves as the foundation for knowledge representation languages like OWL (Web Ontology Language) \cite{mcguinness2004owl} that use the notion of namespaces as well.
+
+The process of manual categorization of mathematical corpus is quite time consuming. What is more, scientific fields are becoming more and more interconnected, and sometimes it is hard even for human experts to categorize an article. Therefore, we believe that the namespaces should be discovered in an unsupervised manner.
+
+Thus, we would like to try the following methods for finding namespaces: categorization based on the textual data \cite{sebastiani2002machine}, on semantic domains \cite{gliozzo2009semantic}, on keywords extracted from the documents \cite{schoneberg2014pos} or on definitions extracted from the formulae in the documents \cite{pagael2014mlp}.
+
+The data set that we plan to use is a subset of English wikipedia articles - all those that contain the \texttt{<math>} tag. The textual dataset can potentially be quite big: for example, the English wikipedia contains 4.5 million articles, and many thousands of them contain mathematical formulae. This is why it is important to think of ways to parallelize it, and therefore the algorithms will be implemented in Apache Flink \cite{source:flink}.
 

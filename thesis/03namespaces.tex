@@ -1,380 +1,88 @@
-
-
-\section{Realization}
-\subsection{Namespace disambiguation}
-
-To accomplish the proposed goal, we plan the following.
-
-First, we would like to study and analyze existing approaches and recognize similarities and differences with identifier namespaces. From the linguistics point of view, the theory of semantic fields \cite{vassilyev1974theory} and semantic domains \cite{gliozzo2009semantic} are the most relevant areas. Then, namespaces are well studied in computer science, e.g. in programming languages such as Java \cite{gosling2014java} or markup languages such as XML \cite{xmlnamespaces}. XML is an especially interesting in this respect, because it serves as the foundation for knowledge representation languages like OWL (Web Ontology Language) \cite{mcguinness2004owl} that use the notion of namespaces as well.
-
-The process of manual categorization of mathematical corpus is quite time consuming. What is more, scientific fields are becoming more and more interconnected, and sometimes it is hard even for human experts to categorize an article. Therefore, we believe that the namespaces should be discovered in an unsupervised manner.
-
-Thus, we would like to try the following methods for finding namespaces: categorization based on the textual data \cite{sebastiani2002machine}, on semantic domains \cite{gliozzo2009semantic}, on keywords extracted from the documents \cite{schoneberg2014pos} or on definitions extracted from the formulae in the documents \cite{pagael2014mlp}.
-
-The data set that we plan to use is a subset of English wikipedia articles - all those that contain the \texttt{<math>} tag. The textual dataset can potentially be quite big: for example, the English wikipedia contains 4.5 million articles, and many thousands of them contain mathematical formulae. This is why it is important to think of ways to parallelize it, and therefore the algorithms will be implemented in Apache Flink \cite{source:flink}.
-
-
-
-\section{Traditional Document Clustering Techniques}
-\subsection{Document Clustering for Identifier Clustering}
+\section{Namespaces as Document Clusters}
+\subsection{Discovering Namespaces with Cluster Analysis}
 
 Why it will work?
 
 List properties of text that identifier-based representation of documents share as well
 
+list characteristics of textual data
 
 
-\section{Advanced Document Clustering Techniques}
-
-
-\subsection{Latent Semantic Analysis}
-
-Latent Semantic Analysis (LSA) is an NLP method:
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  mathematical/statistical method for modeling the meaning of
-  words/passages by analysis of text via extracting and inferring
-  relations of expected contextual usage of words in texts
-\item
-  idea: words that are used in the same contexts tend to have the same
-  meaning
-\item
-  it extracts and represents ``usage-in-context'' meaning of words and
-  it gives a characterization of words meaning
+  \item dimensionality is very large, but vectors are very sparse.
+    e.g. vocabulary size $| V | = 10^5$, but documents may contain only 500 distinct words,
+    or even less - when we consider sentences or tweets
+  \item lexicon of document may be large, but words are typically correlated with each other
+    so number of concepts ("principal components") is $\ll | V |$
+  \item number of words across different documents may wary a lot
+  \item word distributions follow Power Laws (Zipf's law etc - cite)
 \end{itemize}
 
-LSA
+Problems in text:
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  LSA closely approximates how humans learn and understand meaning of
-  words and similarity between words
-\item
-  it applies \href{Factor Analysis}{Factor Analysis} to texts to extract
-  concepts and then clusters documents into similar categories based on
-  factor scores
-\item
-  produces measures of word-word, word-passage, passage-passage
-  relations via dimensionality reduction technique \url{SVD}
-\item
-  Similarity estimates derived by LSA are not just frequencies or
-  co-occurrences counts: it can infer deeper relations: hence ``Latent''
-  and ``Semantic''
+  \item problems of polysemy, homonymy and synonymy: semantic relations between words
+  \item Polysemy is the capacity for a sign (such as a word, phrase, or symbol) to have multiple meanings (multiple senses)
+  \item The state of being a homonym is called homonymy. In linguistics, a homonym is, in the strict sense, one of a group of words that share the same spelling and pronunciation but have different meanings.[1] http://dictionary.reference.com/browse/homonym
+  \item Words that are synonyms are said to be synonymous, and the state of being a synonym is called synonymy.
+  \item The analysis of synonymy, polysemy, and hyponymy and hypernymy is vital to taxonomy and ontology in the information-science senses of those terms.
+  \item Homonyms are words that have the same pronunciation and spelling, but have different meanings. For example, rose (a type of flower) and rose (past tense of rise) are homonyms.
 \end{itemize}
 
-\subsubsection{Limitations}\label{limitations}
+This is also true for identifiers and they have the same problems (illustrate that)
+These problems are studied in IR and NLP literature, so we can apply them for identifiers
+
+
+Identifier spaces (need to define what it is - analogous to documents vector space models) have the same characteristics so we can apply vector space techniques
+
+in VSM for word sense disambiguation often word meaning is attached e.g. "bank\_finances", can do the same e.g. "E\_energy"
+
+Then we discover namespaces in the identifier namespaces - it's done by clustering document-identifier matrix
+
+
+\textbf{How to deal with these problems?} Term Extraction techniques:
+these techniques create "artificial" terms that aren't really terms - they are generated, and not the ones that actually occurred in the text
+The original terms don't have the optimal dimensionality for document content representation
+because of the problems of polysemy, homonymy and synonymy
+so we want to find better representation that doesn't suffer from these issues
+
+
+\subsection{Similarity Measures and Distances}
+
+
+
+\subsection{Vector Space Model}
+
+Vector Space model: term selection, weighting schemes; how to build identifier space and include definition information
+
+\cite{sebastiani2002machine} - \emph{classification}
+
+
+
+TF-IDF
+
+
+tf is normalized by idf
+
+idf - reduces weights of terms that occur more frequently
+
+When applied to identifiers: some identifiers like $x$ or $y$ occur very frequently and don't have much discriminating power
+
+
+to ensure that document matching is done with more discriminative words
+apply sub-linear transformation to to avoid the dominating effect of words that occur very frequently
+
+
+\subsection{Identifier Space Model}
+
+
+There are three ways of incorporating the definition information into the identifier space.
+
+Given ($\lambda$, regularization) and ($w$, weight vector)
 
 \begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  makes no use of words order, punctuation
+  \item use only identifier information. vector is ($\lambda$, $w$)
+  \item use "weak" identifier-definition association: vector is ($\lambda$, $w$, regularization, weight vector)
+  \item use "strong" association: document representation is ($\lambda$\_regularization, $w$\_weight vector)
 \end{itemize}
-
-\subsection{LSA Steps}\label{lsa-steps}
-
-3 major steps in LSA \cite{evangelopoulos2012latent}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Prepare documents
-\item
-  Construct \href{Vector Space Models}{Term-Document matrix} $D$
-\item
-  Reduce dimensionality of $D$ via \url{SVD}
-\end{itemize}
-
-
-Representation: Term-Document Matrix
-
-Construct a Term-Document Matrix $D$ using the
-\href{Vector Space Model}{Vector Space Model}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  typically rows of $D$ - terms, columns of $D$ -
-  documents/passages,
-
-  \begin{itemize}
-  \itemsep1pt\parskip0pt\parsep0pt
-  \item
-    or sometimes, rows of $D$ are documents, columns of $D$ - terms
-  \end{itemize}
-\item
-  not necessarily documents, it can have passages: paragraphs or entire
-  texts
-\item
-  each cell - typically a frequency with which a word occurs in a doc
-\item
-  also apply weighting: TF or TF-IDF
-\end{itemize}
-
-SVD and Dimensionality Reduction
-
-Let $D$ be an $t \times p$ Term-Passage matrix
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $t$ rows are terms, $p$ columns are passages,
-  $\text{rank } D = r$
-\item
-  then SVD decomposition is $D = T \cdot
-  \Sigma \cdot P^T$
-\item
-  $T$ is $t \times r$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains left singular
-  vectors, corresponds to term vectors
-\item
-  $\Sigma$ is $r \times r$ a diagonal
-  matrix of singular values
-\item
-  $P$ is $r \times p$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains right singular
-  vectors, corresponds to passage vectors
-\item
-  and then $T \sqrt\Sigma$ are loadings
-  for terms and $P \sqrt\Sigma$ - for
-  passages
-\end{itemize}
-
-Now reduce the dimensionality:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  want to combine the surface text information into some deeper
-  abstraction
-\item
-  finding the optimal dimensionality for final representation in the
-  Semantic Space is important to properly capture mutual usage of words
-\item
-  the ``True Semantic Space'' should address the problems of ambiguity
-\end{itemize}
-
-So, Apply reduced-rank \url{SVD}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $D \approx T_k \cdot
-  \Sigma_k \cdot P^T_k$
-\item
-  keep only $k$ largest singular values
-\item
-  the result: best $k$-dim approximation of the original matrix $D$
-\item
-  for NLP $k = 300 \pm 50$ usually works the best
-\item
-  but it should be \href{Parameter Tuning}{tuned} because it heavily
-  depends on the domain
-\end{itemize}
-
-Semantic Space
-
-LSA constructs a semantic space via SVD:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $T$ is $t \times r$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains left singular
-  vectors, corresponds to term vectors
-\item
-  $\Sigma$ is $r \times r$ a diagonal
-  matrix of singular values
-\item
-  $P$ is $r \times p$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains right singular
-  vectors, corresponds to passage vectors
-\item
-  and then $T \sqrt\Sigma$ are loadings
-  for terms and $P \sqrt\Sigma$ - for
-  passages
-\end{itemize}
-
-Language-theoretic interpretation:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  LSA vectors approximate:
-\item
-  the meaning of a word as its average effect of the meaning of passages
-  in which they occur
-\item
-  the meaning of a passage as meaning of its words
-\end{itemize}
-
-After doing the SVD, we get the reduced space - this is the semantic
-space
-
-Examples
-
-Let's consider titles of some articles example from \cite{landauer1998introduction}
-
-
-TODO: change it to identifiers!
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $c_1$: ``Human machine interface for ABC computer applications''
-\item
-  $c_2$: ``A survey of user opinion of computer system response
-  time''
-\item
-  $c_3$: ``The EPS user interface management system''
-\item
-  $c_4$: ``System and human system engineering testing of EPS''
-\item
-  $c_5$: ``Relation of user perceived response time to error
-  measurement''
-\item
-  $m_1$: ``The generation of random, binary, ordered trees''
-\item
-  $m_2$: ``The intersection graph of paths in trees''
-\item
-  $m_3$: ``Graph minors IV: Widths of trees and well-quasi-ordering''
-\item
-  $m_4$: ``Graph minors: A survey''
-\end{itemize}
-
-Matrix:
-
-$$D =
-\left[\begin{array}{c|ccccccccc}
- & c_1 & c_2 & c_3 & c_4 & c_5 & m_1 & m_2 & m_3 & m_4 \\ 
-\hline
-\text{human} & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-\text{interface} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
-\text{computer} & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-\text{user} & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 0 \\ 
-\text{system} & 0 & 1 & 1 & 2 & 0 & 0 & 0 & 0 & 0 \\
-\text{response} & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-\text{time} & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-\text{EPS} & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 \\ 
-\text{survey} & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
-\text{trees} & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 0 \\
-\text{graph} & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
-\text{minors} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
-\end{array} \right] $$
-
-Note:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  row vectors for ``human'' and ``user'' are orthogonal: their dot
-  product is zero, but they are supposed to be similar, so it must be
-  positive
-\item
-  also, ``human'' and ``minors'' are orthogonal, but they are not
-  similar, so it must be negative
-\end{itemize}
-
-Let's apply SVD:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $D = W \Sigma P$
-\item
-  2-dim approximation: $D_2 = W_2 \Sigma_2 P_2$
-\end{itemize}
-
-$$D_2 =
-\left[\begin{array}{c|ccccccccc}
- & c_1 & c_2 & c_3 & c_4 & c_5 & m_1 & m_2 & m_3 & m_4 \\
-\hline
-\text{human} & 0.16 & 0.4 & 0.38 & 0.47 & 0.18 & -0.05 & -0.12 & -0.16 & -0.09 \\
-\text{interface} & 0.14 & 0.37 & 0.33 & 0.4 & 0.16 & -0.03 & -0.07 & -0.1 & -0.04 \\
-\text{computer} & 0.15 & 0.51 & 0.36 & 0.41 & 0.24 & 0.02 & 0.06 & 0.09 & 0.12 \\
-\text{user} & 0.26 & 0.84 & 0.61 & 0.7 & 0.39 & 0.03 & 0.08 & 0.12 & 0.19 \\
-\text{system} & 0.45 & 1.23 & 1.05 & 1.27 & 0.56 & -0.07 & -0.15 & -0.21 & -0.05 \\
-\text{response} & 0.16 & 0.58 & 0.38 & 0.42 & 0.28 & 0.06 & 0.13 & 0.19 & 0.22 \\
-\text{time} & 0.16 & 0.58 & 0.38 & 0.42 & 0.28 & 0.06 & 0.13 & 0.19 & 0.22 \\
-\text{EPS} & 0.22 & 0.55 & 0.51 & 0.63 & 0.24 & -0.07 & -0.14 & -0.2 & -0.11 \\
-\text{survey} & 0.1 & 0.53 & 0.23 & 0.21 & 0.27 & 0.14 & 0.31 & 0.44 & 0.42 \\
-\text{trees} &-0.06 & 0.23 & -0.14 & -0.27 & 0.14 & 0.24 & 0.55 & 0.77 & 0.66 \\
-\text{graph} &-0.06 & 0.34 & -0.15 & -0.3 & 0.2 & 0.31 & 0.69 & 0.98 & 0.85 \\
-\text{minors} &-0.04 & 0.25 & -0.1 & -0.21 & 0.15 & 0.22 & 0.5 & 0.71 & 0.62 \\
-\end{array}\right]$$
-
-
-What's the effect of dimensionality reduction here?
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  words appear less or more frequent than originally
-\item
-  consider two cells: (``survey'', $m_4$) and (``trees'', $m_4$)
-\item
-  original document: 1 and 0
-\item
-  reduced document: 0.42 and 0.66
-\item
-  because $m_4$ contains ``graph'' and ``minor'', the 0 for ``trees''
-  was replaced by 0.42 - they are related terms
-\item
-  so it can be seen as estimate of how many times word ``trees'' would
-  occur in other samples that contain ``graph'' and ``minor''
-\item
-  the count for ``survey'' went down - it's not expected in this context
-\end{itemize}
-
-So in the reconstructed space:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  dot product between ``user'' and ``human'' is positive
-\item
-  dot product between ``human'' and ``minors'' is negative
-\item
-  it tells us way better whether terms are similar or not even when they
-  never co-occur together
-\end{itemize}
-
-Taking 2 principal components is the same as taking only 2 abstract
-concepts
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  each word in the vocabulary has some amount of these 2 concepts (we
-  see how much by looking at 1st and 2nd column of $W$)
-\end{itemize}
-
-The idea:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  we don't want to reconstruct the underlying data perfectly, but
-  instead we hope to find the correlation and the abstract concepts
-\end{itemize}
-
-Latent Semantic Analysis (LSA) $\approx$ Latent
-Semantic Indexing (LSI)
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  LSI is the alias of LSA for \href{Information Retrieval}{Information
-  Retrieval}
-\item
-  indexing and retrieval method that uses
-  \href{Singular Value Decomposition}{SVD} to identify patterns in
-  relations between terms and concepts
-\item
-  instead of literal match between query and documents (e.g. using
-  cosine in the traditional vector space morels), convert both into the
-  Semantic Space and calculate the cosine there
-\end{itemize}
-

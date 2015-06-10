@@ -1,4 +1,6 @@
 \section{Namespaces as Document Clusters}
+
+
 \subsection{Discovering Namespaces with Cluster Analysis}
 
 Why it will work?
@@ -48,7 +50,36 @@ because of the problems of polysemy, homonymy and synonymy
 so we want to find better representation that doesn't suffer from these issues
 
 
+\textbf{Assumptions:}
+
+
+\begin{enumerate}
+ \item documents are "mixtures" of namespaces: they take identifiers from several namespaces
+ \item there are some documents are more "pure" than others: they either take identifiers exclusively from one namespace or from few very related namespaces
+ \item there's a correlation between a category of a document and the namespaces
+the document uses
+\end{enumerate}
+
+
+
+
+Under these assumptions: can approximate namespaces discovery by finding groups of "pure" documents. can evaluate purity by using category information and retain only pure ones
+
+(or: that there is a strong correlation between identifiers in
+a document and the namespace of the document, and this correlation can be exploited to
+categorize documents and thus discover namespaces)
+
+
+
+
 \subsection{Similarity Measures and Distances}
+
+
+Jaccard similarity, jaccard distance 
+
+Dot product, cosine similarity, cosine distance 
+
+Euclidean distance, relationship between cosine and Euclidean 
 
 
 
@@ -82,7 +113,9 @@ There are three ways of incorporating the definition information into the identi
 Given ($\lambda$, regularization) and ($w$, weight vector)
 
 \begin{itemize}
-  \item use only identifier information. vector is ($\lambda$, $w$)
-  \item use "weak" identifier-definition association: vector is ($\lambda$, $w$, regularization, weight vector)
-  \item use "strong" association: document representation is ($\lambda$\_regularization, $w$\_weight vector)
+  \item use only identifier information. dimensions are ($\lambda$, $w$)
+  \item use "weak" identifier-definition association:  dimensions are ($\lambda$, $w$, regularization, weight vector)
+  \item use "strong" association:  dimensions are ($\lambda$\_regularization, $w$\_weight vector)
 \end{itemize}
+
+

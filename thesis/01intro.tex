@@ -90,6 +90,34 @@ But it's very time consuming. Our approach: use ML techniques to automatically d
 the namespaces from corpus with mathematical formulas.
 
 
+\textbf{Observations:}
+
+
+In Java or other programming language a class may use objects from other packages
+via import statement.
+
+Can distinguish between two types of application packages (in domain-driven design) 
+
+\begin{itemize}
+  \item domain-specific packages that deal with one particular concept
+  \item packages that use many packages of the first type
+\end{itemize}
+
+For example, \verb|org.company.app.domain.user|, \verb|org.company.app.domain.account| 
+and \verb|org.company.app.tools.auth| are of type 1, while 
+\verb|org.company.app.web.manage| is of type 2 which mostly uses packages of type 1. 
+
+So type 1 packages are mostly self-contained and not highly coupled between each other,
+but type 2 packages mostly use other packages of type 1: they depend on them.
+
+Can extend this intuition to groups of documents. 
+Some groups are of type 1 - they define the namespaces. 
+In some sense they are "pure" - they are all about the same thing
+
+Some documents are not pure: they draw from different concepts,
+they can be thought as type 2 classes. 
+
+
 
 \textbf{Assumptions:}
 
@@ -102,20 +130,30 @@ the document uses
 \end{enumerate}
 
 
-Under these assumptions: can approximate namespaces discovery by finding groups of "pure" documents. can evaluate purity by using category information and retain only pure ones
+Formally, A document is a mixture of namespaces: $P(x) = \sum_{i=1}^K \pi_i P_i(x)$ where 
+$x$ is a document, $P_i(x)$ is probability that $x$ uses concepts from namespace $i$,
+$\pi_i$ are weights s.t. $\sum_{i = 1}^K \pi_i = 1$  ... 
+
+
+
+Can call "pure" groups \emph{namespace defining} groups - they can be thought as type-1 
+groups/documents.
+
+
+Under these assumptions: can approximate the process of namespaces discovery by 
+finding groups of "pure" documents. can evaluate purity by using category information 
+and retain only pure ones
 
 (or: that there is a strong correlation between identifiers in
 a document and the namespace of the document, and this correlation can be exploited to
 categorize documents and thus discover namespaces)
-
-Assumptions:
 
 
 For example, if we observe a document with
 two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more
 likely that the document belongs to the ``physics'' namespace rather than to ``statistics''.
 
-Then, the process of cauterization may be formalized as follows: 
+\textbf{Need to rephrase: }Then, the process of cauterization may be formalized as follows: 
 Let $D$ denote a document and $Z(D)$ denote the category of the document. A document can be 
 seen as a collection of identifiers, so $D = \{ X_1, ..., X_N \}$, where 
 each $X_j$ is a probability distribution over possible definition assignment. 

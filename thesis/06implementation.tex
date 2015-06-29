@@ -1,0 +1,323 @@
+\section{Implementation}
+
+\subsection{Data set}
+The data set of our choice is a dump of English wikipedia \cite{enwikidump}
+
+For category information use DBPedia \cite{bizer2009dbpedia}
+
+\subsection{Definition Extraction}
+
+
+For extracting identifier-definition pair the MLP Project approach \cite{pagael2014mlp}
+(see section~\ref{sec:mlp}).
+
+Implemented in Apache Flink \cite{flink}
+
+First, the original dataset is preprocessed enriched with enhanced MathML,
+and then the dataset is filtered such that only articles with
+the math tag are left.
+
+Each document is in wiki XML. For each document we then extract the title,
+and the content, and extract all the formulas from the content.
+Some formulas can be typed directly with unicode - they will
+be missed. The math tags are replaced with ``FORMULA\_hash'' placeholders and
+and the content of the tags is kept separately from the document content.
+
+The content of the formulas is processed: we are not interested in the
+semantics of a formula, only in its identifiers. We extract the identifiers
+by looking for all \verb|<ci>| tags. There are two types of identifiers:
+simple identifiers (like $t$, $C$, $\mu$, etc) and identifiers with subscripts
+(e.g. $x_1$, $\xi_i$ or even $\beta_{\text{slope}}$.
+Superscripts are usually powers (e.g. $x^2$) and therefore they are not interesting
+for us. There are exceptions to this (e.g. $\sigma^2$ is often an identifier on it
+own) but these cases are rare and can be ignored.
+The identifiers are extracted with XPath queries.
+
+\begin{itemize}
+  \item \verb|//m:mi[not(ancestor::m:msub)]/text()| for all \verb|<ci>| tags
+that are not subscript identifers
+  \item \verb|//m:msub| for subscript identifiers
+\end{itemize}
+
+Since we are only interested in the identifiers of each formula, we
+keep them and discard the rest. As the result, we have a ``Bag of Formulas''.
+
+Next all wiki markup (e.g. headers, tables, images etc). Only inner-wiki
+links are kept: they can be useful as candidate definitions. This is done
+using a Java library ``Mylyn Wikitext'' \cite{mylynwikitext}.
+
+
+The next step is the NLP step. For NLP related tasks we use StanfordNLP
+\cite{manning2014stanford}. First, we tokenize the text and split it
+by sentences, and then we apply Math-aware POS tagging
+(see section~\ref{sec:postagging}, page~\pageref{sec:postagging}).
+For formulas and identifiers we introduce two new POS Classes: ``ID'' and ``MATH''.
+The library does not know about these classes, so its output
+goes through additional post-processing: if a token starts with ``FORMULA\_'',
+then it is a placeholder for a math formula, and therefore we set its tag
+to ``MATH''. If such a formula contains only one identifier, then the token
+is replaced with this identifier, and we tag it as ``ID''.
+Additionally, we keep a list of all identifiers found in the document,
+and then for each token we check if this token is in this list.
+If it is, then it is tagged with ``ID'' as well.
+
+We also take advantage of wikipedia inner links: the text inside a link
+can potentially be a candidate definition. To use them we introduce
+another wiki-related POS Tag: ``LINK''. To find wiki links, we first find
+all token subsequences that start with \verb|[[| and end with \verb|]]|.
+Then these subsequences are concatenated and classified as ``LINK''.
+
+Finally, we are interested in all sequence of successive nouns
+(both singular and plural) possibly preceded by an adjective.
+We concatenate all such subsequences into one token tagged with ``NOUN\_PHRASE''.
+
+Thus, all tokens tagged with ``LINK'' and ``NOUN\_PRASE'' are definition candidates.
+The next step is to select the most probable identifier-definition pairs, this is
+done with the MLP approach (see section~\ref{sec:mlp} at page~\pageref{sec:mlp}).
+The output of this step is a list of identifier-definition pairs. 
+
+
+Most common definitions:
+
+[(u'time', 2464), (u'length', 1325), (u'distance', 1246), (u'matrix', 1230), (u'form', 1199), (u'radius', 1115), (u'mass', 1080), (u'angle', 1030), (u'order', 951), (u'sequence', 913), (u'degree', 904), (u'field', 880), (u'space', 879), (u'group', 786), (u'probability', 777), (u'temperature', 771), (u'velocity', 753), (u'constants', 735), (u'dimension', 714), (u'density', 700)]
+
+pairs:
+
+
+time: $t$ (1086)
+mass: $m$ (424)
+angle: $\theta$ (421)
+temperature: $T$ (400)
+radius: $r$ (395)
+velocity: $v$ (292)
+density: $\rho$ (290)
+group: $G$ (287)
+volume: $V$ (284)
+wavelength: $\lambda$ (263)
+radius: $R$ (257)
+degree: $n$ (233)
+distance: $r$ (220)
+speed of light: $c$ (219)
+length: $L$ (216)
+length: $n$ (189)
+order: $n$ (188)
+dimension: $n$ (185)
+size: $n$ (178)
+mass: $M$ (171)
+
+
+\subsection{Data Cleaning}
+
+
+Additional identifier
+information like hats ($\hat w$, tildes $\tilde y$, bars $\bar X$ or arrows $\overrightarrow x$
+are discarded: only the identifier name is kept.
+Often different fonts are used to convey some semantic information about identifiers.
+For example $\mathbf w$ is a vector, $\mathcal H$ is a set, $\mathbb R$ is a space.
+Unfortunately there is no single notation for this and there is a lot of variance:
+e.g. $\overrightarrow x$ vs $\boldsymbol x$ vs $\mathbf x$, $\mathbb R$ vs $\mathbf R$ vs $\mathfrak R$.
+Therefore all this information is discarded, so $\mathbf w$ becomes just $w$
+and $\mathfrak R$ becomes $R$.
+In the wikipedia dataset this information is encoded directly into MathML
+i.e. the symbols use special unicode characters to convey font features such as 
+boldness, Fraktur, etc,
+so it had to be normalized on the character level - by converting characters
+from special unicode blocks (``Mathematical Alphanumeric Symbols'' block)
+back to standard ASCII positions (``Basic Latin'' block).
+
+A lot of noise (``false positives'')
+gets captured inside \verb|<ci>| tags: many mathematic-related symbols
+like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$''; 
+miscellaneous symbols like ``$\diamond$'' or
+``$\circ$'' arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
+``$\lceil$''.
+
+To filter out these one-symbol false positives we exclude the following unicode blocks:
+``Spacing Modifier Letters'', ``Miscellaneous Symbols'', ``Geometric Shapes'', ``Arrows'',
+``Miscellaneous Technical'', ``Box Drawing'', ``Mathematical Operators''
+(except ``$\nabla$'' which is sometimes used as an identifier)
+and ``Supplemental Mathematical Operators''.
+Some symbols (like ``='', ``+'', ``\~'', ``\%'', ``?'', ``!'')
+belong to commonly used unicode blocks 
+which we cannot exclude altogether. For these symbols we manually 
+prepared a stop list for filtering them.
+
+
+It also captures multiple-symbol false positives: operators and functions
+like ``sin'', ``cos'', ``exp'', ``max'', ``trace''; 
+words commonly used in formulas like ``const'', ``true'', ``false'',
+``vs'', ``iff''; English stop words like ``where'', ``else'', ``on'', 
+``of'', ``as'', ``is''; units like ``mol'', ``dB'', ``mm''.
+These false identifiers are excluded by a stop list as well: if a
+candidate identifier is in the list, it is filtered out.
+
+
+Additionally, many shortlisted definitions are either not valid definitions or too general. 
+For example, some identifiers become associated with ``if and only if'', 
+``alpha'', ``beta'', ``gamma'', which are not valid definitions. Other definitions
+like ``vector'', ``element'', ``number'' or ``variable'' are valid, but 
+they are too general and not descriptive.
+We maintain a stop list of such false definitions and filter them out from 
+the result. 
+
+
+
+
+\subsection{Document Clustering}
+
+First step is discarding all definitions (from each id-pair definitions)
+that occur only once and therefore do not have much discriminating power. 
+
+Then we need to build an Identifier Space (see section~\ref{sec:ism}). 
+There are three ways of doing it.
+
+\begin{itemize}
+  \item keeping identifiers alone
+  \item ``weak identifier-definition association'': putting identifiers along with definitions
+  \item identifier-definition pairs 
+\end{itemize}
+
+In the first case we use only identifier information - and discard the 
+definitions altogether.
+
+In the second and third cases we keep the definitions. 
+But there is some variability in the definitions. For example, 
+the same identifier can be assigned to ``Cauchy stress tensor'' and
+``stress tensor'' - which are almost the same thing. To reduce 
+this variability we tokenize the definition and use individual tokens
+as dimensions of the space. For example, if we have two pairs
+($\sigma$, ``Cauchy stress tensor'') and ($\sigma$, ``stress tensor''),
+for second case we have dimensions $(\sigma, \text{Cauchy}, \text{stress}, \text{tensor})$,
+while for the third case we have 
+$(\sigma\text{\_Cauchy}, \sigma\text{\_stress}, \sigma\text{\_tensor})$.
+
+
+Additionally, to decrease the effect of variability further, 
+a stemming technique is applied to each definition token. 
+We use Snowball stemmer for English \cite{porter2001snowball} 
+implemented in NLTK \cite{bird2006nltk}: 
+a python library for Natural Language Processing. 
+
+Each document is vectorized (converted to a vector form) by using
+\verb|TfidfVectorizer| from  scikit-learn \cite{scikit-learn}. 
+We use the following settings: 
+
+- \verb|use_idf=True, min_df=2|
+- \verb|use_idf=False, min_df=2|
+- \verb|use_idf=False, sublinear_tf=True, min_df=2|
+
+The output is a document-identifier matrix (analogous to ``document-term''):
+documents are rows and identifiers/definitions are columns. 
+
+The output of \verb|TfidfVectorizer| is row-normalized, i.e. 
+all rows has unit length. 
+
+
+K-Means and Mini-Batch K-Means implementation from scikit-learn \cite{scikit-learn}.
+Classes \verb|KMeans|, \verb|MiniBatchKMeans|
+
+If rows are unit-normalized, then running k-means with Euclidean distance
+is equivalent to cosine distance (see section~\ref{sec:kmeans}).
+
+Bisecting K-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of scikit-learn: each time a data set is clustered
+with k-means with $k = 2$. if the subset being clustered is big, 
+($N > 2000$) then mini-batch k-means is used, otherwise usual K-means
+
+Scatter/Gather (see section~\ref{sec:kmeans-ext}) was implemented manually 
+using scipy \cite{scipy} and numpy \cite{walt2011numpy} because 
+scikit-learn's implementation of K-Means does not allow using user-defined distances. 
+
+
+DBScan (section~\ref{sec:dbscan}) and SNN Clustering (section~\ref{sec:dbscan-ext})
+algorithms were also implemented manually:
+available DBScan implementations usually take distance measure rather than 
+a similarity measure, but we want to use a similarity matrix, and not 
+a distance matrix because converting would make the matrix dense, 
+and we want to avoid that. Additionally, available implementation
+do not use the structure of data: in text-like data clustering algorithms 
+can be sped up by using an inverted index (section~\ref{sec:index})
+
+
+LSA (section~\ref{sec:lsa}) is implemented via randomized SVD \cite{tropp2009finding},
+The implementation is taken from scikit-learn \cite{scikit-learn} - 
+method \verb|randomized_svd|.
+
+Non-negative Matrix Factorization (section~\ref{sec:nmf}) is also taken from 
+cikit-learn \cite{scikit-learn}, class \verb|NMF|.
+
+
+To assess the quality of clustering we used wikipedia categories. 
+It is difficult to extract category information from raw wikipedia text, therefore
+we used DBPedia \cite{bizer2009dbpedia} for that. Additionally 
+DBPedia provides a SKOS ontology about categories. 
+
+
+\subsection{Building Hierarchy} 
+
+AMS Mathematics Subject Classification (2010) \cite{ams2010msc}
+Excluded all subcategories those code end with '99': they are 
+usually 'Miscellaneous topics' or 'None of the above, but in this section'. 
+top level categories 'General', 'History and biography', and 'Mathematics education'
+were also excluded. 
+Additionally we exclude the following: 
+
+\begin{itemize}
+\item Quantum theory $\to$ Axiomatics, foundations, philosophy
+\item Quantum theory $\to$ Applications to specific physical systems
+\item Quantum theory $\to$ Groups and algebras in quantum theory
+\item Partial differential equations $\to$ Equations of mathematical physics and other areas of application
+\item Statistics $\to$ Sufficiency and information
+\item Functional analysis $\to$ Other (nonclassical) types of functional analysis
+\item Functional analysis $\to$ Miscellaneous applications of functional analysis
+\end{itemize}
+
+So these categories do not interfere with PACS. 
+
+
+APS Physics and Astronomy Classification Scheme (2010) \cite{aps2010pacs}
+
+We remove the 'GENERAL' top-level category. 
+In PACS there are 3 levels of categories, but we merge all 3-rd level categories into 
+2nd level.
+
+ACM Classification Scheme \cite{rous2012acm} available as a SKOS \cite{miles2005skos} ontology 
+at their website \cite{amc2012ccs}. The SKOS ontology graph was processed with RDFLib \cite{rdflib}
+
+We keep the following top level categories:
+'Hardware', 'Computer systems organization', 'Networks', 'Software and its engineering',
+'Theory of computation', 'Information systems', 'Security and privacy', 
+'Human-centered computing', 'Computing methodologies'.
+
+After obtaining the data and parsing, all categories we ...
+
+
+\subsection{Java Language Processing}
+
+The same set of techniques can be applied to source code.
+(todo: why!)
+If a language 
+is statically typed, like Java or Pascal, usually it is possible to know the
+type of a variable from its declaration. Therefore we can see 
+variables as identifiers and types as "definitions" (TODO: clearly state 
+the difference between types and definitions).
+
+To extract this information from some source code repository each file source
+file can be processed to obtain its Abstract Syntax Tree, and then 
+declaration information can be extracted from it. 
+
+
+In this word we process Java source code using JavaParser \cite{javaparser} - 
+a library for parsing java source code. Java was chosen because the variable 
+types always have to be declared, unlike other languages where the type 
+can be inferred by compilers. 
+
+The following declarations are processed: fields of a class, method and 
+constructor parameters, inner variable declarations inside 
+methods and constructors. It processes both usual classes and inner classes. 
+
+\textbf{Add example and the results}
+
+
+In the experiments we process Apache Mahout source code \cite{mahout}. 
+
+Describe the dataset

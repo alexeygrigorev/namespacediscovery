@@ -5,7 +5,7 @@ Scatter/Gather - first successful document clustering for information retrieval 
 
 Types of clustering techniques:
 \begin{itemize}
-  \item hierarchical 
+  \item hierarchical
   \item partitioning
   \item density-based
   \item etc
@@ -15,25 +15,27 @@ Types of clustering techniques:
 \subsection{Hierarchical clustering}
 
 
-\cite{steinbach2000comparison} - not always good for document clustering 
-because they make mistakes at early iterations that are impossible 
+\cite{steinbach2000comparison} - not always good for document clustering
+because they make mistakes at early iterations that are impossible
 to correct afterwards
 
 
-\subsection{K-Means}
+\subsection{K-Means} \label{sec:kmeans}
 
 
 Often K-Means shows the best results \cite{hall2012evaluating} \cite{steinbach2000comparison}, but it takes long for large collections.
 
 Solution: minibatch K-means (web-scale k-means clustering paper) \cite{sculley2010web}
 
+If rows are unit-normalized, then Euclidean K-means is the same 
+as Cosine Distance K-Means, but with convergence guarantees. 
 
 
-\subsection{Extensions of K-Means}
+\subsection{Extensions of K-Means} \label{sec:kmeans-ext}
 
-Scatter/Gather \cite{cutting1992scatter} 
+Scatter/Gather \cite{cutting1992scatter}
 
-Bisecting K-Means \cite{steinbach2000comparison} 
+Bisecting K-Means \cite{steinbach2000comparison}
 
 Center adjustment (vector average dumping) \cite{larsen1999fast}
 
@@ -41,17 +43,17 @@ Smart seed selection \cite{cutting1992scatter} \cite{larsen1999fast}
 
 
 
-\subsection{DBSCAN}
+\subsection{DBSCAN} \label{sec:dbscan}
 
 describe the algo \cite{ester1996density}
 
 
-pseudocode 
+pseudocode
 
 Can be adapted to take similarity measure instead of distance
 
 
-\subsection{Extensions of DBSCAN}
+\subsection{Extensions of DBSCAN} \label{sec:dbscan-ext}
 
 SNN Clustering: \cite{ertoz2003finding}
 

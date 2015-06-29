@@ -276,7 +276,7 @@ So these categories do not interfere with PACS.
 
 APS Physics and Astronomy Classification Scheme (2010) \cite{aps2010pacs}
 
-We remove the 'GENERAL' top-level category. 
+We remove the ``GENERAL'' top-level category. 
 In PACS there are 3 levels of categories, but we merge all 3-rd level categories into 
 2nd level.
 
@@ -284,11 +284,26 @@ ACM Classification Scheme \cite{rous2012acm} available as a SKOS \cite{miles2005
 at their website \cite{amc2012ccs}. The SKOS ontology graph was processed with RDFLib \cite{rdflib}
 
 We keep the following top level categories:
-'Hardware', 'Computer systems organization', 'Networks', 'Software and its engineering',
-'Theory of computation', 'Information systems', 'Security and privacy', 
-'Human-centered computing', 'Computing methodologies'.
+``Hardware'', ``Computer systems organization'', ``Networks'', 
+``Software and its engineering'', ``Theory of computation'', 
+``Information systems'', ``Security and privacy'',
+``Human-centered computing'', ``Computing methodologies''.
 
-After obtaining the data and parsing, all categories we ...
+After obtaining the data and parsing, all categories, the hierarchies 
+are merged into one and then we try to match the found namespaces 
+with second-level category in the hierarchy. 
+
+This is done by keywords matching: we extract all words from the 
+category (this includes top level category name, subcategory name
+and all sub-sub categories concatenated). From the cluster 
+we also extract the category information.
+Then we try to do keyword matching using cosine similarity 
+between the cluster and each category. The cluster is assigned 
+to the category with the best cosine. 
+
+If the cosine score is low (below $0.2$) or there is only one 
+keyword matched, then the cluster is assigned to the ``OTHERS'' 
+category.
 
 
 \subsection{Java Language Processing}

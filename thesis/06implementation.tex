@@ -1,37 +1,79 @@
 \section{Implementation}
 
-\subsection{Data set}
-The data set of our choice is a dump of English wikipedia \cite{enwikidump}
 
-For category information use DBPedia \cite{bizer2009dbpedia}
+In section~\ref{sec:dataset} we describe the data set that we use, 
+then we describe how we extract identifiers from this dataset 
+(section~\ref{sec:defextraction-impl}) and how this dataset is cleaned
+(section~\ref{sec:datacleaning}). Next, the implementation of clustering
+algorithms is described in the section~\ref{sec:datacleaning}. After
+the clusters are found, we combine them into a hierarchy in 
+the section~\ref{sec:hierarchy}. 
 
-\subsection{Definition Extraction}
+Finally, in the section~\ref{sec:jlp} we explore how the same set of techniques
+can be applied to source code in Java.
 
 
-For extracting identifier-definition pair the MLP Project approach \cite{pagael2014mlp}
-(see section~\ref{sec:mlp}).
+\subsection{Data set} \label{sec:dataset}
 
-Implemented in Apache Flink \cite{flink}
+In this work we apply the discussed techniques to the English version of
+Wikipedia \cite{enwikidump}.
+It's a big web encyclopedia where articles are written and edited by 
+the community. For our work wikipedia is interesting because 
+there are many math pages. 
 
-First, the original dataset is preprocessed enriched with enhanced MathML,
+
+At present (\today) English wikipedia contains about 4.9 mln
+articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}
+and it is 1.5 Gb in the compressed form. However, only a small portion
+of these articles are math related: only about 30.000 pages contain at least 
+one \verb|<math>| tag. 
+
+The math information is enriched with semantic information by MediaWiki 
+and we use this augmented data representation. 30.000 math pages with 
+augmented math tags occupy around 1.5 Gb in uncompressed form. 
+
+Apart from the text data and formulas wikipedia articles have information
+about categories, which can also be exploited. It is hard to 
+extract category information from the raw wikipedia mark up, but this 
+information is available in a structured form in DBPedia \cite{bizer2009dbpedia}.
+
+
+\subsection{Definition Extraction} \label{sec:defextraction-impl}
+
+Before we can proceed to discovering identifier namespaces, we  
+need to extract identifier-definition relations. For this we use the probabilistic 
+approach, discussed in the section~\ref{sec:mlp}. 
+The extraction process in implemented using Apache Flink \cite{flink}.
+
+But before the original dataset can be preprocessed, it is enriched with 
+augmented MathML (see section~\ref{sec:mathml}), 
 and then the dataset is filtered such that only articles with
-the math tag are left.
+the math tag are retained. 
 
-Each document is in wiki XML. For each document we then extract the title,
-and the content, and extract all the formulas from the content.
-Some formulas can be typed directly with unicode - they will
-be missed. The math tags are replaced with ``FORMULA\_hash'' placeholders and
-and the content of the tags is kept separately from the document content.
+In the wikipedia dataset each document is represented using wiki XML. It 
+makes it easy to extract title and content, and then, the all the formulas 
+are extracted from the content. The formulas are extracted by 
+looking for \verb|<math>| tags. However some formulas are typed without 
+the tag, but only with unicode characters. Such formulas are not easy to 
+detect and therefore in this word we choose not to process them.
+Once all \verb|<math>| tags are found, they (along with the content) 
+are replaced with a special placeholder \verb|FORMULA_%HASH%|, where 
+\verb|%HASH%| is MD5 hash \cite{rivest1992md5} of the tag's content represented as 
+a hexadecimal string. After that 
+the content of the tags is kept separately from the document content. 
 
-The content of the formulas is processed: we are not interested in the
-semantics of a formula, only in its identifiers. We extract the identifiers
-by looking for all \verb|<ci>| tags. There are two types of identifiers:
-simple identifiers (like $t$, $C$, $\mu$, etc) and identifiers with subscripts
-(e.g. $x_1$, $\xi_i$ or even $\beta_{\text{slope}}$.
-Superscripts are usually powers (e.g. $x^2$) and therefore they are not interesting
-for us. There are exceptions to this (e.g. $\sigma^2$ is often an identifier on it
-own) but these cases are rare and can be ignored.
-The identifiers are extracted with XPath queries.
+Once formulas are retrieved, we extract the definitions from them. 
+We are not interested in the semantics of a formula, only in the identifiers 
+it contains. Hence we need only to look for all \verb|<ci>| tags. 
+There are two types of identifiers: simple identifiers such as 
+$t$, $C$, $\mu$; and complex identifiers with subscripts such as
+$x_1$, $\xi_i$ or even $\beta_{\text{slope}}$. We do not process 
+superscripts because they are usually powers (for example, $x^2$), 
+and therefore they are not interesting for this work. 
+There are exceptions to this, for example, $\sigma^2$ is an identifier,
+but these cases are rare and can be ignored. 
+
+Since MathML is XML, the identifiers are extracted with XPath queries:
 
 \begin{itemize}
   \item \verb|//m:mi[not(ancestor::m:msub)]/text()| for all \verb|<ci>| tags
@@ -39,131 +81,157 @@ that are not subscript identifers
   \item \verb|//m:msub| for subscript identifiers
 \end{itemize}
 
-Since we are only interested in the identifiers of each formula, we
-keep them and discard the rest. As the result, we have a ``Bag of Formulas''.
+Once the identifiers are extracted, the rest of the formula is discarded. 
+As the result, we have a ``Bag of Formulas''.
 
-Next all wiki markup (e.g. headers, tables, images etc). Only inner-wiki
-links are kept: they can be useful as candidate definitions. This is done
-using a Java library ``Mylyn Wikitext'' \cite{mylynwikitext}.
+The content of a wiki document is structured and authored with a special 
+markup language for specifying document layout elements such as
+headers, lists, text formatting and tables: Wiki markup. 
+Thus the next step is to process the Wiki markup and extract the textual 
+content of an article, and this is done using a Java library 
+``Mylyn Wikitext'' \cite{mylynwikitext}.
+Almost all annotations are discarded at this stage,
+and only inner-wiki links are kept: they can be useful as candidate definitions.
 
+Once the markup annotations are removed and the text content of an article is 
+extracted, we then apply Natural Language Processing (NLP) techniques.
+Thus, the next step is the NLP step, and for NLP we use StanfordNLP
+\cite{manning2014stanford}. 
+The first part at this stage is to tokenize the text and also split it by sentences. 
+Once it is done, we then apply Math-aware POS tagging
+(see section~\ref{sec:postagging}).
+For identifiers and math formulas we introduce two new POS classes: 
+``\verb|ID|'' and ``\verb|MATH|'', respectively. 
+These classes are not a part of the 
+standard Penn Treebank POS Scheme \cite{santorini1990part} used by 
+StanfordNLP, therefore we need to label all the instances of these tags ourselves 
+during the additional post-processing step. If a token starts
+with ``\verb|FORMULA_|'', then we recognize that it is a placeholder 
+for a math formula, and therefore we annotate it with the ``\verb|MATH|''
+tag. Additionally, if this formula contains only one identifier, this 
+placeholder token is replaced by the identifier and it is tagged with 
+``\verb|ID|''. Additionally, we keep track of all identifiers found in 
+the document and then for each token we check if this token is in the list. 
+If it is, then it is re-annotated with ``\verb|ID|'' as well.
 
-The next step is the NLP step. For NLP related tasks we use StanfordNLP
-\cite{manning2014stanford}. First, we tokenize the text and split it
-by sentences, and then we apply Math-aware POS tagging
-(see section~\ref{sec:postagging}, page~\pageref{sec:postagging}).
-For formulas and identifiers we introduce two new POS Classes: ``ID'' and ``MATH''.
-The library does not know about these classes, so its output
-goes through additional post-processing: if a token starts with ``FORMULA\_'',
-then it is a placeholder for a math formula, and therefore we set its tag
-to ``MATH''. If such a formula contains only one identifier, then the token
-is replaced with this identifier, and we tag it as ``ID''.
-Additionally, we keep a list of all identifiers found in the document,
-and then for each token we check if this token is in this list.
-If it is, then it is tagged with ``ID'' as well.
+At the Wikipedia markup processing step we discard almost all markup 
+annotations, but keep only inter-wiki links, because these links
+are good definition candidates. To use them, we introduce 
+another POS Tag: ``\verb|LINK|''. To detect all inner-wiki links, 
+we first find all token subsequences that start with \verb|[[| 
+and end with \verb|]]|. 
+Then these subsequences are concatenated and tagged as ``\verb|LINK|''.
 
-We also take advantage of wikipedia inner links: the text inside a link
-can potentially be a candidate definition. To use them we introduce
-another wiki-related POS Tag: ``LINK''. To find wiki links, we first find
-all token subsequences that start with \verb|[[| and end with \verb|]]|.
-Then these subsequences are concatenated and classified as ``LINK''.
-
-Finally, we are interested in all sequence of successive nouns
-(both singular and plural) possibly preceded by an adjective.
-We concatenate all such subsequences into one token tagged with ``NOUN\_PHRASE''.
-
-Thus, all tokens tagged with ``LINK'' and ``NOUN\_PRASE'' are definition candidates.
-The next step is to select the most probable identifier-definition pairs, this is
-done with the MLP approach (see section~\ref{sec:mlp} at page~\pageref{sec:mlp}).
-The output of this step is a list of identifier-definition pairs. 
-
-
-Most common definitions:
-
-[(u'time', 2464), (u'length', 1325), (u'distance', 1246), (u'matrix', 1230), (u'form', 1199), (u'radius', 1115), (u'mass', 1080), (u'angle', 1030), (u'order', 951), (u'sequence', 913), (u'degree', 904), (u'field', 880), (u'space', 879), (u'group', 786), (u'probability', 777), (u'temperature', 771), (u'velocity', 753), (u'constants', 735), (u'dimension', 714), (u'density', 700)]
-
-pairs:
-
-
-time: $t$ (1086)
-mass: $m$ (424)
-angle: $\theta$ (421)
-temperature: $T$ (400)
-radius: $r$ (395)
-velocity: $v$ (292)
-density: $\rho$ (290)
-group: $G$ (287)
-volume: $V$ (284)
-wavelength: $\lambda$ (263)
-radius: $R$ (257)
-degree: $n$ (233)
-distance: $r$ (220)
-speed of light: $c$ (219)
-length: $L$ (216)
-length: $n$ (189)
-order: $n$ (188)
-dimension: $n$ (185)
-size: $n$ (178)
-mass: $M$ (171)
+Also we are interested in all sequences of successive nouns (both singular 
+and plural) possibly modified by an adjective. We concatenate all
+such sequences into one token tagged with ``\verb|NOUN_PHRASE|''.
 
 
-\subsection{Data Cleaning}
+Next we select the most probably identifier-definition pairs. 
+At this stage we are interested only in tokens annotated with  ``\verb|LINK|''
+and ``\verb|NOUN_PHRASE|'': these tokens are definition candidates, and 
+we rank each token by a score that depends how far it is from the identifer
+of interest and how far is the closest formula that contains this 
+identifier (see section~\ref{sec:mlp}). 
+The output of this step is a list of identifier-definition pairs along 
+with the score. Only pairs with scores above the user specified  
+threshold are retained. 
+
+The following is the list of the most common identifier-definition pairs:
+
+\begin{itemize}
+\item $t$: ``time'' (1086)
+\item $m$: ``mass'' (424)
+\item $\theta$: ``angle'' (421)
+\item $T$: ``temperature'' (400)
+\item $r$: ``radius'' (395)
+\item $v$: ``velocity'' (292)
+\item $\rho$: ``density'' (290)
+\item $G$: ``group'' (287)
+\item $V$: ``volume'' (284)
+\item $\lambda$: ``wavelength'' (263)
+\item $R$: ``radius'' (257)
+\item $n$: ``degree'' (233)
+\item $r$: ``distance'' (220)
+\item $c$: ``speed of light'' (219)
+\item $L$: ``length'' (216)
+\item $n$: ``length'' (189)
+\item $n$: ``order'' (188)
+\item $n$: ``dimension'' (185)
+\item $n$: ``size'' (178)
+\item $M$: ``mass'' (171)
+\end{itemize}
 
 
-Additional identifier
-information like hats ($\hat w$, tildes $\tilde y$, bars $\bar X$ or arrows $\overrightarrow x$
-are discarded: only the identifier name is kept.
-Often different fonts are used to convey some semantic information about identifiers.
-For example $\mathbf w$ is a vector, $\mathcal H$ is a set, $\mathbb R$ is a space.
-Unfortunately there is no single notation for this and there is a lot of variance:
-e.g. $\overrightarrow x$ vs $\boldsymbol x$ vs $\mathbf x$, $\mathbb R$ vs $\mathbf R$ vs $\mathfrak R$.
-Therefore all this information is discarded, so $\mathbf w$ becomes just $w$
-and $\mathfrak R$ becomes $R$.
-In the wikipedia dataset this information is encoded directly into MathML
-i.e. the symbols use special unicode characters to convey font features such as 
-boldness, Fraktur, etc,
-so it had to be normalized on the character level - by converting characters
-from special unicode blocks (``Mathematical Alphanumeric Symbols'' block)
+
+\subsection{Data Cleaning} \label{sec:datacleaning}
+
+The Natural Language data is famous for being noisy and hard to 
+clean \cite{sonntag2004assessing}. The same is true for 
+mathematical identifiers and  scientific texts with formulas. 
+In this section we describe how the data was preprocessed and 
+cleaned at different stages of Definition Extraction 
+(section~\ref{sec:defextraction-impl}).
+
+
+Often identifiers contain additional semantic information visually conveyed 
+by special THINGIES like hats ($\hat w$), bars ($\bar X$), arrows ($\overrightarrow x$) 
+and others or special fort features. For example boldness is often used to 
+denote vectors $\mathbf w$ or matrices $\mathbf X$, calligraphic fonts are 
+used for sets $\mathcal H$, double-struck fonts often denote spaces ($\mathbb R$),
+etc. Unfortunately there is no common notation established across all fields of 
+mathematics and there is a lot of variance. For example, 
+a vector can be denoted by $\overrightarrow x$, $\boldsymbol x$ or $\mathbf x$, 
+and a real filed by $\mathbb R$, $\mathbf R$ or $\mathfrak R$. 
+Therefore we discard all this additional information, such that
+$\bar X$ becomes $X$, $\mathbf w$ becomes $w$ and $\mathfrak R$ becomes $R$.
+
+
+The additional THINGIES can easily be discarded, but the visual features are 
+encoded directly on the character level: the identifiers use special unicode 
+characters to convey font features such as boldness or Fraktur,
+so it has to be normalized by converting characters
+from special ``Mathematical Alphanumeric Symbols'' unicode block
 back to standard ASCII positions (``Basic Latin'' block).
 
-A lot of noise (``false positives'')
-gets captured inside \verb|<ci>| tags: many mathematic-related symbols
+Additionally, the is a lot of noise on the annotation level in MathML formulas: 
+many non-identifiers are captures as identifiers inside \verb|<ci>| tags. Among 
+them there are many mathematic-related symbols
 like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$''; 
 miscellaneous symbols like ``$\diamond$'' or
-``$\circ$'' arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
+``$\circ$'', arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
 ``$\lceil$''.
 
-To filter out these one-symbol false positives we exclude the following unicode blocks:
-``Spacing Modifier Letters'', ``Miscellaneous Symbols'', ``Geometric Shapes'', ``Arrows'',
-``Miscellaneous Technical'', ``Box Drawing'', ``Mathematical Operators''
-(except ``$\nabla$'' which is sometimes used as an identifier)
+To filter out these one-symbol false identifiers we fully exclude all characters from 
+the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'', 
+``Geometric Shapes'', ``Arrows'', ``Miscellaneous Technical'', ``Box Drawing'', 
+``Mathematical Operators'' (except ``$\nabla$'' which is sometimes used as an identifier)
 and ``Supplemental Mathematical Operators''.
-Some symbols (like ``='', ``+'', ``\~'', ``\%'', ``?'', ``!'')
-belong to commonly used unicode blocks 
-which we cannot exclude altogether. For these symbols we manually 
-prepared a stop list for filtering them.
-
+Some symbols (like ``='', ``+'', ``\verb|~|'', ``\%'', ``?'', ``!'')
+belong to commonly used unicode blocks which we cannot exclude altogether. 
+For these symbols we manually prepare a stop list for filtering them.
 
 It also captures multiple-symbol false positives: operators and functions
-like ``sin'', ``cos'', ``exp'', ``max'', ``trace''; 
-words commonly used in formulas like ``const'', ``true'', ``false'',
-``vs'', ``iff''; English stop words like ``where'', ``else'', ``on'', 
-``of'', ``as'', ``is''; units like ``mol'', ``dB'', ``mm''.
+like ``\texttt{sin}'', ``\texttt{cos}'', ``\texttt{exp}'', ``\texttt{max}'', ``\texttt{trace}''; 
+words commonly used in formulas like ``\texttt{const}'', ``\texttt{true}'', ``\texttt{false}'',
+``\texttt{vs}'', ``\texttt{iff}''; English stop words like ``\texttt{where}'', ``\texttt{else}'',
+``\texttt{on}'', ``\texttt{of}'', ``\texttt{as}'', ``\texttt{is}''; 
+units like ``\texttt{mol}'', ``\texttt{dB}'', ``\texttt{mm}''.
 These false identifiers are excluded by a stop list as well: if a
 candidate identifier is in the list, it is filtered out.
 
 
-Additionally, many shortlisted definitions are either not valid definitions or too general. 
+Then, at the next stage, the definitions are extracted. However many 
+shortlisted definitions are either not valid definitions or too general. 
 For example, some identifiers become associated with ``if and only if'', 
 ``alpha'', ``beta'', ``gamma'', which are not valid definitions. Other definitions
-like ``vector'', ``element'', ``number'' or ``variable'' are valid, but 
-they are too general and not descriptive.
-We maintain a stop list of such false definitions and filter them out from 
-the result. 
+like ``element'', ``number'' or ``variable'' are valid, but 
+they are too general and not descriptive. We maintain a stop list of such 
+false definitions and filter them out from the result. 
 
 
 
-
-\subsection{Document Clustering}
+\subsection{Document Clustering} \label{sec:clustering-impl}
 
 First step is discarding all definitions (from each id-pair definitions)
 that occur only once and therefore do not have much discriminating power. 
@@ -252,7 +320,7 @@ we used DBPedia \cite{bizer2009dbpedia} for that. Additionally
 DBPedia provides a SKOS ontology about categories. 
 
 
-\subsection{Building Hierarchy} 
+\subsection{Building Hierarchy} \label{sec:hierarchy}
 
 AMS Mathematics Subject Classification (2010) \cite{ams2010msc}
 Excluded all subcategories those code end with '99': they are 
@@ -306,7 +374,7 @@ keyword matched, then the cluster is assigned to the ``OTHERS''
 category.
 
 
-\subsection{Java Language Processing}
+\subsection{Java Language Processing} \label{sec:jlp}
 
 The same set of techniques can be applied to source code.
 (todo: why!)

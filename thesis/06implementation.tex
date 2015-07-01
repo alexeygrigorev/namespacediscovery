@@ -175,10 +175,12 @@ cleaned at different stages of Definition Extraction
 
 
 Often identifiers contain additional semantic information visually conveyed 
-by special THINGIES like hats ($\hat w$), bars ($\bar X$), arrows ($\overrightarrow x$) 
-and others or special fort features. For example boldness is often used to 
-denote vectors $\mathbf w$ or matrices $\mathbf X$, calligraphic fonts are 
-used for sets $\mathcal H$, double-struck fonts often denote spaces ($\mathbb R$),
+by special diacritical marks or font features. For example, the diacritics can be   
+hats to denote ``estimates'' (e.g. $\hat w$), bars to denote the expected value 
+(e.g. $\bar X$), arrows to denote vectors (e.g. $\overrightarrow x$) and others.
+As for the font features, boldness is often used to
+denote vectors (e.g. $\mathbf w$) or matrices (e.g. $\mathbf X$), calligraphic fonts are 
+used for sets (e.g. $\mathcal H$), double-struck fonts often denote spaces (e.g. $\mathbb R$),
 etc. Unfortunately there is no common notation established across all fields of 
 mathematics and there is a lot of variance. For example, 
 a vector can be denoted by $\overrightarrow x$, $\boldsymbol x$ or $\mathbf x$, 
@@ -187,12 +189,14 @@ Therefore we discard all this additional information, such that
 $\bar X$ becomes $X$, $\mathbf w$ becomes $w$ and $\mathfrak R$ becomes $R$.
 
 
-The additional THINGIES can easily be discarded, but the visual features are 
-encoded directly on the character level: the identifiers use special unicode 
-characters to convey font features such as boldness or Fraktur,
-so it has to be normalized by converting characters
-from special ``Mathematical Alphanumeric Symbols'' unicode block
-back to standard ASCII positions (``Basic Latin'' block).
+The diacritic marks can easily be discarded because they are represented 
+by special MathML instructions that easily can be ignored 
+(see the section~\ref{sec:mathml} for details). But, on the other hand,
+the visual features are encoded directly on the character level: 
+the identifiers use special unicode symbols to convey font features such 
+as boldness or Fraktur, so it needs to be normalized by converting characters
+from special ``Mathematical Alphanumeric Symbols'' unicode block \cite{allen2007unicode}
+back to the standard ASCII positions (``Basic Latin'' block).
 
 Additionally, the is a lot of noise on the annotation level in MathML formulas: 
 many non-identifiers are captures as identifiers inside \verb|<ci>| tags. Among 
@@ -206,7 +210,7 @@ To filter out these one-symbol false identifiers we fully exclude all characters
 the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'', 
 ``Geometric Shapes'', ``Arrows'', ``Miscellaneous Technical'', ``Box Drawing'', 
 ``Mathematical Operators'' (except ``$\nabla$'' which is sometimes used as an identifier)
-and ``Supplemental Mathematical Operators''.
+and ``Supplemental Mathematical Operators'' \cite{allen2007unicode}.
 Some symbols (like ``='', ``+'', ``\verb|~|'', ``\%'', ``?'', ``!'')
 belong to commonly used unicode blocks which we cannot exclude altogether. 
 For these symbols we manually prepare a stop list for filtering them.

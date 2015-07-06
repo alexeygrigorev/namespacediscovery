@@ -71,19 +71,7 @@ categorize documents and thus discover namespaces)
 
 
 
-
-\subsection{Similarity Measures and Distances}
-
-
-Jaccard similarity, jaccard distance
-
-Dot product, cosine similarity, cosine distance
-
-Euclidean distance, relationship between cosine and Euclidean
-
-
-
-\subsection{Vector Space Model}
+\subsection{Vector Space Model} \label{sec:vsm}
 
 Vector Space model: term selection, weighting schemes; how to build identifier space and include definition information
 
@@ -104,8 +92,6 @@ When applied to identifiers: some identifiers like $x$ or $y$ occur very frequen
 to ensure that document matching is done with more discriminative words
 apply sub-linear transformation to to avoid the dominating effect of words that occur very frequently
 
-\subsection{Inverted Index} \label{sec:index}
-
 \subsection{Identifier Space Model} \label{sec:ism}
 
 
@@ -118,5 +104,221 @@ Given ($\lambda$, regularization) and ($w$, weight vector)
   \item use "weak" identifier-definition association:  dimensions are ($\lambda$, $w$, regularization, weight vector)
   \item use "strong" association:  dimensions are ($\lambda$\_regularization, $w$\_weight vector)
 \end{itemize}
+
+
+
+
+\subsection{Similarity Measures and Distances}
+
+Once the documents are represented in some vector space, we need to 
+define how to compare these documents to each other. There are two 
+ways of doing this: using a similarity function that tells how similar 
+two objects are (the higher values - the more similar the objects),
+or using a distance function, sometimes called ``dissimilarity function'',
+which is the opposite of similarity (the higher the values, the less similar 
+the objects) 
+
+The most commonly used distance function in vector spaces is Euclidean 
+distance which corresponds to the geometric distance between two points 
+in the space. For example, if we have two points $\mathbf x$ and 
+$\mathbf z$ then the Euclidean distance is the
+length of the line that connects these two points. 
+It is defined as
+$\| \mathbf x - \mathbf z \| = \sqrt{ (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) } = \sqrt{\sum_i (x_i - z_i)^2}$. This distance is also often called 
+$L_2$ distance.
+
+But Euclidean distance is not always meaningful for high dimensional data. 
+
+$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) = 
+\mathbf x^T \mathbf x - 2 \mathbf x^T \mathbf z + \mathbf z^T \mathbf z = 
+\| \mathbf x \|^2 - 2 \mathbf x^T \mathbf z + \| \mathbf z \|^2$
+
+We see that it also takes into account the length of each individual vector, 
+and therefore distance between related and not related documents can be 
+the same. 
+
+Consider the following example (from \cite{ertoz2003finding}):
+There are 4 data points in 10-dimensional space indexed by 
+identifiers $A_1, \ ... \ , A_{10}$
+
+
+\begin{tabular}{|c|cccccccccc|}
+  \hline
+~ &  $A_1$ &   $A_2$ &   $A_3$ &  $A_4$ &  $A_5$ &  $A_6$ &  $A_7$ &  $A_8$ &  $A_9$ &  $A_{10}$ \\
+  \hline
+$\mathbf p_1$ &  3 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 \\
+$\mathbf p_2$ &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  4 \\
+$\mathbf p_3$ &  3 &  2 &  4 &  0 &  1 &  2 &  3 &  1 &  2 &  0 \\
+$\mathbf p_4$ &  0 &  2 &  4 &  0 &  1 &  2 &  3 &  1 &  2 &  4 \\
+  \hline
+\end{tabular}
+
+
+distance between $\mathbf p_1$ and $\mathbf p_2$ is $\| \mathbf p_1 - \mathbf p_2\| = 5$
+distance between $\mathbf p_3$ and $\mathbf p_4$ is $\| \mathbf p_3 - \mathbf p_4\| = 5$
+so Euclidean distance between these two vectors is the same!
+ but suppose these vectors correspond to documents and words ([[Vector Space Models]])
+ $\mathbf p_3$ and $\mathbf p_4$ must be more similar to each other than $\mathbf p_1$ and $\mathbf p_2$: $\mathbf p_3$ and $\mathbf p_4$ have 7 words in common whereas $\mathbf p_1$ and $\mathbf p_2$ have only 2
+
+
+When the data is sparse it's better to use different measure of distance/similarity
+we need to ignore records where both vectors have 0
+for example:
+[[Dot Product]] and [[Cosine Similarity]]
+[[Jaccard Coefficient]]
+
+
+
+\textbf{Jaccard similarity, jaccard distance}
+
+\textbf{Dot product}
+Dot product, or inner product, can also be seen as a similarity measure: the 
+
+
+
+Geometric Definition
+Let $\vec v \cdot \vec w$ denote the ''dot product'' between vectors $\vec v$ and $\vec w$
+definition: $\vec v \cdot \vec w = \| \vec v \| \cdot \| \vec w \| \cdot \cos \theta$ where $\theta$ is the angle between $\vec v$ and $\vec w$
+$\| \vec v \|$ denotes the length of $\vec v$
+ if two vectors are perpendicular, then $\cos \theta = 0$ and thus $\vec v \cdot \vec w = 0$
+ if they co-directional, then $\theta = 0$ and $\vec v \cdot \vec w = \| \vec v \| \cdot \| \vec w \|$
+ consequently, we have $\vec v \cdot \vec v = \| \vec v \|^2$
+
+
+Why does this geometric definition make sense?
+
+consider vectors $\vec u$, $\vec v$ and $\vec w$
+let $\vec v + \vec u = \vec w$ or $\vec u = \vec w - \vec v$
+(ADD PROPER IMAGE WITH COSINE THEOREM 
+http://habrastorage.org/files/d9f/8b1/073/d9f8b10734864b92bdcf9cf5ac92a0dc.png
+)
+
+$\| \vec u \|^2 =  \| \vec w - \vec v \|^2 = (\vec w - \vec v) \cdot (\vec w - \vec v) = \| \vec w \|^2 + \| \vec v \|^2 - 2 \cdot \vec w \vec v$
+by the Cosine Theorem we know that
+$\| \vec u \|^2 =  \| \vec w - \vec v \|^2 = \| \vec w \|^2 + \| \vec v \|^2 - 2 \cdot \| \vec w \| \cdot \| \vec v \| \cdot \cos \theta$
+so $\| \vec w \| \cdot \| \vec v \| \cdot \cos \theta = \cfrac{1}{2} (\| \vec w \|^2 + \| \vec v \|^2 - \| \vec w - \vec v \|^2) = \cfrac{1}{2} (\| \vec w \|^2 + \| \vec v \|^2 - \| \vec w \|^2 - \| \vec v \|^2 + 2 \cdot \vec w \vec v) = \vec w \cdot \vec v$
+thus $\vec w \cdot \vec v = \| \vec w \| \cdot \| \vec v \| \cdot \cos \theta$
+i.e. the definition makes sense from the The Cosine Theorem point of view
+
+
+For two vectors $\mathbf v, \mathbf w \in \mathbb R^n$ we define the dot product as $\mathbf v^T \mathbf w = \sum\limits_{i = 1}^n v_i w_i$
+
+These definitions are equivalent
+
+
+\textbf{Cosine similarity} is a [[Similarity Function]] that is often used in [[Information Retrieval]]
+ it measures the angle between two vectors,  and in case of IR - the angle between two documents
+
+recall the definition of the [[Dot Product]]: $\mathbf v \cdot \mathbf w = \| \mathbf v \| \cdot \| \mathbf w \| \cdot \cos \theta$
+or, by rearranging get $\cos \theta = \cfrac{\mathbf v \cdot \mathbf w}{\| \mathbf v \| \cdot \| \mathbf w \|}$
+so, let's define the cosine similarity function as $\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1^T \mathbf d_2}{\| \mathbf d_1 \| \cdot \| \mathbf d_2 \|}$
+cosine is usually $[-1, 1]$, but document vectors (see [[Vector Space Model]]) are usually non-negative, so the angle between two documents can never be greater than 90 degrees, and for document vectors $\text{cosine}(\mathbf d_1, \mathbf d_2) \in [0, 1]$
+min cosine is 0 (max angle: the documents are orthogonal)
+max cosine is 1 (min angle: the documents are the same)
+
+
+If documents have unit length, then cosine similarity is the same as [[Dot Product]]
+$\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1^T \mathbf d_2}{\| \mathbf d_1 \| \cdot \| \mathbf d_2 \|} = \mathbf d_1^T \mathbf d_2$
+thus we can "unit-normalize" document vectors $\mathbf d' = \cfrac{\mathbf d}{\| \mathbf d \|}$ and then compute dot product on them and get cosine
+ this "unit-length normalization" is often called "cosine normalization" in IR
+
+
+
+\textbf{ Cosine Distance}
+for documents $\text{cosine}(\mathbf d_1, \mathbf d_2) \in [0, 1]$
+it is max when two documents are the same
+how to define a distance? distance function should become larger as elements become less similar
+since maximal value of cosine is 1, we can define '''cosine distance''' as
+$d_c(\mathbf d_1, \mathbf d_2) = 1 - \text{cosine}(\mathbf d_1, \mathbf d_2) = 1 -  \cfrac{\mathbf d_1^T \mathbf d_2}{\| \mathbf d_1 \| \cdot \| \mathbf d_2 \|}$
+
+
+Let's check if cosine distance is a proper metric, i.e. it satisfies all the requirements
+Let $D$ be the document space and $\mathbf d_1, \mathbf d_2 \in D$
+ $d_c(\mathbf d_1, \mathbf d_2) \geqslant 0$: checks - 0 is minimum
+$d_c(\mathbf d_1, \mathbf d_1) = 0$ checks - $1 - \cos 0 = 0$
+ $d_c(\mathbf d_1, \mathbf d_2) = d_c(\mathbf d_2, \mathbf d_1)$: checks - angle is the same
+
+
+What about the triangle inequality?
+under certain conditions is doesn't hold (Korenius2007) - so it's not a proper metric
+
+
+
+\textbf{Cosine and Euclidean Distance}
+Euclidean distance $\| \mathbf d_1 - \mathbf d_2 \| = \sqrt{(\mathbf d_1 - \mathbf d_2)^T (\mathbf d_1 - \mathbf d_2)}$
+
+
+There's a connection between Cosine Distance end Euclidean Distance
+consider two unit-normalized vectors $\mathbf x_1 = \mathbf d_1 / \| \mathbf d_1 \|$ and $\mathbf x_2 = \mathbf d_1 / \| \mathbf d_1 \|$
+$\| \mathbf x_1 - \mathbf x_2 \|^2 = (\mathbf x_1 - \mathbf x_2)^T (\mathbf x_1 - \mathbf x_2) = \mathbf x_1^T \mathbf x_1 - 2 \, \mathbf x_1^T \mathbf x_2 + \mathbf x_2^T \mathbf x_2 = \| \mathbf x_1 \|^2 - 2 \, \mathbf x_1^T \mathbf x_2 + \| \mathbf x_2 \|^2 = 2 - 2 \, \mathbf x_1^T \mathbf x_2$
+if vectors are unit-normalized, cosine = dot product, so we have
+$\| \mathbf x_1 - \mathbf x_2 \|^2 = 2 \, (1 -  \mathbf x_1^T \mathbf x_2) = 2 \, \big(1 - \text{cosine}(x_1, x_2)\big) = 2 \, d_c(x_1, x_2)$
+
+
+It can also make some sense visually:
+
+
+\url{https://habrastorage.org/files/f73/289/979/f732899792f246358649e89765cd88da.png}
+recall the [[Cosine Theorem]]: $a^2 = b^2 + c^2 - 2 bc \cos \theta$
+$b = c = 1$, so we have $a^2 = 2 \, (1 - \cos \theta)$
+
+
+Thus we can use Euclidean distance and interpret it as Cosine distance
+
+
+Korenius, Tuomo, Jorma Laurikkala, and Martti Juhola. "On principal component analysis, cosine and Euclidean measures in information retrieval." 2007.
+
+
+
+\subsection{Inverted Index} \label{sec:index}
+
+Inverted Index is a IR technique for being able to retrieve results faster. 
+It also can be used for making clustering faster 
+
+if $D$ is a document-term matrix, then the inverted index is build 
+by considering $D^T$ and 
+
+In [[Databases]], [[Indexing (databases)|indexing]] is needed to speed up queries
+want to avoid full table scan
+same is true for [[Information Retrieval]] and other [[Text Mining]]/[[NLP]] tasks
+Inverted index is a way of achieving this, and it can be generalized to other forms of input, not just text
+
+
+For IR
+index is a partial representation of a document that contains the most important information about the document
+usually want to find terms to index automatically
+
+
+
+
+Inverted Index for Similarity Search 
+
+Idea:
+usually a document contains only a small portion of terms
+so document vectors are very sparse
+typical distance is cosine similarity - it ignores zeros. for cosine to be non-zero, two docs need to share at least one term
+$D^T$ is the inverted index of the term-document matrix $D$
+
+
+This, to find docs similar to $d$:
+for each $w_i \in d$
+let $D_i = \text{index}[w_i] - d$ be a set of documents that contain $w_i$ (except for $d$ itself)
+then take the union of all $D_i$
+calculate similarity only with documents from this union
+
+
+Can be used in [[Document Clustering]] to speed up similarity computation
+
+
+
+Posting List 
+Build a dictionary: a "posting" list
+for each word we store ids of documents that have this word
+document are sorted by ids
+http://slidewiki.org/upload/media/images/29/509.png?filter=Resize-width-550
+source of picture: http://slidewiki.org/print/deck/339
+sorting - because it's easier to take union: just merge the posting list
+
+
 
 

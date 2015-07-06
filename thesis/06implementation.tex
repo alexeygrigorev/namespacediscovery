@@ -66,11 +66,11 @@ Once formulas are retrieved, we extract the definitions from them.
 We are not interested in the semantics of a formula, only in the identifiers 
 it contains. Hence we need only to look for all \verb|<ci>| tags. 
 There are two types of identifiers: simple identifiers such as 
-$t$, $C$, $\mu$; and complex identifiers with subscripts such as
-$x_1$, $\xi_i$ or even $\beta_{\text{slope}}$. We do not process 
+``$t$'', ``$C$'', ``$\mu$''; and complex identifiers with subscripts such as
+``$x_1$'', ``$\xi_i$'' or even ``$\beta_{\text{slope}}$''. We do not process 
 superscripts because they are usually powers (for example, $x^2$), 
 and therefore they are not interesting for this work. 
-There are exceptions to this, for example, $\sigma^2$ is an identifier,
+There are exceptions to this, for example, ``$\sigma^2$'' is an identifier,
 but these cases are rare and can be ignored. 
 
 Since MathML is XML, the identifiers are extracted with XPath queries:
@@ -176,17 +176,19 @@ cleaned at different stages of Definition Extraction
 
 Often identifiers contain additional semantic information visually conveyed 
 by special diacritical marks or font features. For example, the diacritics can be   
-hats to denote ``estimates'' (e.g. $\hat w$), bars to denote the expected value 
-(e.g. $\bar X$), arrows to denote vectors (e.g. $\overrightarrow x$) and others.
+hats to denote ``estimates'' (e.g. ``$\hat w$''), bars to denote the expected value 
+(e.g. ``$\bar X$''), arrows to denote vectors (e.g. ``$\overrightarrow x$'') and others.
 As for the font features, boldness is often used to
-denote vectors (e.g. $\mathbf w$) or matrices (e.g. $\mathbf X$), calligraphic fonts are 
-used for sets (e.g. $\mathcal H$), double-struck fonts often denote spaces (e.g. $\mathbb R$),
-etc. Unfortunately there is no common notation established across all fields of 
+denote vectors (e.g. ``$\mathbf w$'') or matrices (e.g. ``$\mathbf X$''), calligraphic fonts are 
+used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces 
+(e.g. ``$\mathbb R$''), etc. 
+Unfortunately there is no common notation established across all fields of
 mathematics and there is a lot of variance. For example, 
-a vector can be denoted by $\overrightarrow x$, $\boldsymbol x$ or $\mathbf x$, 
-and a real filed by $\mathbb R$, $\mathbf R$ or $\mathfrak R$. 
+a vector can be denoted by ``$\overrightarrow x$'', ``$\boldsymbol x$'' or ``$\mathbf x$'', 
+and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''. 
 Therefore we discard all this additional information, such that
-$\bar X$ becomes $X$, $\mathbf w$ becomes $w$ and $\mathfrak R$ becomes $R$.
+``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$'' 
+becomes ``$R$''.
 
 
 The diacritic marks can easily be discarded because they are represented 
@@ -227,104 +229,160 @@ candidate identifier is in the list, it is filtered out.
 
 Then, at the next stage, the definitions are extracted. However many 
 shortlisted definitions are either not valid definitions or too general. 
-For example, some identifiers become associated with ``if and only if'', 
-``alpha'', ``beta'', ``gamma'', which are not valid definitions. Other definitions
-like ``element'', ``number'' or ``variable'' are valid, but 
+For example, some identifiers become associated with ``\texttt{if and only if}'', 
+``\texttt{alpha}'', ``\texttt{beta}'', ``\texttt{gamma}'', which are not valid definitions. 
+Other definitions like ``\texttt{element}'', ``\texttt{number}'' or 
+``\texttt{variable}'' are valid, but
 they are too general and not descriptive. We maintain a stop list of such 
 false definitions and filter them out from the result. 
 
+The next stage is using identifier/defintion pairs for document clustering
+We can note that if some definition is used only once throughout the entire
+data set, it is not useful because it does not have any discriminative power.
+Therefore all such definitions are excluded.
 
 
 \subsection{Document Clustering} \label{sec:clustering-impl}
 
-First step is discarding all definitions (from each id-pair definitions)
-that occur only once and therefore do not have much discriminating power. 
+At the Document Clustering stage we want to find cluster of documents 
+that are good namespace candidates. 
 
-Then we need to build an Identifier Space (see section~\ref{sec:ism}). 
-There are three ways of doing it.
+Before we can do this, we need to vectorize our dataset: i.e. build the 
+Identifier Space (see section~\ref{sec:ism}) and represent each document 
+in this space. 
+
+There are three choices for dimensions of the Identifier space: 
 
 \begin{itemize}
-  \item keeping identifiers alone
-  \item ``weak identifier-definition association'': putting identifiers along with definitions
-  \item identifier-definition pairs 
+  \item identifiers alone
+  \item ``weak'' identifier-definition association
+  \item ``strong'' association: use identifier-definition pairs
 \end{itemize}
 
-In the first case we use only identifier information - and discard the 
-definitions altogether.
+In the first case we are only interested in identifier information and 
+discard the definitions altogether. 
 
-In the second and third cases we keep the definitions. 
-But there is some variability in the definitions. For example, 
-the same identifier can be assigned to ``Cauchy stress tensor'' and
-``stress tensor'' - which are almost the same thing. To reduce 
-this variability we tokenize the definition and use individual tokens
-as dimensions of the space. For example, if we have two pairs
-($\sigma$, ``Cauchy stress tensor'') and ($\sigma$, ``stress tensor''),
-for second case we have dimensions $(\sigma, \text{Cauchy}, \text{stress}, \text{tensor})$,
-while for the third case we have 
+In the second and third cases we keep the definitions and use them to 
+index the dimensions of the Identifier Space. Bur there is some 
+variability in the definitions: for example, the same identifier 
+``$\sigma$'' in one document can be assigned to ``Cauchy stress tensor'' and
+in other it can be assigned to ``stress tensor'', which are almost the same thing. 
+To reduce this variability we perform some preprocessing: we tokenize 
+the definitions and use individual tokens to index dimensions of the space. 
+For example, suppose we have two pairs ($\sigma$, ``Cauchy stress tensor'') 
+and ($\sigma$, ``stress tensor''). In the ``weak'' association case
+we have will dimensions $(\sigma, \text{Cauchy}, \text{stress}, \text{tensor})$,
+while for the ``strong'' association case we will have 
 $(\sigma\text{\_Cauchy}, \sigma\text{\_stress}, \sigma\text{\_tensor})$.
 
-
-Additionally, to decrease the effect of variability further, 
-a stemming technique is applied to each definition token. 
-We use Snowball stemmer for English \cite{porter2001snowball} 
-implemented in NLTK \cite{bird2006nltk}: 
-a python library for Natural Language Processing. 
+Additionally, the effect of variability can be decreased further
+by applying a stemming technique for each definition token. 
+In this work we use Snowball stemmer for English \cite{porter2001snowball} 
+implemented in NLTK \cite{bird2006nltk}: a python library for 
+Natural Language Processing. 
 
 Each document is vectorized (converted to a vector form) by using
 \verb|TfidfVectorizer| from  scikit-learn \cite{scikit-learn}. 
 We use the following settings: 
 
-- \verb|use_idf=True, min_df=2|
-- \verb|use_idf=False, min_df=2|
-- \verb|use_idf=False, sublinear_tf=True, min_df=2|
+\begin{itemize}
+  \item \verb|use_idf=True, min_df=2|
+  \item \verb|use_idf=False, min_df=2|
+  \item \verb|use_idf=False, sublinear_tf=True, min_df=2|
+\end{itemize}
+
+
+In the first case we use inverse document frequency (IDF) to assign additional 
+collection weight for "terms"
+(see section~\ref{sec:vsm}), while in second and in third we use only 
+term frequency (TF).
+In the second case we apply a sublinear transformation to the TF component
+to reduce  the influence of frequently occurring words. 
+In all three cases we keep 
+only "terms" that are used in at least two documents. 
 
 The output is a document-identifier matrix (analogous to ``document-term''):
 documents are rows and identifiers/definitions are columns. 
-
-The output of \verb|TfidfVectorizer| is row-normalized, i.e. 
+The output of \verb|TfidfVectorizer| is row-normalized, i.e.
 all rows has unit length. 
 
 
-K-Means and Mini-Batch K-Means implementation from scikit-learn \cite{scikit-learn}.
-Classes \verb|KMeans|, \verb|MiniBatchKMeans|
+Once we the documents are vectorized, we can apply clustering techniques
+to them. We use K-Means (class \verb|KMeans| in scikit-learn) and 
+Mini-Batch K-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}.
+Note that if rows are unit-normalized, then running k-means with 
+Euclidean distance is equivalent to cosine distance 
+(see section~\ref{sec:kmeans}).
 
-If rows are unit-normalized, then running k-means with Euclidean distance
-is equivalent to cosine distance (see section~\ref{sec:kmeans}).
+Bisecting K-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of 
+scikit-learn: at each step we take a subset of the dataset and apply 
+K-means with $k = 2$ to this subset. If the subset is big (with number of 
+documents $N > 2000$), then we use Mini-Batch K-means with $k=2$ 
+because it converges much faster. 
 
-Bisecting K-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of scikit-learn: each time a data set is clustered
-with k-means with $k = 2$. if the subset being clustered is big, 
-($N > 2000$) then mini-batch k-means is used, otherwise usual K-means
 
-Scatter/Gather (see section~\ref{sec:kmeans-ext}) was implemented manually 
-using scipy \cite{scipy} and numpy \cite{walt2011numpy} because 
-scikit-learn's implementation of K-Means does not allow using user-defined distances. 
+Scatter/Gather extensions to K-means (see section~\ref{sec:kmeans-ext}) was 
+implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because 
+scikit-learn's implementation of K-Means does not allow using user-defined distances.
 
 
 DBScan (section~\ref{sec:dbscan}) and SNN Clustering (section~\ref{sec:dbscan-ext})
 algorithms were also implemented manually:
 available DBScan implementations usually take distance measure rather than 
-a similarity measure, but we want to use a similarity matrix, and not 
-a distance matrix because converting would make the matrix dense, 
-and we want to avoid that. Additionally, available implementation
-do not use the structure of data: in text-like data clustering algorithms 
-can be sped up by using an inverted index (section~\ref{sec:index})
+a similarity measure. The similarity matrix cleated by similarity measures 
+are typically very sparse, because usually only a small fraction of the documents 
+are similar to some given document. Similarity measures 
+can be converted to distance measures, but in this case 
+the matrix will no longer be sparse, and we would like to avoid that.
+Additionally, available implementations are usually general purpose 
+implementations and do not take advantage of the structure of the data:
+in text-like data clustering algorithms can be sped up significantly 
+by using an inverted index (section~\ref{sec:index})
 
 
-LSA (section~\ref{sec:lsa}) is implemented via randomized SVD \cite{tropp2009finding},
-The implementation is taken from scikit-learn \cite{scikit-learn} - 
-method \verb|randomized_svd|.
+Dimensionality reduction techniques are also important: they 
+not only reduce the dimensionality, but also help reveal the latent 
+structure of data. In this work we use Latent Semantic Analysis (LSA) (section~\ref{sec:lsa})
+which is implemented using randomized Singular Value Decomposition (SVD) 
+\cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn 
+\cite{scikit-learn} - method \verb|randomized_svd|. Non-negative Matrix Factorization 
+is an alternative technique for dimensionality reduction (section~\ref{sec:nmf}). 
+Its implementation is also taken from scikit-learn \cite{scikit-learn}, 
+class \verb|NMF|.
 
-Non-negative Matrix Factorization (section~\ref{sec:nmf}) is also taken from 
-cikit-learn \cite{scikit-learn}, class \verb|NMF|.
+To assess the quality of produced clusters we use wikipedia categories. It is 
+quite difficult to extract category information from raw wikipedia text,
+therefore we use DBPedia \cite{bizer2009dbpedia} for that: it provides 
+machine-readable information about categories for each wikipedia article. 
+Additionally, categories in wikipedia form a hierarchy, and this hierarchy 
+is available as a SKOS ontology. 
 
+A cluster is said to be ``pure'' if all documents have the same category. 
+Using categories information we can find the most frequent category of the 
+cluster, and then we can define purity as 
 
-To assess the quality of clustering we used wikipedia categories. 
-It is difficult to extract category information from raw wikipedia text, therefore
-we used DBPedia \cite{bizer2009dbpedia} for that. Additionally 
-DBPedia provides a SKOS ontology about categories. 
+$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|}$$
+
+(\textbf{TODO}: Add backlink to purity definition). 
+
+Then we can calculate the overall purity of a cluster assignment and use 
+this to compare results of different clustering algorithms. However it is not 
+enough just to find the most pure cluster assignment: because as the number 
+of clusters increases the overall purity also grows. 
+Thus we can also optimize for the number of clusters with purity $p$ of 
+size at least $n$. 
+
+When the number of clusters increase, the purity always grows, but at 
+some point the number of pure clusters will start decreasing. 
+
+(\textbf{TODO}:  Add a graph to show the tradeoff between purity and the number of clusters)
+
 
 
 \subsection{Building Hierarchy} \label{sec:hierarchy}
+
+
+Once 
 
 AMS Mathematics Subject Classification (2010) \cite{ams2010msc}
 Excluded all subcategories those code end with '99': they are 

@@ -1,2 +1,218 @@
 \section{Evaluation}
 
+In section \ref{sec:param-tuning} we describe how we select 
+the best clustering algorithm.
+
+
+
+\subsection{Parameter Tuning} \label{sec:param-tuning}
+
+We have the following parameters
+
+Way to incorporate definition information (3 ways):
+no identifier, soft association, hard association 
+
+Weighting schemes: TF-IDF, TF, log TF
+
+Clustering algorithm
+
+DBSCAN, SNN Clustering: params: min\_pts, epsilon 
+K-Means, Bisecting K-Means: params: $k$ 
+
+
+Distance and similarity measures used
+Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
+
+Ways to reduce dimensionality 
+SVD $D \approx D_k = U \Sigma_k V$, param: $k$ what's the rank of the approximation matrix 
+NNMF $D \approx D_k = U_k V_k^T$ param: $k$ number of columns in $U$ and $V$ - also the rank of $D_k$
+
+The approach for finding the best parameter set is a grid search: different combination
+are tries and the best result is kept.
+ 
+Agglomerative: Wald linkage: takes forever never finished
+
+
+
+Only identifiers 
+
+Usual K-Means
+
+some clusters are useful, but most of them aren't
+
+For example
+
+APL (programming language)	$n O R$
+Binary search tree	$O n$
+Boolean satisfiability problem	$O n$
+Complexity	$O n$
+Earley parser	$O n$
+Heapsort	$O n \Omega$
+Lisp (programming language)	$O n$
+Priority queue	$O n$
+Sieve of Eratosthenes	$O n$
+Smoothsort	$O n$
+Comb sort	$\Omega n p O$
+Divide and conquer algorithm	$O n \Omega$
+Stack (abstract data type)	$O n t$
+Skip list	$n p O$
+Graph minor	$O n h$
+Flex lexical analyser	$O n$
+Gift wrapping algorithm	$O n h$
+Perlin noise	$n O$
+Pseudo-polynomial time	$n O m$
+Hirzebruch surface	$O n m p$
+Beap	$n O$
+Pairing heap	$O n \Omega$
+Cost efficiency	$O n p$
+Marcus Hutter	$n O$
+Simplex noise	$O n$
+Vizing's theorem	$O m n$
+Graph traversal	$n O$
+AC (complexity)	$O n$
+Adleman–Pomerance–Rumely primality test	$O n c$
+O (disambiguation)	$O$
+Warnock algorithm	$O n p$
+Odd–even sort	$O n$
+Database storage structures	$O n$
+Introselect	$O n$
+Burstsort	$O n$
+Asymptotic computational complexity	$O n$
+Indirect DNA damage	$Chromophore O intact DNA damaged$
+Fürer's algorithm	$O n \Omega$
+Even-hole-free graph	$O n$
+Range Minimum Query	$n j O$
+Control table	$O$
+Zoltán Füredi	$O n$
+Fenwick tree	$O n d$
+Constraint graph (layout)	$O n$
+Bubble sort	$O n$
+TC (complexity)	$O n$
+Primitive abundant number	$O n$
+Algorithmic complexity attack	$O n$
+Symbols for zero	$O$
+Proxmap sort	$O n c$
+Theil–Sen estimator	$O n$
+Brodal queue	$O n$
+Alias method	$O n$
+
+
+
+DBSCAN SNN 
+
+k = 10
+dist = jaccard
+
+eps=7 points
+min\_point=5 points
+
+
+Epsilon Eridani in fiction $M_\odot$
+Solar mass $M_\odot$
+Orders of magnitude (mass) $M_\odot$
+Carbon-burning process $M_\odot$
+Baryonic dark matter $M_\odot$
+PSR J1614–2230 $M_\odot$
+Kennicutt–Schmidt law $M_\odot$
+Portal:Star/Selected article/19 $M_\odot$
+NGC 6166 $M_\odot$
+Celestial Snow Angel $M_\odot$
+Huge-LQG $M_\odot$
+High-velocity cloud $M_\odot$
+NGC 4845 $M_\odot$
+Pulsating white dwarf $M_\odot$
+Robust associations of massive baryonic objects $M_\odot$
+Black Widow Pulsar $M_\odot$
+Betelgeuse $M_\odot$
+Andromeda Galaxy $M_\odot$
+
+
+
+WEAK ASSOCIATION
+
+K-Means weak association 
+
+
+
+
+DBSCAN 
+k=15, eps=8, min\_pts=5
+
+Papyrus 66 	$P \text{papyrus}$
+Alexandrian text-type 	$P \text{papyrus}$
+Western text-type 	$P \text{papyrus}$
+Codex Ephraemi Rescriptus 	$P \text{papyrus}$
+Bodmer Papyri 	$P \text{papyrus}$
+Categories of New Testament manuscripts 	$P \text{papyrus}$
+Papyrus 4 	$P \text{papyrus}$
+Papyrus 75 	$P \text{papyrus}$
+Uncial 0308 	$P M papyrus \text{47}$
+Codex Athous Lavrensis 	$P \text{papyrus}$
+Papyrus 92 	$P \text{papyrus}$
+Papyrus 90 	$P \text{papyrus}$
+Papyrus 9 	$P \text{papyrus}$
+Papyrus 15 	$P \text{papyrus}$
+Papyrus 16 	$P \text{papyrus}$
+Papyrus 20 	$P \text{papyrus}$
+Papyrus 39 	$P \text{papyrus}$
+Papyrus 49 	$P \text{papyrus}$
+Papyrus 65 	$P \text{papyrus}$
+Papyrus 111 	$P \text{papyrus}$
+Uncial 0243 	$P \text{papyrus}$
+Minuscule 1739 	$P \text{papyrus}$
+Minuscule 88 	$P \text{papyrus}$
+Authorship of the Epistle to the Hebrews 	$P \text{papyrus}$
+Egerton Gospel 	$P \text{papyrus}$
+Rylands Library Papyrus P52 	$P \text{papyrus}$
+Codex Vaticanus 	$P \text{papyrus}$
+
+
+K-Means 
+
+
+Direct shear test $angle \varphi friction$
+Truncated dodecadodecahedron $golden ratio \phi$
+Golden triangle (mathematics) $golden section \theta \phi$
+Petrophysics $percentage \varphi symbol S_w$
+Greedy algorithm for Egyptian fractions $golden terms d \phi denominator possible expansion y x ratio$
+Pi Josephson junction $\pi junction \varphi$
+Snub dodecahedron $golden ratio \tau 2\xi - V \xi$
+Lucas number $golden terms \phi m L number values ratio L_k n L_n F_n L_m$
+54 (number) $golden \varphi ratio$
+Special right triangles $\pi c b ratio c. \phi m golden radians n line integers segment$
+Universal code (data compression) $golden code ratio power \phi l n q p law$
+Existential instantiation $c symbol \varphi variable$
+Perles configuration $golden ratio \phi$
+Wythoff array $golden ratio \phi column m number n \varphi fibonacci$
+Golomb sequence $a_n n golden ratio \phi$
+Almost integer $constant \pi gelfonds \varphi example$
+16:10 $golden ratio \phi$
+Leonardo number $golden ratio \phi computations \psi L n roots$
+Rogers–Ramanujan continued fraction $golden functions ratio G \phi H q modular$
+Great rhombic triacontahedron $golden ratio \phi$
+108 (number) $golden \varphi ratio$
+Random Fibonacci sequence $golden B ratio M_n probability \phi f_n sequence n random increases values f_1 f_2 M_3 F_n$
+Rhombic triacontahedron $golden ratio \phi r_i S edge r_m V$
+Exact trigonometric constants $function \pi ratio \phi image golden values x V \theta example$
+Bilunabirotunda $golden ratio \phi$
+Feigenbaum constants $map z ratio places f \phi golden c_n \alpha \delta variable x x_i$
+
+
+
+Batch, k = 2500 .. 10000 with step 50
+SVD with n=600
+
+
+
+
+
+
+\subsection{Building Hierarchy}
+
+How to evaluate???
+
+
+
+\subsection{Result analysis}
+\subsection{experiment conclusions}
+

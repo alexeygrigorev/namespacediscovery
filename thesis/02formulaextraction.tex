@@ -1,40 +1,83 @@
-\section{Mathematical Definition Extraction} \label{section:definitionextraction}
+\section{Mathematical Definition Extraction} \label{sec:definitionextraction-top}
+
 Mathematical expressions are hard to understand without the natural language description,
-so we want to find identifiers in the mathematical expressions and extract their
-definition from the surrounding text
+therefore we want to extract identifiers from mathematical expressions
+and then find their definitions from the surrounding text.
 
-Example:
-
-The precision $P$ is defined as $P = \cfrac{w}{w + y}$ where $w$ is the number of
-correctly labeled pairs and $y$ is the number of incorrectly labeled pairs
-
-We want to extract:
-
-($P$, "precision"),
-($w$, "the number of correctly labeled pairs"),
-($y$, "the number of incorrectly labeled pairs")
-
-Another example: "Let $e$ be the base of natural logarithm"
-
-want to extract ($e$, "the base of natural logarithm")
-
-
-A phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
+For example, given the sentence ``The relation between energy and mass is
+described by  the mass-energy equivalence formula $E = mc^2$,
+where $E$ is energy, $m$ is mass and $c$ is the speed of light''
+the goal is to extract the following identifier-definition relations:
 
 \begin{itemize}
-  \item \emph{definiendum}, a mathematical expression or identifier, is the term to be defined;
+\itemsep1pt\parskip0pt\parsep0pt
+  \item ($E$, ``energy'')
+  \item ($m$, ``mass'')
+  \item ($c$, ``the speed of light'')
+\end{itemize}
+
+Consider another example: ``Let $e$ be the base of natural logarithm''.
+We would like to extract ($e$, ``the base of natural logarithm'').
+
+Formally, a phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item \emph{definiendum} is the term to be defined: it is a mathematical expression or identifier;
   \item \emph{definiens} is the definition itself: it is the word or phrase that defines the definiendum in a definition.
   \item \emph{definitor} is a relator verb that links definiendum and definiens.
 \end{itemize}
 
-In this work we are interested only in first two parts: definiendum and definiens.
-Thus we define a \emph{relation} as a pair (definiendum, definiens). Since we are
-interested in finding definitions only for identifiers, we restrict ourselves only
-to (identifier, definition) relations.
+
+In this work we are interested in the first two parts: \emph{definiendum} and
+\emph{definiens}. Thus we define a \emph{relation} as a pair
+(definiendum, definiens). For example, ($E$, ``energy'') is a relation where
+$E$ is a definiendum, and ``energy'' is a definiens.
 
 
-% TODO:
-An \emph{identifier} is a mathematical ...
+\textbf{TODO}: An \emph{identifier} is a mathematical ...
+
+
+We have the following assumption about defintion (i.e. deinities): 
+Assumption: the definitions of mathematical expressions are always noun phrases
+
+In general, a noun phrase can be
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item a simple noun
+  \item a compound noun (e.g. adjective + noun)
+  \item a compound noun with a clause, prepositional phrase, etc
+\end{itemize}
+
+
+
+In this chapter we will discuss how the relations can be discovered automatically. 
+The typical processing pipeline for definition extraction consists of 
+the following steps \cite{kristianto2012extracting} \cite{pagael2014mlp}:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item Read corpus of documents in some markup language, e.g. Wiki Markup or Latex
+  \item Translate all formulas in the documents into MathML
+  \item Process MathML formulas
+  \item Replace formulas with some placeholder
+  \item Annotate text using Math-Aware POS Tagging
+  \item Find relations in the text
+\end{itemize}
+
+
+Thus, this chapter is organized as follows: first we introduce the 
+Mathematical Markup Language (MathML) in section~\ref{sec:mathml}, then discuss 
+the Math-Aware POS Tagging procedure in section~\ref{sec:postagging} and 
+finally review the extraction methods in section~\ref{sec:definition-extraction-methods}
+and briefly discuss how the quality of extracted identifiers is evaluated
+in section~\ref{sec:definition-evaluation}. 
+
+%TODO:
+
+% http://habrastorage.org/files/025/1f5/4fa/0251f54fa7a248faa6718839ee060b53.png
+% MLP flow
 
 
 \subsection{Formula Representation: MathML} \label{sec:mathml}
@@ -263,237 +306,270 @@ The complete list of MathML entities is described in [Entities].
 
 
 
-
-
-\subsection{Automatic Definition Extraction}
-We have an identifier and want to find what it stands for.
-
-The definitions of mathematical expressions and identifiers can be found from
-the natural text description around the expression.
-
-Assumption: the definitions of mathematical expressions are always noun phrases
-
-In general, a noun phrase can be
-
-\begin{itemize}
-  \item a simple noun
-  \item a compound noun (e.g. adjective + noun)
-  \item a compound noun with a clause, prepositional phrase, etc
-\end{itemize}
-
-
-
-\subsection{Preprocessing}
-
-The typical (see e.g. \cite{kristianto2012extracting} \cite{pagael2014mlp} (more?)) pipeline is the following:
-
-\begin{itemize}
-  \item Read corpus of documents in some markup language, e.g. Mediawiki or Latex
-  \item Translate all formulas in the documents into MathML
-  \item Process MathML formulas
-  \item Replace formulas with some placeholder
-  \item Annotate text (using Math-Aware POS Tagging, see section~\ref{sec:postagging})
-  \item Find relations in the text
-\end{itemize}
-
-
-For example:
-
-%TODO:
-
-% http://habrastorage.org/files/025/1f5/4fa/0251f54fa7a248faa6718839ee060b53.png
-% MLP flow
-
-
 \subsection{Math-aware POS tagging} \label{sec:postagging}
+Part-of-Speech Tagging (POS Tagging) is a typical Natural Language Processing 
+task which assigns a POS Tag to each word in a given text \cite{jurafsky2000speech}. 
+While the POS Tagging task is mainly a tool for text processing, it can 
+also be applicable to scientific documents with mathematical expressions, 
+and can be adjusted to dealing with formulae. 
 
-NLP is a tool for text processing, but it's also applicable to scientific documents with math expressions. So we can adjust traditional NLP methods to dealing with formulas.
-
-
-Penn Treebank POS Scheme \cite{santorini1990part}  doesn't have special classes for mathematics.
-What we can do is to add other math-related classes:
-
-ID for identifiers (e.g. "... where $E$ stands for energy", $E$ should be tagged as ID)
-
-\verb|MATH| for formulas (e.g. "$E = mc^2$ is the mass-energy equivalence formula", "$E = mc^2$ should be tagged as \verb|MATH|)
-
-Mathematical expressions are usually contained within special tags, e.g. inside
-tag \verb|<math>...</math>| for wikipedia, or inside \verb|$...$| for
-latex documents.
-
-We find all such mathematical expressions and replace each with a unique single token \verb|MATH_mathID|
-
-the \verb|mathID| could be a randomly generated string or result of some hash function
-applied to the content of formula. The latter approach is preferred when we want
-to have consistent strings across several runs.
-
-Then we apply traditional [[POS Tagging]] (e.g. via Stanford
-CoreNLP \cite{manning2014stanford})
-techniques to the textual data. They typically will annotate such \verb|MATH_mathID|
-tokens as nouns
-
-after that we may want to re-annotate all math tokens: if it contains only
-one identifier, we label it as \verb|ID|, if several - as \verb|MATH|. But in some cases
-we want to keep original annotation
-
-after that we can bring the mathematical content back to the document
+A \emph{POS tag} is an abbreviation that corresponds to some
+part of speech. Penn Treebank POS Scheme \cite{santorini1990part} is 
+a commonly used POS tagging scheme which defines a set of part-of-speech tags 
+for annotating English words.
+For example, \texttt{JJ} is an adjective (``big''), \texttt{RB} as in adverb, 
+\texttt{DT} is a determiner (``a'', ``the''), \texttt{NN} is a 
+noun (``corpus'') and \texttt{SYM} is used for symbols (``>'', ``=''). 
 
 
+However the Penn Treebank scheme does not have special tags for mathematics,
+but it is flexible enough and can be extended to include additional tags.
+For example, we can include a math-related tag \texttt{MATH}.
+Usually it is done by first applying traditional POS taggers (like Stanford
+CoreNLP \cite{manning2014stanford}), and then 
+refining the results by re-tagging math-related tokens of text as \texttt{MATH}
+\cite{schoneberg2014pos}.
 
-\subsection{Extraction Methods}
+
+For example, consider the following sentence:
+``The relation between energy and mass is
+described by  the mass-energy equivalence formula $E = mc^2$,
+where $E$ is energy, $m$ is mass and $c$ is the speed of light''.
+In this case we will assign the MATH tag to ``$E = mc^2$'', ``$E$'',
+``$m$'' and ``$c$''
+
+However we can note that for finding identifier-definition relations 
+the \texttt{MATH} tag alone is not sufficient: we need to distinguish 
+between complex mathematical expressions and stand-alone identifiers - 
+mathematical expressions that contain only one symbol: the identifier.
+For the example above we would like to be able to distinguish the 
+expression ``$E = mc^2$'' from identifier tokens ``$E$'',
+``$m$'' and ``$c$''. Thus we extend the Penn Treebank scheme even more 
+and introduce an additional tag \texttt{ID} to denote stand-alone identifiers. 
+
+
+Thus, in the example above ``$E = mc^2$'' will be assigned the \texttt{MATH} tag
+and ``$E$'',``$m$'' and ``$c$'' will be annotated with \texttt{ID}.
+
+In the next section we discuss how this can be used to find identifier-definition 
+relations.
+
+
+\subsection{Extraction Methods} \label{sec:definition-extraction-methods}
+There are several ways of extracting the identifier-definition relations.
+Here we will review the following:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item Nearest Noun
+  \item Pattern Matching
+  \item Machine-Learning based methods
+  \item Probabilistic methods
+\end{itemize}
+
+
 \subsubsection{Nearest Noun Method}
-Definition is a combination of adjectives and nouns (also sometimes determinants) in the text before the identifier
 
-\cite{grigore2009towards}
-\cite{yokoi2011contextual}
+\ \\
+
+The Nearest Noun  \cite{grigore2009towards} \cite{yokoi2011contextual} 
+is the simplest definition extraction method.
+It assumes that the definition is a combination of ad
+It finds definitions by looking for combinations of adjectives and nouns
+(sometimes preceded by determiners) in the text before the identifier. 
+
+I.e. if we see a token annotated with \texttt{ID}, and then a sequence 
+consisting only of adjectives (\texttt{JJ}), nouns (\texttt{NN}, \texttt{NNS}) 
+and determiners (\texttt{DET}), then we say that this sequence is 
+the definition for the identifer. 
+
+For example, given the sentence ``In other words, the bijection $\sigma$ normalizes
+$G$ in ...'' we will extract relation ($\sigma$, "bijection").
 
 
-This way it only can be compound nouns without additional phrases.
 
+\subsubsection{Pattern Matching Methods} \label{sec:pattern-matching}
 
-E.g:
+\ \\
+
+The Pattern Matching method \cite{quoc2010mining} is an extension of the 
+Nearest Noun method: in Nearest Noun we are looking for one specific patten 
+where identifier is followed by the definition, but we can define several such 
+patterns and use them to extract definitions. 
+
+For example, we can define the following patterns:
 
 \begin{itemize}
-  \item "In other words, the bijection $\sigma$ normalizes $G$ in ..."
-  \item It will extract relations ($\sigma$, "bijection")
+\itemsep1pt\parskip0pt\parsep0pt
+  \item \texttt{IDE} \texttt{DEF}
+  \item \texttt{DEF} \texttt{IDE}
+  \item let$|$set \texttt{IDE} denote$|$denotes$|$be \texttt{DEF}
+  \item \texttt{DEF} is$|$are denoted$|$\texttt{def}ined$|$given as$|$by \texttt{IDE}
+  \item \texttt{IDE} denotes$|$denote$|$stand$|$stands as$|$by \texttt{DEF}
+  \item \texttt{IDE} is$|$are \texttt{DEF}
+  \item \texttt{DEF} is$|$are \texttt{IDE}
+  \item and many others
 \end{itemize}
 
 
+In this method \texttt{IDE} and \texttt{DEF} are placeholders that are 
+assigned a value when the pattern is matched against some subsequence 
+of tokens.  \texttt{IDE} and DEF need to 
+satisfy certain criteria in order to be successfully matched: like in the 
+Nearest Noun method we assume that \texttt{IDE} is some token annotated with 
+\texttt{ID} and \texttt{DEF} is a phrase containing adjective (\texttt{JJ}), 
+nouns (\texttt{NN}) and  determiners (\texttt{DET}). Note that the first patten corresponds 
+to the Nearest Noun pattern.
 
-\subsubsection{Pattern Matching Methods}
-
-Use patterns to extract definitions
-
-For example,
-
-\begin{itemize}
-  \item DESC IDENTIFIER (this is actually the same as nearest noun method)
-  \item let|set IDENTIFIER denote|denotes|be DESC
-  \item DESC is|are denoted|defined|given as|by IDENTIFIER
-  \item IDENTIFIER denotes|dentore|stand|stands as|by IDENTIFIER
-  \item IDENTIFIER is|are DESC
-  \item DESC is|are IDENTIFIER
-  \item and others
-\end{itemize}
+The patterns above are combined from two sources: one 
+is extracted from a guide to writing mathematical papers in English 
+(\cite{trzeciak1995writing}) by \textbf{TODO}, and another 
+is extracted from Graphs and Combinatorics papers from Springer 
+by \textbf{TODO}. 
 
 
-Patterns taken from
-\cite{trzeciak1995writing} (\textbf{TODO}: mention who exactly did that)
-and sentence patterns from Graphs and Combinatorics papers from Springer
-
-Used in \cite{quoc2010mining}
-
-Others (\cite{kristianto2012extracting}, \cite{kristianto2014extracting}, \cite{pagael2014mlp})
-usually use this method as the baseline for comparison.
+The pattern matching method is often used as the baseline method 
+for identifier-definition extraction methods \cite{kristianto2012extracting}
+\cite{kristianto2014extracting} \cite{pagael2014mlp}.
 
 
 \subsubsection{Machine Learning Based Methods}
-Formulates definition extraction as a binary classification problem
+
+\ \\
+
+The definition extraction problem can be formulated as a binary classification
+problem: given a pair (identifier, candidate-definition), does this pair 
+correspond to real identifier-definition relation? 
+
+To do this we find all candidate pairs: identifiers are tokens 
+annotated with \texttt{ID}, and candidate defections are nouns and 
+noun phrases from the same sentence as the definition. 
+
+Once the candidate pairs are found, we extract the following features \cite{kristianto2014extracting} \cite{yokoi2011contextual}:
+
 
 \begin{itemize}
-  \item find candidate pairs (identifier, candidate definition)
-  \item candidates are nouns and noun phrases from the same sentence as the expression
-\end{itemize}
-
-
-Features:
-\begin{itemize}
-  \item sentence patterns (true if one of the patterns can capture this relation - could be separate feature for each pattern)
-  \item if there's a colon/comma between candidate and identifier
-  \item if there's another math expression between
-  \item if candidate is inside parentheses and identifier is outside
-  \item word-distance between candidate and identifier
-  \item position of candidate relative to identifier
+\itemsep1pt\parskip0pt\parsep0pt
+  \item boolean features for each of the patterns from 
+    section~\ref{sec:pattern-matching} indicating if the pattern is matched
+  \item indicator if there's a colon or comma between candidate and identifier
+  \item indicator if there's another math expression between candidate and identifier
+  \item indicator if candidate is inside parentheses and identifier is outside
+  \item distance (in words) between the identifier and the candidate
+  \item the position of candidate relative to identifier
   \item text and POS tag of one/two/three preceding and following tokens around the candidate
-  \item unigram/bigram/trigram of previous features
-  \item text of first verb between candidate and identifier
-  \item others
+  \item text of the first verb between candidate and identifier
+  \item many others
 \end{itemize}
 
-Classifiers:
-[[SVM]] (linear kernel) (\cite{kristianto2014extracting}, \cite{yokoi2011contextual})
-
-[[Conditional Random Fields]] (\cite{kristianto2014extracting})
+Once the features are extracted, a binary classifier can be trained to predict
+if an unseen candidate pair is a relation or not. 
+For this task the popular choices of classifiers are Support Vector Machine 
+classifier with linear kernel \cite{kristianto2014extracting} \cite{yokoi2011contextual}
+and Conditional Random Fields \cite{kristianto2014extracting},
+but, in principle, any other binary classifier can be applied 
+as well.
 
 
 \subsubsection{Probabilistic Approaches} \label{sec:mlp}
-Mathematical Language Processing (MLP) Approach \cite{pagael2014mlp}: Statistical definition discovery: rank candidate definitions by probability and design an
-information extraction system that shots the most relevant (i.e. probable)
-definition to the reader to facilitate reading scientific texts with mathematics.
 
+\ \\
 
-The main idea: the definitions occur very closely to identifiers in sentences.
+In the Mathematical Language Processing approach \cite{pagael2014mlp}
+a relation identifier-definition is seen as a pair (identifier, 
+probability distribution over definition candidates). Thus, for
+definition extraction the candidate definitions are ranked by
+their probability of defining the identifier, 
+and then only most probable candidates are retained.
 
+The main idea of this approach is that the definitions occur very closely 
+to identifiers in sentences, and the closeness can be used to
+model the probability distribution over candidate definitions. 
 
-extract identifiers from MathML
-
-
-Two assumptions
+There are two assumptions:
 
 \begin{itemize}
-  \item identifier and its definition occur in the same sentence, so the candidates are
-  taken only from the same sentences (as in the ML approach)
-  \item definitions are likely occur earlier in the document when authors introduce
-  the meaning of an identifier, in subsequent uses the definition is typically not repeated
+\itemsep1pt\parskip0pt\parsep0pt
+  \item identifier and its definition can only occur in the same sentence, 
+      so the candidates are definitions are taken only from the sentence where 
+      the identifier occurs (as in the Machine Learning approach)
+  \item definitions are more likely to occur closer to the formula 
+      where the identifier is used
 \end{itemize}
 
-These assumptions are used in the ranking formula
+With these assumptions in mind, the distribution over definition candidates 
+can be modeled with:
 
-each candidate is ranked with the following weighed sum:
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item probability distribution $R_{\sigma_d}\big(\Delta(i, t) \big)$ where $\Delta(i, t)$
+        is the distance between identifier $i$ and candidate definition $t$, 
+        parameterized with $\sigma_d$,
+  \item probability distribution $R_{\sigma_s}\big(n(i, t) \big)$ where $n(i, t)$ 
+        is the number of sentences between the formula where $i$ is used 
+        and the sentence where $t$ occurs, 
+        parameterized with $\sigma_s$,
+        and
+  \item term frequency $\text{tf}(t, s)$: how many times $t$ occurs in the sentence $s$
+\end{itemize}
 
+
+All three elements can be combined together for ranking candidate definitions:
 $$R(n, \Delta, t, d) = \cfrac{\alpha \, R_{\sigma_d}(\Delta) + \beta \, R_{\sigma_s}(n) + \gamma \, \text{tf}(t, s)}{\alpha + \beta + \gamma}$$
+where $\alpha, \beta, \gamma$ are weighting parameters.
 
-where
+Instead of taking the raw distances, the Gaussian distribution is used
+to model the fact that the probability of being the definition does not
+decrease linearly as we move away from the identifier, but rather
+exponentially. Thus, the distances are modeled with
+$$R_{\sigma}(\Delta) = \exp \left( -\cfrac{1}{2} \cdot \cfrac{\Delta^2 - 1}{\sigma^2} \right)$$
+assuming that the probability to find the relation at $\Delta = 1$ is maximal. 
 
-$t$ is the candidate term,
-$s$ set of sentences in the document,
-$\Delta$ is the distance (the amount of word tokens) between identifier and the candidate term $t$,
-$n$ n is the number of sentences between the formula where the identifier is used and
-the place where the definition candidate is found.
+There are several parameters in this model: $\sigma_d$ and $\sigma_s$
+for controlling the widths of $R_{\sigma_d}(\Delta)$ and $R_{\sigma_s}(n)$
+respectively; and  $\alpha, \beta, \gamma$  are parameters for controlling 
+the contribution of different ranking components. 
 
-The distances modeled with Gaussian (instead of taking the raw ones)
+The parameter $\sigma_d$ is the standard deviation of Gaussian that
+models the distance to definition candidate. By examining several mathematical
+articles manually it has been established that 
+$R_{\sigma_d}(1) \approx 2 \cdot R_{\sigma_d}(5)$, i.e. it is two times more 
+likely to find the real definition at distance  $\Delta=1$
+rather than at distance $\Delta=5$, and thus $\sigma_d = \sqrt{ 12 / \ln 2}$.
 
-$$R_{\sigma}(\Delta) = \exp \left( -\cfrac{1}{2} \cdot {\Delta^2 - 1}{\sigma_2} \right)$$
+The parameter $\sigma_s$ is the standard deviation of the Gaussian that models 
+the distance (in the number of sentences) between the candidate definition 
+and the formula where the identifier is used. Manual evaluation has shown that 
+$\sigma_s = 2 \sqrt{ 1 / \ln 2}$. 
 
-assume that the probability to find a relation at $\Delta = 1$ is maximal
-
-Finding Parameters $\sigma_d$ and $\sigma_s$
-
-$\sigma_d$ - the standard deviation of Gaussian that models the distance to definition candidate
-manual evaluation showed that $R_{\sigma_d}(1) \approx R_{\sigma_d}(5)$,
-i.e. it's two times more likely to find the real definition at distance $\Delta=1$
-than at distance $\Delta=5$.
-thus $\sigma_d = \sqrt{\cfrac{12}{\ln 2}}$
-
-
-% TODO: check that
-$\sigma_s$ - the standard deviation of the Gaussian that models the distance
-from the beginning of document
-%
-$\sigma_s = 2 \sqrt{\cfrac{1}{\ln 2}}$
-
-
-weights $\alpha, \beta, \gamma$:
-$\alpha = \beta = 1$ and
-$\gamma = 0.1$ because some valid definitions may occur more often than other
-valid definitions, e.g. "length" vs "Hamiltonian"
+Finally, for weights $\alpha, \beta, \gamma$ the following parameters were chosen in 
+\cite{pagael2014mlp}: $\alpha = \beta = 1$ and $\gamma = 0.1$.
 
 
-\subsubsection{Other Ideas}
-Translation of mathematical formulas to English using machine-translation techniques
-\cite{nghiem2012towards}
+\subsection{Performance Measures} \label{sec:definition-evaluation}
 
-Expand or delete?
-
-
-\subsection{Performance Measures}
-
-TODO: Write more about this
+The common way to evaluate the performance of an Information Retrieval system
+is to use Precision and Recall \cite{manning2008introduction}. 
+\emph{Precision} is typically defined as is the fraction of retrieved documents 
+that are relevant, while \emph{recall} is defined as 
+the fraction of relevant documents that are retrieved. These performance measures 
+can be adapted to measure the quality of Formula Extraction systems \cite{pagael2014mlp} 
+as:
 
 \begin{itemize}
-  \item Precision: no of math expresssion with correctly extracted definitions / no of extracted definitions
-  \item Recall: no of math expresssion with correctly extracted definitions / no of expressions with definitions
-  \item $F_1 = 2PR / (P + R)$: harmonic mean between P and R
+\itemsep1pt\parskip0pt\parsep0pt
+  \item \emph{Precision}: the fraction of definitions that are correct among extracted. 
+        It is calculated as the number of correctly extracted definitions
+        divided by the total number of extracted definitions. 
+  \item \emph{Recall}: the fraction of definitions correctly extracted among all correct
+        definitions. 
+        It is calculated by dividing the number of correctly extracted definitions
+        on the total number of identifiers with definition.
 \end{itemize}
 
 
+A common way of incorporating two measures into a single one is $F_\beta$-score
+defined as $F_\beta = \cfrac{(\beta^2 +1)\, P \, R}{\beta^2 P + R}$ where 
+$P$ and $R$ are precision and recall respectively, and $\beta$ is the trade-off
+parameter. $F_1 = \cfrac{2PR}{P + R}$ is the balanced $F$ score when both 
+precision and recall have equal weights.

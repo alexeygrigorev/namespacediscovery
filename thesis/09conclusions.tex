@@ -11,6 +11,10 @@ While I was reading, it occurred to me that one document may have several namesp
 Use semi-supervised techniques for evaluation
 
 
+Can use additional information from wiki articles. For example, can 
+extract some keywords from the article and use it in clustering
+
+Or interwiki pages.
 
 Pages that describe certain namespaces may be quite interconnected.
 There are link-based clustering methods e.g. Botafogo and Schneiderman 1991
@@ -20,4 +24,15 @@ There are hybrid approaches that use both usual textual representation  + links
 \cite{oikonomakou2005review}
 
 
-It can be interesting to apply these tecnhiques to a larger dataset, for example, arXiv.
+It can be interesting to apply these techniques to a larger dataset, for example, arXiv.
+
+Try other clustering techniques: spectral clustering \cite{ng2002spectral}
+other ways to embed identifiers like word2vec \cite{mikolov2013efficient} 
+or GloVe \cite{pennington2014glove}
+
+
+How to extend this method to situations when no additional information 
+about document category is known. I.e. need to replace the notion of 
+purity with some other objective for discovering namespaces and 
+namespace-defining clusters
+

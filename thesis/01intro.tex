@@ -10,14 +10,14 @@ and resolving name conflicts \cite{duval2002metadata}.
 
 
 In operation systems, files are organized into directories that are used to group related
-files together. To refer to a particular file we use the full name, e.g. 
-\verb|/home/user/documents/doc.txt| or \verb|C:\\Users\\Username\\Documents\\doc.txt|. 
+files together. To refer to a particular file we use the full name, e.g.
+\verb|/home/user/documents/doc.txt| or \verb|C:\\Users\\Username\\Documents\\doc.txt|.
 The same directory cannot contain a file with the same name, and we typically store closery
-related files in the same directory, so we can see file system directories as namespaces. 
+related files in the same directory, so we can see file system directories as namespaces.
 
 
-XML uses namespaces to prefix element names to ensure uniqueness and remove 
-ambiguity between them~\cite{xmlnamespaces}. 
+XML uses namespaces to prefix element names to ensure uniqueness and remove
+ambiguity between them~\cite{xmlnamespaces}.
 
 Add examples (from the XML course)
 
@@ -32,32 +32,35 @@ into the same namespace, and namespaces give a way to achieve better modularity.
 There are design principles that tell the best way of grouping objects to
 achieve the low coupling between packages and high cohesion within packages~\cite{larman2005applying}.
 
-Usually we group items 
+Usually we group items
 
 \begin{itemize}
   \item that share the same functionality  (e.g. objects for database access put into one package)
   \item that are about the same domain (can cite DDD)
 \end{itemize}
 
-In the Java programming language~\cite{gosling2014java} packages are used to organize identifiers 
-into namespaces. 
-Packages solve the problem of ambiguity: for example, we have several classes with 
-name \texttt{Date}: \texttt{java.util.Date} and  \texttt{java.sql.Date} or 
+In the Java programming language~\cite{gosling2014java} packages are used to organize identifiers
+into namespaces.
+Packages solve the problem of ambiguity: for example, we have several classes with
+name \texttt{Date}: \texttt{java.util.Date} and  \texttt{java.sql.Date} or
 \texttt{java.util.List} and \texttt{java.awt.List}.
 
 Modularity of packages allows safely plug in libraries and use the code from there.
 
 
-The programmer, when creating a method in a java class, can use all classes in the package. 
-However, if they need to refer to a class in another package, they either have 
+The programmer, when creating a method in a java class, can use all classes in the package.
+However, if they need to refer to a class in another package, they either have
 to use a fully qualified name, e.g. \texttt{java.sql.Date} instead of \texttt{Date}
-or add an import statement \texttt{import java.sql.Date} in the header of the java 
+or add an import statement \texttt{import java.sql.Date} in the header of the java
 class and use the alias  \texttt{Date} in the class.  (cite JLS~\cite{gosling2014java} 7.5 Import Declarations)
 
 
+To use it, we first need to map identifiers to their definitions, and this can be done by
+extracting the definitions from the text that surrounds the formula. We explore these methods
+in section \ref{section:definitionextraction}.
 
 
-\subsection{Namespaces in Mathematical Notation}
+
 
 In this thesis we will extend the notion of namespaces to mathematical formulae.
 
@@ -81,7 +84,7 @@ $E$ may refer to ``energy", ``expected value" or ``elimination matrix".
 
 In this thesis we compare different approaches for namespace disambiguation.
 
-How do we construct a namespace? 
+How do we construct a namespace?
 
 How to find a namespace? Can be constructed manually using existent category information
 (refer to that list of categories of scientific articles)
@@ -96,78 +99,19 @@ the namespaces from corpus with mathematical formulas.
 In Java or other programming language a class may use objects from other packages
 via import statement.
 
-Can distinguish between two types of application packages (in domain-driven design) 
+Can distinguish between two types of application packages (in domain-driven design)
 
 \begin{itemize}
   \item domain-specific packages that deal with one particular concept
   \item packages that use many packages of the first type
 \end{itemize}
 
-For example, \verb|org.company.app.domain.user|, \verb|org.company.app.domain.account| 
-and \verb|org.company.app.tools.auth| are of type 1, while 
-\verb|org.company.app.web.manage| is of type 2 which mostly uses packages of type 1. 
+For example, \verb|org.company.app.domain.user|, \verb|org.company.app.domain.account|
+and \verb|org.company.app.tools.auth| are of type 1, while
+\verb|org.company.app.web.manage| is of type 2 which mostly uses packages of type 1.
 
 So type 1 packages are mostly self-contained and not highly coupled between each other,
 but type 2 packages mostly use other packages of type 1: they depend on them.
-
-Can extend this intuition to groups of documents. 
-Some groups are of type 1 - they define the namespaces. 
-In some sense they are "pure" - they are all about the same thing
-
-Some documents are not pure: they draw from different concepts,
-they can be thought as type 2 classes. 
-
-
-
-\textbf{Assumptions:}
-
-
-\begin{enumerate}
- \item documents are "mixtures" of namespaces: they take identifiers from several namespaces
- \item there are some documents are more "pure" than others: they either take identifiers exclusively from one namespace or from few very related namespaces
- \item there's a correlation between a category of a document and the namespaces
-the document uses
-\end{enumerate}
-
-
-Formally, A document is a mixture of namespaces: $P(x) = \sum_{i=1}^K \pi_i P_i(x)$ where 
-$x$ is a document, $P_i(x)$ is probability that $x$ uses concepts from namespace $i$,
-$\pi_i$ are weights s.t. $\sum_{i = 1}^K \pi_i = 1$  ... 
-
-
-
-Can call "pure" groups \emph{namespace defining} groups - they can be thought as type-1 
-groups/documents.
-
-
-Under these assumptions: can approximate the process of namespaces discovery by 
-finding groups of "pure" documents. can evaluate purity by using category information 
-and retain only pure ones
-
-(or: that there is a strong correlation between identifiers in
-a document and the namespace of the document, and this correlation can be exploited to
-categorize documents and thus discover namespaces)
-
-
-For example, if we observe a document with
-two identifiers $E$, assigned to ``energy'', and $m$, assigned to ``mass'', then it is more
-likely that the document belongs to the ``physics'' namespace rather than to ``statistics''.
-
-\textbf{Need to rephrase: }Then, the process of cauterization may be formalized as follows: 
-Let $D$ denote a document and $Z(D)$ denote the category of the document. A document can be 
-seen as a collection of identifiers, so $D = \{ X_1, ..., X_N \}$, where 
-each $X_j$ is a probability distribution over possible definition assignment. 
-Then we can classify a document based on 
-$\text{arg} \, \max_z P(Z=z \mid X_1=x_1, \ ... \ ,  X_N=x_N)$. For example, if in a document 
-we observe $E$ assigned to ``energy'' and $m$ assigned to ``mass'', then 
-$P(\text{``physics''} \mid E=\text{``energy''}, m=\text{``mass''}) > P(\text{``statistics''} \mid E=\text{``energy''}, m=\text{``mass''})$ 
-and we may conclude that the identifiers in the document are likely to belong to 
-the ``physics'' namespace.
-
-To use it, we first need to map identifiers to their definitions, and this can be done by
-extracting the definitions from the text that surrounds the formula. We explore these methods 
-in section \ref{section:definitionextraction}.
-
 
 
 

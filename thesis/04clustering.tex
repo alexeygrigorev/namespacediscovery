@@ -1,361 +1,372 @@
-\section{Document Clustering Techniques}
+\section{Document Clustering Techniques} \label{sec:doc-clustering}
 
-Scatter/Gather - first successful document clustering for information retrieval \cite{cutting1992scatter}
+Cluster analysis is a set of techniques for
+organizing collection of items into coherent groups. 
+In Text Mining clustering is often used for finding topics 
+in a collection of document. 
+In Information Retrieval clustering is used to assist the users and group 
+retrieved results into clusters. 
 
 
-Types of clustering techniques:
+There are several types of clustering algorithms: 
+
 \begin{itemize}
-  \item hierarchical
-  \item partitioning
-  \item density-based
-  \item etc
+\itemsep1pt\parskip0pt\parsep0pt
+  \item Hierarchical (Agglomerative and Divisive)
+  \item Partitioning
+  \item Density-based
+  \item and others
+\end{itemize}
+
+In this chapter we will review some of the clustering techniques: 
+in section~\ref{sec:clustering-heierarchical} we will discuss 
+Agglomerative clustering. We discuss K-Means, a partitioning algorithms,
+in section~\ref{sec:kmeans} and its extensions in section~\ref{sec:kmeans-ext}.
+Finally, a density-based algorithm DBSCAN is explained in 
+section~\ref{sec:dbscan} along with its extensions in section~\ref{sec:dbscan-ext}.
+
+
+\subsection{Agglomerative clustering} \label{sec:clustering-heierarchical}
+
+The general idea of agglomerative clustering algorithms is to start with 
+each document being its own cluster and iteratively merge clusters based 
+on best pair-wise cluster similarity.
+
+Thus, a typical agglomerative clustering algorithms consists of the following steps:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item let each document be a cluster on its own
+  \item compute similarity between all pairs of clusters an store the 
+      results in a similarity matrix
+  \item merge two most similar clusters
+  \item update the similarity matrix
+  \item repeat until everything belongs to the same cluster
+\end{itemize}
+
+These algorithms differ only in the way they calculate 
+similarity between clusters. 
+
+It can be: 
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item \textbf{Single Linkage (SLINK)}: The clusters are merged based
+on the closest pair. It can be very efficient, but it encourages 
+chaining behavior.
+
+% similarity is usually not transitive:
+%i.e. if $A$ is similar to $B$, and $B$ is similar to $C$, it doesn't mean that $A$ must be similar to $C$
+% but single linkage encourages grouping through transitivity chains
+% Sibson, Robin. "SLINK: an optimally efficient algorithm for the single-link cluster method." 1973.
+
+  \item \textbf{Complete Linkage (CLINK)}: The clusters are merged 
+  based on the worst-case similarity - the similarity between the most 
+  distant objects on the clusters. It's very expensive computationally, 
+  but it avoids chaining altogether. 
+
+% Defays, Daniel. "An efficient algorithm for a complete link method." 1977. 
+
+  \item \textbf{Group-Average Linkage}: Similarity between clusters 
+  is calculated as average pair-wise similarity between all objects 
+  in the clusters, and the most similar clusters are merged.
+
+  \item \textbf{Ward's Method}: The clusters to merge are chosen such that the within-cluster
+  error (e.g. sum of squares) between each object and its centroid 
+  is minimized. 
+
+% El-Hamdouchi, Abdelmoula, and Peter Willett. "Hierarchic document classification using Ward's clustering method." 1986.
+
 \end{itemize}
 
 
-Cluster analysis: organizing collection of items into coherent groups
+Among these algorithms only SLINK is computationally feasible 
+for large data sets, but it doesn't give good results compared to other 
+agglomerative clustering algorithms. Additionally, these algorithms 
+are not always good for document clustering because they tend to 
+make mistakes at early iterations that are impossible to correct
+afterwards \cite{steinbach2000comparison}.
 
-IR: need to assist user and group retrieved results into clusters 
-
-
-Finding topics in a collection of document is an important task in text mining.
-Usually done by applying a clustering technique and hope it will result 
-if groups that represent documents in some common theme or topic \cite{ertoz2004finding}
-The goal is to find clusters with strong coherent themes (even if we omit some documents)
-in reality it's true: we don't expect all documents to belong to some strong category.
-
-A group of documents with a strong topic is characterized by how it uses 
-words from some specialized vocabulary in additional to general vocabulary. 
-
-A doc about olympics would contain general terms (the, a) and specific terms (country names)
-
-
-Data model \cite{ertoz2004finding} \ref{fig:topic-clusters}: there are concepts from which documents pick their words. DESCRIBE it.
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.5\textwidth]{data-model.png}
-\caption{\textbf{TODO: }Abstract data model}
-\label{fig:topic-clusters}
-\end{figure}
-
-
-\subsection{Hierarchical clustering}
-
-
- Agglomerative Clustering
-General concept: merge items into clusters based on distance/similarity
-usually based on best pairwise similarity
-
-Typical steps:
-
-- at the beginning each document is a cluster on its own
-- then we compute similarity between all pairs of clusters and store the results in a similarity matrix
-- merge two most similar clusters
-- update the similarity matrix
-- repeat until everything belongs to the same cluster
-
-
-Linkage Types
-
-How to join two clusters?
-- Single Linkage (SLINK)
-- Complete Linkage (CLINK)
-- Group-Average Linkage
-- Ward 
-
-
-
-Single Linkage
-Merge two groups $A$ and $B$ based on their closest pair
-
-
-Implementation:
-compute all similarity pairs
-sort them in order of decrease
-process pairs in this order
-
-
-advantage:
-efficient to implement
-equivalent to a Spanning Tree algo on the complete graph of pair-wise distances can use Prim's Spanning Tree algo
-
-
-Drawbacks
-encourages chaining
-similarity is usually not transitive:
-i.e. if $A$ is similar to $B$, and $B$ is similar to $C$, it doesn't mean that $A$ must be similar to $C$
-but single linkage encourages grouping through transitivity chains
-
-
-References:
-Sibson, Robin. "SLINK: an optimally efficient algorithm for the single-link cluster method." 1973. 
-
-
- Complete Linkage 
-Worst-case similarity:
-avoids chaining altogether
-but it's very expensive computationally
-
-
-References:
-Defays, Daniel. "An efficient algorithm for a complete link method." 1977. 
-
-Group-Average Linkage
-similarity between groups $A$ and $B$ are calculated as average similarity between each $a \in A$ and $b \in B$
-
-
-It's way slower than single linkage,
-but it's more robust: it doesn't show the chaining behavior
-
-
-Speeding up:
-can approximate it by using the distance between centroids: mean doc in $A$ and mean doc in $B$
-
-
-
-Ward's Method
-Merge the pair of clusters that minimizes the total within-group error (sum of squares) between each document and centroid
-
-
-Result:
-spherical tightly bound clusters
-less sensitive to outliers
-
-References:
-El-Hamdouchi, Abdelmoula, and Peter Willett. "Hierarchic document classification using Ward's clustering method." 1986. 
-
-
-Pros and Cons
-Single-link algorithms are best for capturing clusters of different sizes and shapes
-but it's also sensitive to noise
-complete link and group average are not affected by noise, but have a bias towards finding global patterns
-
-Computational complexity:
-only Single-Link is computationally possible for large datasets, but it doesn't give good results because uses too little information
-
-
-\cite{steinbach2000comparison} - not always good for document clustering
-because they make mistakes at early iterations that are impossible
-to correct afterwards
 
 
 \subsection{K-Means} \label{sec:kmeans}
 
+Unlike agglomerative clustering algorithms, K-Means is an iterative 
+algorithm, which means that it can correct the mistakes made 
+at earlier iterations. 
 
-Lloyd algorithm is the most popular way of implementing k-means
-
-
-Algorithm 
- First we choose $k$ - the number of clusters we want to get
- Then we randomly initialize k cluster centers (cluster centroids)
-
-This is an iterative algorithm, and on each iteration it does 2 things
- cluster assignment step
- move centroids step
-
-Cluster Assignment Step:
- go through each example and choose the closest centroids
- and assign the example to it
-
-Move Centroids Step:
- Calculate the average for each group
- and move the centroids there
-
-Repeat this until converges
+Lloyd's algorithm  is the most popular way of implementing K-Means 
+\cite{xu2005survey}: given a desired number of clusters $k$, 
+it iteratively improves the Euclidean distance between each data 
+point and the centroid, closest to it. 
 
 
-Pseudo Code
-
-Let's have the following notation
-$c_i \in \{ 1, 2, \ ... \ , k \}$ - index of cluster to which example $\mathbf x_i$ is assigned
-$\boldsymbol \mu_k$ - cluster centroid $k$ ($\boldsymbol \mu_k \in \mathbb{R}^n$)
-$\mu_{c_i}$ - cluster centroid of example $\mathbf x_i$
-
-$k$-means($k$, $\{ \mathbf x_i, y_i \}$):
-
-randomly initialize $k$ cluster centroids $\boldsymbol \mu = \Big( \mu_1, \mu_2, \, ... \, , \mu_k \Big) \in \mathbb{R}^{k + 1}$
-repeat:
-cluster assignment step:
-for $i = 1$ to $m$:
-$c_i \leftarrow$ closest to $\mathbf x_i$ centroid using [[Euclidean Distance]] $\text{dist} = \| \mathbf x_i - \boldsymbol \mu_i \|^2$
- move centroids step:
- for $i = 1$ to $k$:
- $\boldsymbol \mu_k \leftarrow$ average of all points assigned to $c_k$
+Let $\mathcal D = \{  \mathbf d_1, \ ... \ , \mathbf d_n \}$ be the document 
+collection, where documents $\mathbf d_i$ are represented is some document
+vector space $\mathbb R^m$ and $k$ is the desired number of clusters. 
+Then we define $k$ cluster centroids $\boldsymbol \mu_j$ that are 
+also in the same document vector space $\mathbb R^m$. 
+Additionally for each document $\mathbf d_i$ we maintain the assignment 
+variable $c_i \in \{ 1, 2, \ ... \ , k \}$, which specifies to what 
+cluster centroid $\boldsymbol \mu_1, \ ... \ , \boldsymbol \mu_k$ 
+$\mathbf d_i$ belongs. 
 
 
-Often K-Means shows the best results \cite{hall2012evaluating} \cite{steinbach2000comparison}, but it takes long for large collections.
+The algorithms consists of three steps: (1) initialization step, 
+where each $\boldsymbol \mu_j$ is randomly assigned some value, 
+(2) cluster assignment step, where we iterate over all document vectors
+$\mathbf d_i$ and find its closest centroid, and (3)  move centroids step,
+where the centroids are re-calculated. Steps (2) and (3) are repreated 
+until the algorithm converges. The pseudocode for $K$-Means is presented 
+in the listing~\ref{algo:k-means}.
 
-Solution: minibatch K-means (web-scale k-means clustering paper) \cite{sculley2010web}
 
-Lloyd's classical algorithm is slow for large datasets (Sculley2010)
-Use [[Mini-Batch Gradient Descent]] for optimizing K-Means
-reduces complexity while achieving better solution than [[Stochastic Gradient Descent]]
+\begin{algorithm}
+\caption{Lloyd's algorithm for $K$-Means}
+\label{algo:k-means}
 
-Notation:
-$f(C, \mathbf x)$ returns the nearest centroid for $\mathbf x$
+\begin{algorithmic}[0]
+  \Statex
+  \Function{K-Means}{no. clusters $k$, documents $\mathcal D$}
+    \For{$j \leftarrow 1 \ .. \ k$} \Comment{random initialization}
+      \Let{$\boldsymbol \mu_j$}{random $\mathbf d \in \mathcal D$}
+    \EndFor
 
+    \While{not converged}
+      \For{each $\mathbf d_i \in \mathcal D$} \Comment{cluster assignment step}
+        \Let{$c_i$}{$\operatorname{arg\, min}_j \| \mathbf d_i - \boldsymbol \mu_j \|^2$}
+      \EndFor
+
+      \For{$j \leftarrow 1 \ .. \ k$} \Comment{move centroids step}
+        \Let{$\mathcal C_j$}{$\{\, \mathbf d_i \text{ s.t. } c_i = j \, \}$}
+        \Let{$\boldsymbol \mu_j$}
+            {$\cfrac{1}{| \mathcal C_j |} \sum_{\mathbf d_i \in \mathcal C_j} \mathbf d_i$}
+      \EndFor
+    \EndWhile
+
+    \State \Return{$(c_1, \ ... \ , c_n)$}
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Usually, $K$-Means shows very good results for document clustering, and in 
+several studies it (or its variations) shows the best performance \cite{hall2012evaluating} \cite{steinbach2000comparison}. 
+
+However for large document collections Lloyd's classical $K$-Means takes a lot 
+of time to converge. The problem is caused by the fact that it goes through 
+the entire collection many times. Mini-Batch $K$-Means \cite{sculley2010web} 
+uses Mini-Batch Gradient Descent method, which is a different optimization technique
+that converges faster. The pseudocode for Mini-Batch $K$-Means is presented 
+in listing~\ref{algo:minibatch-k-means}.
+
+\begin{algorithm}
+\caption{MiniBatch $K$-Means}
+\label{algo:minibatch-k-means}
+
+\begin{algorithmic}[0]
+  \Statex
+  \Function{MiniBatch-K-Means}{no. clusters $k$, no. iterations $t$, batch size $b$, documents $\mathcal D$}
+    \For{$j \leftarrow 1 \ .. \ k$} \Comment{random initialization}
+      \Let{$\boldsymbol \mu_j$}{random $\mathbf d \in \mathcal D$}
+    \EndFor
+
+    \Repeat{\ $t$ times}
+      \Let{$\mathcal M$}{$b$ random examples from $\mathcal D$}
+
+      \For{each $\mathbf d_i \in \mathcal M$} 
+        \Let{$\text{centroids}[\mathbf d_i]$}
+            {$\operatorname{arg\, min}_j \| \mathbf d_i - \boldsymbol \mu_j \|^2$}
+             \Comment{cache the centroid nearest to $\mathbf d_i$}
+      \EndFor
+
+      \For{each $\mathbf d_i \in \mathcal M$}
+        \Let{$c_i$}{$\text{centroids}[\mathbf d_i]$}  
+                                       \Comment{the centroid index of document $\mathbf d_i$}
+        \Let{$v[c_i]$}{$v[c_i] + 1$}   \Comment{counts per centroid $c_i$}
+        \Let{$\eta$}{$1 / v[c_i]$}     \Comment{per-centroid learning rate}
+        \Let{$\boldsymbol \mu_{c_i}$}
+        {$(1 - \eta) \cdot \boldsymbol \mu_{c_i} + \eta \cdot \mathbf d_i$}
+                                        \Comment{gradient step}
+      \EndFor
+    \Until{not converged}
+
+    \State \Return{$(c_1, \ ... \ , c_n)$}
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+Note that $K$ means uses Euclidean distance, and Euclidean distance
+does not always behave well in high-dimensional sparse vector spaces 
+like Document VSMs (see section~\ref{sec:similarity-distance}). However, 
+as discussed in section~\ref{sec:similarity-distance}, 
+if document vectors are normalized, the Euclidean distance
+and Cosine distance are related, and therefore 
+Euclidean $K$-means is the same as ``Cosine Distance'' $K$-Means.
+
+$K$-Means is the most popular clustering algorithms and there are 
+many extensions to this algorithm. In the next section we will
+discuss some of the extensions related to document clustering. 
+
+
+\subsection{Extensions of $K$-Means} \label{sec:kmeans-ext}
+
+There are several extensions of $K$-Means. 
+
+
+For example, Bisecting K-Means \cite{steinbach2000comparison} is a combination 
+of partitioning and hierarchical (divisive) algorithms. It's a variant of $K$-Means that 
+gradually splits the document space in halves until the desired number of clusters 
+is obtained. Bisecting K-Means can achieve good performance while 
+giving the user additional information about ... ?
 
 Algorithm:
- given $k$, batch size $b$, max. number of iterations $t$ and dataset $X$
- initialize each $\boldsymbol \mu$ with randomly selected elements from $X$
- repeat $t$ times:
- $M \leftarrow b$ random examples from $X$
- for $\mathbf x \in M$:
- $d[\mathbf x] = f(C, \mathbf x)$ // cache the centroid nearest to $\mathbf x$
- for $\mathbf x \in M$:
- $\boldsymbol \mu \leftarrow d[\mathbf x]$
- $v[\boldsymbol \mu] = v[\boldsymbol \mu] + 1$ // counts per centroid
- $\eta = 1 / v[\boldsymbol \mu]$ // per-centroid learning rate
- $\boldsymbol \mu \leftarrow (1 - \eta) \cdot \boldsymbol \mu + \eta \cdot \mathbf x$ //gradient step
+
+\begin{itemize}
+  \item start with a single cluster
+  \item choose a cluster to split (for example, the largest one)
+  \item apply $K$-means to this cluster with $k=2$ to split it
+  \item repeat until have desired number of clusters
+\end{itemize}
+
+% may repeat this procedure several times and take the clusters with highest overall similarity
+
+\ \\
+
+Scatter/Gather is another popular variation of $K$-means, but 
+initially used for clustering retrieved documents for Information 
+Retrieval systems \cite{cutting1992scatter}. This variation
+includes: special smart seed selection procedure (applying 
+hierarchical cluster on a subset of document vectors to
+initialize the centroids at the initialization step) and
+several cluster refinement operations. 
+Additionally, in Scatter/Gather cluster centroids are concatenations 
+of all terms in the cluster documents, not a mean value;
+and the cosine similarity is used instead of Euclidean 
+distance. 
 
 
-If rows are unit-normalized, then Euclidean K-means is the same 
-as Cosine Distance K-Means, but with convergence guarantees. 
-TODO: ADD REFERENCE
+There are two cluster refinement operations: split and join.
+
+The split operation is used to continue splitting clusters,
+and it's applied only to the clusters that are not coherent 
+enough. Essentially, the split operation splits the non-coherent
+clusters in the same way as Bisecting $K$-Means. 
+The coherence is measured via \emph{self-similarity} of a cluster,
+which is the mean similarity of all documents in the cluster to 
+its centroid, or the mean pair-wise similarity between all documents 
+of the cluster. 
+
+The join operation merges the clusters that are very similar 
+to each other. The similarity is measured by computing ``typical''
+terms for each cluster (usually the most frequent terms of 
+the centroid) and examining which clusters have significant
+overlaps between their typical terms. 
 
 
-\subsection{Extensions of K-Means} \label{sec:kmeans-ext}
-
-Bisecting K-Means \cite{steinbach2000comparison}
-
-This is a variant of K-Means
-it's a [[Hierarchical Clustering]] method, and it's useful for [[Document Clustering]]
-
-
-Algorithm:
-start with a single cluster
- repeat until have desired number of clusters
- choose a cluster to split (e.g. the largest one)
- find two subclusters using K-means with $k = 2$ and split
- may repeat this procedure several times and take the clusters with highest overall similarity
-
-
-Scatter/Gather \cite{cutting1992scatter}
-
-This is
-use [[Hierarchical Clustering]] for seed selection,
-k-means for clustering
-
-Scatter/Gather is a variation of [[K-Means]] used for [[Document Clustering]] with
-special seed selection
-usual k-means
-then several cluster refinement operations
-
-
-Idea:
-use some hierarchical clustering algorithm on a sample to find good initial seeds
-use K-Means afterwards
-
-After selecting seeds just do usual K-Means
-but do some additional operations to improve quality for document clustering
-
-
-Cluster refinement hypothesis:
-documents that belong to the same cluster in finer granularity will also occur in the same cluster in coarser granularity
-
-
-Split Operations
-The main idea is to continue splitting after K-Means has finished
-sometimes clusters as not as granular as we'd like
-continue splitting them to refine clusters
-don't need to apply it to all clusters - only to non-coherent ones
-it will help create more coherent clusters
-
-(so it's just applying k-means once again on the cluster with $k=2$
-
-Algo:
-select a cluster to split
-apply buckshot with $k=2$ on this cluster
-re-cluster around these centers
-
-
-How to measure "coherence"?
-compute self-similarity of a cluster:
-similarity of documents to the centroid cluster
-or average pairwise similarity within the cluster
-apply split only to clusters with low self-similarity
-
-
-Join Operation
-The idea:
-after K-means has finished,
-join very similar clusters into one
-
-
-How?
-compute typical words of each cluster:
-i.e. examine most frequent words on the centroid
-two clusters are similar if there's significant overlap between words of these clusters
-
-
-
-Challenges
-if there are many documents, the centroid will contain many word => leads to slowdown
-solution: use [[Projection onto Subspaces|projection]] techniques like [[PCA]] 
-
-
-
-
-
-Center adjustment (vector average dumping) \cite{larsen1999fast}
-
-Smart seed selection \cite{cutting1992scatter} \cite{larsen1999fast}
+However, when there are many documents, the centroids tend 
+to contain a lot of words, which leads to a significant slowdown. 
+A solution to this problem is a center adjustment method, called
+vector average dumping WHAT IS IT? \cite{larsen1999fast}. 
+Alternatively, some terms of the centroid can be 
+truncated. There are several possible ways of trucating
+the terms: for example, we can keep only the top $c$ terms, or
+remove the least frequent words such that at least 90\% (or 95\%) of 
+the original vector norm is retained \cite{schutze1997projections}.
 
 
 
 \subsection{DBSCAN} \label{sec:dbscan}
 
-describe the algo \cite{ester1996density}
 
-It's a density-based clustering algorithm
+DBSCAN is a clustering algorithm that can discover 
+clusters of complex shapes based on the density of 
+data points \cite{ester1996density}. 
 
+The \emph{density} associated with a data point is obtained by 
+counting the number of points in a region of specified radius $\varepsilon$
+around the point. If a point has a density of at least some user defined 
+threshold $\text{MinPts}$, then it is considered a \emph{core point}. 
+The clusters are formed around these core points, and if two core points 
+are within the radius $\varepsilon$, then they belong to the same cluster. 
+If a point is not a core point itself, but it belong to the neighborhood of some 
+core point, then it is a \emph{border point}. But if a point is not a core point 
+and it is not in the neighborhood of any other core point, then it does not 
+belong to any cluster and it is considered \emph{noise}. 
 
-Density associated with a point is obtained by counting the number of points in a region of specified radius $\epsilon$ around each point
- points with density $\geqslant \text{min\_pts}$ are considered as "core points"
- noise and non-core points are discarded
- clusters are formed around the core points
- if two core points are within a radius $\epsilon$, then they belong to the same cluster
-
-
-
-Disadvantages
- can find clusters of different shapes, but can't find clusters of different densities
-
+DBSCAN works as follows: it selects an arbitrary data point $p$, and then 
+finds all other points in $\varepsilon$-neighborhood of $p$. If 
+there are more than $\text{MinPts}$ points around $p$, then it is a core point, 
+and it is considered a cluster. Then the process is repeated for all points in 
+the neighborhood, and they all are assigned to the same cluster, as $p$. 
+If $p$ is not a core point, but it has a core point in its neighborhood, then 
+it's a border point and it is assigned to the same cluster and the core point.
+But if it is a noise point, then it is marked as noise or discarded. 
 Pseudocode (taken from Wiki)
 
-\begin{verbatim}
-DBSCAN(D, eps, MinPts) {
-   C = 0
-   for each point P in dataset D {
-      if P is visited
-         continue next point
-      mark P as visited
-      NeighborPts = regionQuery(P, eps)
-      if sizeof(NeighborPts) < MinPts
-         mark P as NOISE
-      else {
-         C = next cluster
-         expandCluster(P, NeighborPts, C, eps, MinPts)
-      }
-   }
-}
 
-expandCluster(P, NeighborPts, C, eps, MinPts) {
-   add P to cluster C
-   for each point P' in NeighborPts {
-      if P' is not visited {
-         mark P' as visited
-         NeighborPts' = regionQuery(P', eps)
-         if sizeof(NeighborPts') >= MinPts
-            NeighborPts = NeighborPts joined with NeighborPts'
-      }
-      if P' is not yet member of any cluster
-         add P' to cluster C
-   }
-}
 
-regionQuery(P, eps)
-   return all points within P's eps-neighborhood (including P)
-\end{verbatim}
+\begin{algorithm}
+\caption{DBSCAN}
+\label{algo:dbscan}
+
+\begin{algorithmic}[0]
+  \Statex
+  \Function{DBSCAN}{database $\mathcal D$, radius $\varepsilon$, MinPts}
+    \Let{$\text{result}$}{$\varnothing$}
+
+    \ForAll{$p \in \mathcal D$} 
+      \If{$p$ is visited}
+        \State{\textbf{continue}}
+      \EndIf
+      \State{mark $p$ as visited}
+      \Let{$\mathcal N$}{\textsc{Region-Query}($p, \varepsilon$)} 
+          \Comment{$\mathcal N$ is the neighborhood of $p$}
+      \If{$\mathcal N < \text{MinPts}$}
+        \State{mark $p$ as \texttt{NOISE}}
+      \Else
+        \Let{$\mathcal C$}
+            {\textsc{Expand-Cluster}$(p, \mathcal N, C, \varepsilon, \text{MinPts})$}
+        \Let{result}{result $\cup \ \{ \mathcal C \}$}
+      \EndIf
+    \EndFor
+    \State \Return{result}
+  \EndFunction
+\end{algorithmic}
+
+
+\begin{algorithmic}[0]
+  \Statex
+  \Function{Expand-Cluster}{point $p$, neighborhood $\mathcal N$, radius $\varepsilon$, MinPts}
+     \Let{$\mathcal C$}{$\{ p \}$}
+     \ForAll{$x \in \mathcal N$}
+        \If{$x$ is visited}
+          \State{\textbf{continue}}
+        \EndIf
+
+        \State{mark $x$ as visited}
+        \Let{$\mathcal N_x$}{\textsc{Region-Query}$(x, \varepsilon)$}
+            \Comment{$\mathcal N_x$ is the neighborhood of $x$}
+        \If{$| \mathcal N_x | \geqslant \text{MinPts}$}
+          \Let{$\mathcal N$}{$\mathcal N \cup \mathcal N_x$}
+        \EndIf
+
+        \Let{$\mathcal C$}{$\mathcal C \cup \{ x \}$}
+     \EndFor
+
+     \State \Return{$\mathcal C$}
+  \EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}[0]
+  \Statex
+  \Function{Region-Query}{point $p$, radius $\varepsilon$}
+     \State \Return{$\{ x \ : \ \| x - p \| \leqslant \varepsilon \}$} \Comment{all points within distance $\varepsilon$ from $p$}
+  \EndFunction
+\end{algorithmic}
+
+\end{algorithm}
+
 
 Can be adapted to take similarity measure instead of distance
 

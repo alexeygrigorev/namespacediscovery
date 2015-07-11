@@ -35,7 +35,7 @@ In this work we are interested in the first two parts: \emph{definiendum} and
 $E$ is a definiendum, and ``energy'' is a definiens.
 
 
-\textbf{TODO}: An \emph{identifier} is a mathematical ...
+% \textbf{TODO}: An \emph{identifier} is a mathematical ...
 
 
 We have the following assumption about defintion (i.e. deinities): 
@@ -98,19 +98,14 @@ Tokens can be:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-\item
-  identifier, variable or function names
-\item
-  numbers
-\item
-  operators (including brackets - so called ``fences'')
-\item
-  text and whitespaces
+\item identifier, variable or function names
+\item numbers
+\item operators (including brackets - so called ``fences'')
+\item text and whitespaces
 \end{itemize}
 
 A ``symbol'' is not necessarily one character: it could be a string such
-as \texttt{<mi>sin</mi>}
-or \texttt{<mn>24</mn>}.
+as \texttt{<mi>sin</mi>} or \texttt{<mn>24</mn>}. 
 In MathML they are treated as single tokens.
 
 
@@ -122,7 +117,7 @@ with token elements.
 Let us consider an example. A mathematical expression $(a + b)^2$
 can be represented in MathML as follows:
 
-\begin{verbatim}
+\begin{lstlisting}[language=XML,caption={TODO},label={}]
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
@@ -137,15 +132,15 @@ can be represented in MathML as follows:
     <mn>2</mn>
   </msup>
 </math>
-\end{verbatim}
+\end{lstlisting}
 
 
 It has the tree structure and recursive. If we take another mathematical
-expression $\cfrac{3}{(a + b)^2}$. It is a
+expression $\frac{3}{(a + b)^2}$. It is a
 fraction and we see that its denominator is the same as the previous
 expression. This is also true for the MathML representation:
 
-\begin{verbatim}
+\begin{lstlisting}[language=XML,caption={TODO},label={}]
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfrac>
     <mn>3</mn>
@@ -163,7 +158,7 @@ expression. This is also true for the MathML representation:
     </msup>
   </mfrac>
 </math>
-\end{verbatim}
+\end{lstlisting}
 
 \ \\
 
@@ -179,18 +174,12 @@ There are several token elements:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-\item
-  \texttt{mi} identifier
-\item
-  \texttt{mn} number
-\item
-  \texttt{mo} operator, fence, or separator
-\item
-  \texttt{mtext} text
-\item
-  \texttt{mspace} space
-\item
-  \texttt{ms} string literal
+\item   \texttt{mi} identifier
+\item   \texttt{mn} number
+\item   \texttt{mo} operator, fence, or separator
+\item   \texttt{mtext} text
+\item   \texttt{mspace} space
+\item   \texttt{ms} string literal
 \end{itemize}
 
 Often tokens are just single characters, like
@@ -264,19 +253,19 @@ And special kinds of scripts (TODO: describe in more details)
 
 For example, $\vec v$ will be rendered as
 
-\begin{verbatim}
-<math xmlns='http://www.w3.org/1998/Math/MathML'>
+\begin{lstlisting}[language=XML,caption={TODO},label={}]
+<math xmlns="http://www.w3.org/1998/Math/MathML">
   <mover>
     <mi>v</mi>
     <mo>&rarr;</mo>
   </mover>
 </math>
-\end{verbatim}
+\end{lstlisting}
 
 
 This is how we would represent $\hat{ \mathbf x}$ (a bold x with a hat) in MathML:
 
-\begin{verbatim}
+\begin{lstlisting}[language=XML,caption={TODO},label={}]
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mrow>
     <mover>
@@ -287,7 +276,7 @@ This is how we would represent $\hat{ \mathbf x}$ (a bold x with a hat) in MathM
     </mover>
   </mrow>
 </math>
-\end{verbatim}
+\end{lstlisting}
 
 There are more complex elements such as \texttt{mtable}.
 
@@ -319,7 +308,7 @@ a commonly used POS tagging scheme which defines a set of part-of-speech tags
 for annotating English words.
 For example, \texttt{JJ} is an adjective (``big''), \texttt{RB} as in adverb, 
 \texttt{DT} is a determiner (``a'', ``the''), \texttt{NN} is a 
-noun (``corpus'') and \texttt{SYM} is used for symbols (``>'', ``=''). 
+noun (``corpus'') and \texttt{SYM} is used for symbols (``$>$'', ``$=$''). 
 
 
 However the Penn Treebank scheme does not have special tags for mathematics,
@@ -476,8 +465,8 @@ as well.
 \ \\
 
 In the Mathematical Language Processing approach \cite{pagael2014mlp}
-a relation identifier-definition is seen as a pair (identifier, 
-probability distribution over definition candidates). Thus, for
+an identifier-definition relation is seen as a pair $\langle$identifier, 
+probability distribution over definition candidates$\rangle$. Thus, for
 definition extraction the candidate definitions are ranked by
 their probability of defining the identifier, 
 and then only most probable candidates are retained.
@@ -569,7 +558,7 @@ as:
 
 
 A common way of incorporating two measures into a single one is $F_\beta$-score
-defined as $F_\beta = \cfrac{(\beta^2 +1)\, P \, R}{\beta^2 P + R}$ where 
+defined as $F_\beta = \frac{(\beta^2 +1)\, P \, R}{\beta^2 P + R}$ where 
 $P$ and $R$ are precision and recall respectively, and $\beta$ is the trade-off
-parameter. $F_1 = \cfrac{2PR}{P + R}$ is the balanced $F$ score when both 
+parameter. $F_1 = \frac{2PR}{P + R}$ is the balanced $F$ score when both 
 precision and recall have equal weights.

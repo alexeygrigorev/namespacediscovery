@@ -1,4 +1,4 @@
-\section{Implementation}
+\section{Implementation} \label{sec:implementation}
 
 
 In section~\ref{sec:dataset} we describe the data set that we use, 
@@ -308,23 +308,21 @@ all rows has unit length.
 
 
 Once we the documents are vectorized, we can apply clustering techniques
-to them. We use K-Means (class \verb|KMeans| in scikit-learn) and 
-Mini-Batch K-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}.
-Note that if rows are unit-normalized, then running k-means with 
+to them. We use $K$-Means (class \verb|KMeans| in scikit-learn) and 
+Mini-Batch $K$-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}.
+Note that if rows are unit-normalized, then running $K$-Means with 
 Euclidean distance is equivalent to cosine distance 
 (see section~\ref{sec:kmeans}).
 
-Bisecting K-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of 
+Bisecting $K$-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of 
 scikit-learn: at each step we take a subset of the dataset and apply 
-K-means with $k = 2$ to this subset. If the subset is big (with number of 
-documents $N > 2000$), then we use Mini-Batch K-means with $k=2$ 
+$K$-Means with $K = 2$ to this subset. If the subset is big (with number of 
+documents $n > 2000$), then we use Mini-Batch $K$-means with $K=2$ 
 because it converges much faster. 
 
-
-Scatter/Gather extensions to K-means (see section~\ref{sec:kmeans-ext}) was 
+Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans-ext}), was 
 implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because 
-scikit-learn's implementation of K-Means does not allow using user-defined distances.
-
+scikit-learn's implementation of $K$-Means does not allow using user-defined distances.
 
 DBScan (section~\ref{sec:dbscan}) and SNN Clustering (section~\ref{sec:dbscan-ext})
 algorithms were also implemented manually:
@@ -372,24 +370,25 @@ of clusters increases the overall purity also grows.
 Thus we can also optimize for the number of clusters with purity $p$ of 
 size at least $n$. 
 
-When the number of clusters increase, the purity always grows, but at 
-some point the number of pure clusters will start decreasing. 
-
-(\textbf{TODO}:  Add a graph to show the tradeoff between purity and the number of clusters)
-
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{pure-clusters.pdf}
-\caption{}
-\label{fig:k-vs-pureclusters}
-\end{figure}
+When the number of clusters increase, the purity always grows 
+(see fig.~\ref{fig:k-vs-purity}), but at some point the number of pure clusters 
+will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 
 
 \begin{figure}[h]
 \centering\includegraphics[width=0.9\textwidth]{purity.pdf}
-\caption{}
+\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases linearly with $K$}
 \label{fig:k-vs-purity}
 \end{figure}
+
+
+\begin{figure}[h]
+\centering\includegraphics[width=0.9\textwidth]{pure-clusters.pdf}
+\caption{$K$ in $K$-Means vs the number of pure clusters: it grows initially, but after $K\approx 1000$ starts to decrease}
+\label{fig:k-vs-pureclusters}
+\end{figure}
+
+
 
 
 \subsection{Building Hierarchy} \label{sec:hierarchy}
@@ -451,31 +450,108 @@ category.
 
 \subsection{Java Language Processing} \label{sec:jlp}
 
-The same set of techniques can be applied to source code.
-(todo: why!)
-If a language 
-is statically typed, like Java or Pascal, usually it is possible to know the
-type of a variable from its declaration. Therefore we can see 
-variables as identifiers and types as "definitions" (TODO: clearly state 
-the difference between types and definitions).
+\textbf{TODO:} also refer back to the introduction 
 
-To extract this information from some source code repository each file source
-file can be processed to obtain its Abstract Syntax Tree, and then 
-declaration information can be extracted from it. 
+In chapter~\ref{sec:namespaces-top} we have compared the identifier namespaces
+with namespaces in programming languages and with packages in the Java 
+programming language in particular. We motivated the assumption that there 
+exist ``namespace defining'' groups of documents by arguing that these 
+groups also exist in programming languages. Thus, the same set of techniques
+for namespace discovery should be applicable to source code as well. 
+
+If a programming language is statically typed, like Java or Pascal, 
+usually it is possible to know the type of a variable from the declaration
+of this variable. Therefore we can see variable names as ``identifiers''
+and variable types as ``definitions''. Clearly, there is a difference
+between variable types and identifier definitions, but we believe
+that this comparison is valid because the type carries additional semantic
+information about the variable and in what context it can be used -- 
+like the definition of an identifier.
+
+The information about variables and their types can be extracted from a
+source code repository, and each source file can be processed to 
+obtain its Abstract Syntax Tree (AST). By processing the ASTs, 
+we can extract the variable declaration information. Thus, each 
+source file can be seen as a document, which is represented 
+by all its variable declarations. 
+
+In this work we process Java source code, and for parsing it 
+and building ASTs we use a library JavaParser \cite{javaparser}.
+The Java programming language was chosen because it requires the programmer 
+to always specify the type information when declaring a variable. 
+It is different for other languages when the type information is 
+usually inferred by the compilers at compilation time. 
 
 
-In this word we process Java source code using JavaParser \cite{javaparser} - 
-a library for parsing java source code. Java was chosen because the variable 
-types always have to be declared, unlike other languages where the type 
-can be inferred by compilers. 
+In Java a variable can be declared in three places: 
+as an inner class variable (or a ``field''), as a method (constructor) 
+parameter or as a local variable inside a method or a constructor.
+We need to process all three types of variable declarations 
+and then apply additional preprocessing, such as converting the name 
+of the type from short to fully qualified using the information from the 
+import statements. For example, \verb|String| is converted to 
+\verb|java.lang.String| and \verb|List<Integer>| to \verb|java.util.List<Integer>|,
+but primitive types like \verb|byte| or \verb|int| are left unchanged. 
+Secondly, 
 
-The following declarations are processed: fields of a class, method and 
-constructor parameters, inner variable declarations inside 
-methods and constructors. It processes both usual classes and inner classes. 
 
-\textbf{Add example and the results}
+Consider an example in the listing~\ref{code:javaclass}. There is a 
+class variable \texttt{threshold}, a method parameter \texttt{in} and 
+two local variables \texttt{word} and \texttt{posTag}. The following 
+relations will be extracted from this class: (``threshold'', \verb|double|),
+(``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|), 
+(``posTag'', \verb|java.lang.String|).
+Since all primitives and classes from packages that star with
+\verb|java| are discarded, at the end the class \verb|WordProcesser| 
+is represented with only one relation (``in'', \verb|domain.Word|).
 
 
-In the experiments we process Apache Mahout source code \cite{mahout}. 
+\begin{lstlisting}[language=Java,caption={A java class},label={code:javaclass}]
+package process;
 
-Describe the dataset
+import domain.Word;
+
+public class WordProcesser  {
+
+    private double threshold;
+
+    public boolean isGood(Word in) {
+        String word = in.getWord();
+        String posTag = in.getPosTag();
+        return isWordGood(word) && isPosTagGood(posTag);
+    }
+
+    // ...
+
+}
+\end{lstlisting}  
+
+
+In the experiments we applied this source code analysis to 
+the source code of Apache Mahout 0.10 \cite{mahout}, which is an open-source
+library for scalable Machine Learning and Data Mining.
+
+As on 2015-07-15, this dataset consists of 1560 java classes with 45878 
+variable declarations. After discarding declarations from the standard Java API,
+primitives and types with generic parameters, only 15869 declarations were 
+retained. 
+
+The following is top-15 variable/type declarations:
+
+\begin{itemize}
+\item (``conf'', \verb|org.apache.hadoop.conf.Configuration|), 491 times
+\item (``v'', \verb|org.apache.mahout.math.Vector|), 224 times
+\item (``dataModel'', \verb|org.apache.mahout.cf.taste.model.DataModel|), 207 times
+\item (``fs'', \verb|org.apache.hadoop.fs.FileSystem|), 207 times
+\item (``log'', \verb|org.slf4j.Logger|), 171 times
+\item (``output'', \verb|org.apache.hadoop.fs.Path|), 152 times
+\item (``vector'', \verb|org.apache.mahout.math.Vector|), 145 times
+\item (``x'', \verb|org.apache.mahout.math.Vector|), 120 times
+\item (``path'', \verb|org.apache.hadoop.fs.Path|), 113 times
+\item (``measure'', \verb|org.apache.mahout.common.distance.DistanceMeasure|), 102 times
+\item (``input'', \verb|org.apache.hadoop.fs.Path|), 101 times
+\item (``y'', \verb|org.apache.mahout.math.Vector|), 87 times
+\item (``comp'', \verb|org.apache.mahout.math.function.IntComparator|), 74 times
+\item (``job'', \verb|org.apache.hadoop.mapreduce.Job|), 71 times
+\item (``m'', \verb|org.apache.mahout.math.Matrix|), 70 times
+\end{itemize}

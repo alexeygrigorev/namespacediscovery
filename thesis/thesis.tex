@@ -1,12 +1,48 @@
 \documentclass[12pt, book, titlepage]{llncs}
 \usepackage{llncsdoc}
 
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsfonts}
 
 \usepackage[margin=4cm]{geometry}
 
+% source code
+\usepackage{listings}
+
+% config from http://stackoverflow.com/questions/741985
+% \usepackage{courier}
+\lstset{
+   basicstyle=\footnotesize\ttfamily,
+   numberstyle=\tiny, 
+   numbersep=5pt,
+   tabsize=2,
+   extendedchars=true,
+   breaklines=true,
+   keywordstyle=\color{red},
+   frame=lines,
+   stringstyle=\color{gray}\ttfamily,
+   showspaces=false,
+   showtabs=false,
+   xleftmargin=17pt,
+   framexleftmargin=17pt,
+   framexrightmargin=5pt,
+   framexbottommargin=4pt,
+   showstringspaces=false
+}
+
+\lstloadlanguages{XML,Java}
+
+\usepackage{caption}
+\DeclareCaptionFont{black}{\color{black}}
+\DeclareCaptionFormat{listing}{\rule{\textwidth}{0.5pt} \linebreak \parbox{\textwidth}{\hspace{15pt}#1#2#3}}
+\captionsetup[lstlisting]{format=listing, labelfont=black, textfont=black, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
+
+
+% pseudocode
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
@@ -21,7 +57,7 @@
 \usepackage{indentfirst}
 \frenchspacing
 
-\usepackage{color}
+
 
 % highlight text
 \usepackage{soul}

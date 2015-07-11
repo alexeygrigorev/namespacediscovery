@@ -1,4 +1,4 @@
-\section{Namespaces as Document Clusters}
+\section{Namespaces as Document Clusters} \label{sec:namespaces-top}
 
 
 In this chapter we discuss how the process of namespace discovery
@@ -20,6 +20,8 @@ search can be made faster by using inverted index~\ref{sec:index}.
 
 
 \subsection{Namespaces in Mathematical Notation} \label{sec:namespaces}
+
+\textbf{TODO:} rewrite a bit to keep the introduction in mind. Also refer to introduction
 
 An \emph{identifier namespace} is a coherent structure where
 each identifier is used only once and has a unique definition.
@@ -125,7 +127,7 @@ text documents should work for identifiers.
 Let us consider the characteristics of text data:
 
 There are many distinct words in natural language. For example,
-if $V$ is a set of all possible words, then usually $|V| \approx 10^5$,
+if $\mathcal V$ is a set of all possible words, then usually $|\mathcal V| \approx 10^5$,
 but each individual document may contain only 500 distinct words, or
 sometimes even less if we consider sentences or small documents
 (e.g. tweets)
@@ -135,6 +137,9 @@ number of words across different document may wary a lot
  word distributions follow Power Laws (e.g. Zipf's law)
 
 
+The identifiers have the same properties! 
+
+\ \\
 
 
 Natural languages suffer from lexical problems of variability and ambiguity,
@@ -222,12 +227,12 @@ documents don't contain many distinct words, so the matrix is sparse
 
 
 Notation:
-let $\mathcal D = \{d_1, \ ... \ , d_m \}$ be a set of $m$ documents
-and let $V = \{t_1, \ ... \ , t_n \}$ be a set of $n$ terms (the vocabulary).
-Each document is set of weighed terms $d = \{ w_1, \ ... \ , w_n \}$
-where $w_i$ is the weight of term $t_i$.
+let $\mathcal D = \{d_1, \ ... \ , d_n \}$ be a set of $m$ documents
+and let $\mathcal V = \{t_1, \ ... \ , t_m \}$ be a set of $n$ terms (the vocabulary).
+Each document is set of weighed terms $d_i = \{ w_1, \ ... \ , w_m \}$
+where $w_j$ is the weight of term $t_j$.
 
-There are following term weighting schemes:
+There are following term weighting schemes \cite{manning2008introduction}:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
@@ -267,9 +272,9 @@ $$\text{idf}(t, \mathcal D) = \log \cfrac{ |\mathcal D| }{\text{df}(t, \mathcal 
 % also can be some Entropy-based measure
 
 
-A good weighting system gives the best performance when
-ii assigns more weights to terms with high TF, but low DF.
-\cite{salton1988term} This can be achieved by combining both TF and IDF
+A good weighting system gives the best performance when it assigns 
+more weights to terms with high TF, but low DF \cite{salton1988term}.
+This can be achieved by combining both TF and IDF
 schemes. TF is good for getting high frequency words, but using
 just TF is not enough if high frequency words are contained in
 many documents, thus need a collection dependent factor that favors
@@ -286,16 +291,16 @@ $$\text{tf-idf}(t, d \mid \mathcal D) = (1 + \log \text{tf}(t, d)) \cdot \log \c
 \ \\
 
 Once the weighting scheme is established, documents can be represented
-by vectors $d = (w_1, \ ... \ w_n)$ where $w_i$ is the weight of term
-$t_i$.
+by vectors $d_i = (w_1, \ ... \ w_m)$ where $w_j$ is the weight of term
+$t_j$.
 
 Then these vectors can be put together to form a matrix. Let $D$ be
-a $n \times m$ matrix, where rows of $D$ are indexed by terms $t_i$,
+a $m \times n$ matrix, where rows of $D$ are indexed by terms $t_i$,
 columns of $D$ are indexed by documents $d_j$, and element $(D)_{ij}$
 is a weight $w_i$ of term $t_i$ in document $d_j$. Then
 such matrix $D$ is called a \emph{term-document matrix}.
 
-Alternatively, $D$ can be $m \times n$ matrix with rows being indexed
+Alternatively, $D$ can be $n \times m$ matrix with rows being indexed
 by documents $d_j$ and columns - by terms $t_i$. Then such $D$ is called
 \emph{document-term matrix}. Note that if $D$ is a term-document matrix,
 then $D^T$ is a document-term matrix. In Information Retrieval
@@ -307,7 +312,7 @@ it is more convenient to use document-term matrix.
 Let us consider the column space of the term-document matrix $D$.
 The column of $D$ are documents from the corpus $\mathcal D$,
 so the column space of $D$ contains document vectors where
-dimensions are terms $t_1, \ ... \ , t_n$. This vector space is
+dimensions are terms $t_1,  t_2, \ ... \ , t_m$. This vector space is
 called \emph{Document VSM}
 
 
@@ -320,7 +325,7 @@ called \emph{Document VSM}
 
 Alternatively, we can consider the row space of $D$. This is
 called the \emph{Term VSM}: the vectors in this space are terms
-and they are indexed by documents $d_1, \ ... \ , d_m$.
+and they are indexed by documents $d_1, d_2,  \ ... \ , d_n$.
 
 
 \begin{figure}[h]
@@ -415,14 +420,15 @@ For example, if we have two points $\mathbf x$ and
 $\mathbf z$, then the Euclidean distance is the
 length of the line that connects these two points.
 It is defined as
-$\| \mathbf x - \mathbf z \| = \sqrt{ (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) } = \sqrt{\sum_i (x_i - z_i)^2}$. This distance is also often called
-``$L_2$ distance''.
+$$\| \mathbf x - \mathbf z \| = \sqrt{ (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) } = \sqrt{\sum_i (x_i - z_i)^2}$$
+
+This distance is also often called ``$L_2$ distance''.
 
 
 Let us rewrite the expression for calculating the Euclidean distance:
-$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) =
+$$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z) =
 \mathbf x^T \mathbf x - 2 \mathbf x^T \mathbf z + \mathbf z^T \mathbf z =
-\| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \mathbf x^T \mathbf z$.
+\| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \mathbf x^T \mathbf z$$
 
 A useful way to think about Euclidean distance for document spaces
 is to consider all three elements of this distance: individual
@@ -487,7 +493,7 @@ the more similar two vectors are, the larger is their inner product.
 
 Geometrically the inner product between two vectors $\mathbf x$ and $\mathbf z$
 is defined as
-$\mathbf x \cdot \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$
+$$\mathbf x \cdot \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$$
 where $\theta$ is the angle between vectors $\mathbf x$ and $\mathbf z$ \cite{huges2013calculus}.
 If the vectors are perpendicular, then $\cos \theta = 0$,
 and the inner product is also $0$. The perpendicular vectors are called \emph{orthogonal}.
@@ -496,12 +502,12 @@ The geometric definition makes sense from the Law of Cosine point of view.
 Consider two vectors $\mathbf x$ and $\mathbf z$, and let
 $\mathbf y = \mathbf x - \mathbf z$.
 Then the Law of Cosines states that
-$\| \mathbf y \|^2 = \| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \, \| \mathbf x \| \, \| \mathbf z\| \, \cos \theta$
+$$\| \mathbf y \|^2 = \| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \, \| \mathbf x \| \, \| \mathbf z\| \, \cos \theta$$
 (see fig.~\ref{fig:law-cosines}).
 By replacing $\| \mathbf x \| \, \| \mathbf z\| \, \cos \theta$ with
 the inner product $\mathbf x \cdot \mathbf z$ and $\mathbf y$ with $\mathbf x - \mathbf z$
 we get the Euclidean distance
-$\| \mathbf x - \mathbf z \|^2 = \| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \, \mathbf x \cdot \mathbf z \, \cos \theta$.
+$$\| \mathbf x - \mathbf z \|^2 = \| \mathbf x \|^2 + \| \mathbf z \|^2 - 2 \, \mathbf x \cdot \mathbf z \, \cos \theta$$
 
 
 \begin{figure}[h]
@@ -542,9 +548,9 @@ definition of inner product. Recall that given
 two vectors $\mathbf x$ and $\mathbf z$, the inner product is defined as
 $\mathbf x \cdot \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$.
 By rearranging the terms we get
-$\cos \theta = \cfrac{\mathbf x \cdot \mathbf z}{\|\mathbf x \| \, \| \mathbf z \|}$
+$$\cos \theta = \frac{\mathbf x \cdot \mathbf z}{\|\mathbf x \| \, \| \mathbf z \|}$$
 and thus
-$\theta = \arccos \cfrac{\mathbf x \cdot \mathbf z}{\|\mathbf x \| \, \| \mathbf z \|}$.
+$$\theta = \arccos \frac{\mathbf x \cdot \mathbf z}{\|\mathbf x \| \, \| \mathbf z \|}$$
 
 Note, however, that it is not necessary to invert the cosine: the angle $\theta$
 between two vectors ranges from $0$ to $\pi$, and cosine is monotonically
@@ -556,10 +562,10 @@ and therefore $\cos \theta \in [0, 1]$.
 
 Using this, we define \emph{cosine similarity} between two documents $\mathbf d_1$ and
 $\mathbf d_2$ as
-$\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1 \cdot \mathbf d_2}{\|\mathbf d_1 \| \, \| \mathbf d_2 \|}$.
+$$\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1 \cdot \mathbf d_2}{\|\mathbf d_1 \| \, \| \mathbf d_2 \|}$$
 
 If the documents have unit lengths, then cosine similarity is the same as
-dot product: $\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1 \cdot \mathbf d_2}{\|\mathbf d_1 \| \, \| \mathbf d_2 \|} = \mathbf d_1 \cdot \mathbf d_2$.
+dot product: $$\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1 \cdot \mathbf d_2}{\|\mathbf d_1 \| \, \| \mathbf d_2 \|} = \mathbf d_1 \cdot \mathbf d_2$$.
 Thus we can unit-normalize all document vectors
 (i.e. compute $\mathbf d' = \mathbf d / \| \mathbf d \|$ for all
 $\mathbf d \in \mathcal D$) and then simply use the dot product to compute
@@ -571,7 +577,7 @@ Cosine similarity gives the similarity score between two document vectors.
 What if instead we need a distance function? The maximal possible cosine
 is 1 for two identical documents. Therefore we can define \emph{cosine distance}
 between two vectors $\mathbf d_1$ and $\mathbf d_2$ as
-$d_c(\mathbf d_1, \mathbf d_2) = 1 - \text{cosine}(\mathbf d_1, \mathbf d_2)$.
+$$d_c(\mathbf d_1, \mathbf d_2) = 1 - \text{cosine}(\mathbf d_1, \mathbf d_2)$$
 The cosine distance is not a proper metric \cite{korenius2007principal},
 but it is nonetheless useful.
 
@@ -580,9 +586,11 @@ distance \cite{korenius2007principal}.
 Consider two unit-normalized vectors $\mathbf d_1' = \mathbf d_1 / \| \mathbf d_1 \|$ and
 $\mathbf d_2' = \mathbf d_1 / \| \mathbf d_1 \|$.
 The Euclidean distance between them is
-$\| \mathbf d_1' - \mathbf d_2' \|^2 = \| \mathbf d_1' \|^2 - 2 \, \mathbf d_1'^T \mathbf d_2' + \| \mathbf d_2 \|^2 = 2 - 2 \, \mathbf d_1'^T \mathbf d_2$. Since the vectors are unit-normalized, we know that
+$$\| \mathbf d_1' - \mathbf d_2' \|^2 = \| \mathbf d_1' \|^2 - 2 \, \mathbf d_1'^T \mathbf d_2' + \| \mathbf d_2 \|^2 = 2 - 2 \, \mathbf d_1'^T \mathbf d_2$$
+
+Since the vectors are unit-normalized, we know that
 $\text{cosine}(\mathbf d_1', \mathbf d_2') = \mathbf d_1'^T \mathbf d_2'$, so we have
-$\| \mathbf d_1' - \mathbf d_2' \|^2 = 2 \, \big(1 - \text{cosine}(d_1', d_2')\big) = 2 \, d_c(d_1', d_2')$.
+$$\| \mathbf d_1' - \mathbf d_2' \|^2 = 2 \, \big(1 - \text{cosine}(d_1', d_2')\big) = 2 \, d_c(d_1', d_2')$$.
 
 
 Thus we can use Euclidean distance on unit-normalized vectors

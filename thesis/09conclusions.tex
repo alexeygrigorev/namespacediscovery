@@ -1,14 +1,23 @@
 \section{Conclusions}
 
+The results are super. 
+
 
 \subsection{Future Work}
 
 
-While I was reading, it occurred to me that one document may have several namespaces, but I'm not yet sure how to model it. Maybe by taking a small context around each formula and treating it as a small document? Or I should hold this thought and wait till we maybe obtain some results from other simpler methods?
 
 
+% While I was reading, it occurred to me that one document may have several 
+% namespaces, but I'm not yet sure how to model it. Maybe by taking a small 
+% context around each formula and treating it as a small document? Or I 
+% should hold this thought and wait till we maybe obtain some results 
+% from other simpler methods?
 
-Use semi-supervised techniques for evaluation
+the work is done assuming that document imports only from one namespace
+but it can import from several. can solve that by dividing the document
+in parts (e.g. by paragraphs) and then applying the same analysis 
+independently to each paragraph - instead of each document. 
 
 
 Can use additional information from wiki articles. For example, can 
@@ -26,6 +35,10 @@ There are hybrid approaches that use both usual textual representation  + links
 
 It can be interesting to apply these techniques to a larger dataset, for example, arXiv.
 
+Other dim red techniques for LSA, e.g. Local NMF \cite{li2001learning}
+There should also be randomized NMF that works faster. 
+
+
 Try other clustering techniques: spectral clustering \cite{ng2002spectral}
 other ways to embed identifiers like word2vec \cite{mikolov2013efficient} 
 or GloVe \cite{pennington2014glove}
@@ -35,4 +48,7 @@ How to extend this method to situations when no additional information
 about document category is known. I.e. need to replace the notion of 
 purity with some other objective for discovering namespaces and 
 namespace-defining clusters
+
+
+
 

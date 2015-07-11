@@ -1,247 +1,95 @@
-\section{Discovering Latent Semantics}
+\section{Discovering Latent Semantics} \label{sec:latent-semantics}
+In chapter~\ref{sec:namespaces-top} we have discussed the 
+lexical variability and ambiguity problems in natural language: synonymy 
+and polysemy. We can treat these problems as ``statistical noise'' and 
+apply dimensionality reduction techniques to find the optimal dimensionality
+for the data and thus reduce the amount of noise there. 
+In this chapter we discuss two approaches for doing this: 
+Latent Semantic Analysis in section~\ref{sec:lsa}
+and Non-Negative Matrix Factorization in section~\ref{sec:nmf}.
 
 
-\textbf{How to deal with these problems?} Term Extraction techniques:
-these techniques create "artificial" terms that aren't really terms - they are generated, and not the ones that actually occurred in the text
-The original terms don't have the optimal dimensionality for document content representation
-because of the problems of polysemy, homonymy and synonymy
-so we want to find better representation that doesn't suffer from these issues
+
+% \textbf{How to deal with these problems?} Term Extraction techniques:
+% these techniques create "artificial" terms that aren't really terms - they are generated, and not the ones that actually occurred in the text
+% The original terms don't have the optimal dimensionality for document content representation
+% because of the problems of polysemy, homonymy and synonymy
+% so we want to find better representation that doesn't suffer from these issues
 
 
 \subsection{Latent Semantic Analysis} \label{sec:lsa}
 
-LSI paper \cite{deerwester1990indexing}
-
-Using SVD for clustering IR results \cite{osinski2004lingo}
-
-
- Decomposition of Term-Document Matrix
-We can decompose the matrix $D$
-using [[SVD]] and we'll get [[Latent Semantic Analysis]]
-LSA can also be done with [[Non-Negative Matrix Factorization]]
-
-
-
-Latent Semantic Analysis (LSA) is an NLP method:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  mathematical/statistical method for modeling the meaning of
-  words/passages by analysis of text via extracting and inferring
-  relations of expected contextual usage of words in texts
-\item
-  idea: words that are used in the same contexts tend to have the same
-  meaning
-\item
-  it extracts and represents ``usage-in-context'' meaning of words and
-  it gives a characterization of words meaning
-\end{itemize}
-
-LSA
+The Vector Space Model discussed in section~\ref{sec:vsm}.
+The solution to this problem is to assume that there exists 
+some optimal document vector space where the document vectors
+do not suffer from the ... 
+This vector space can be found by finding the best $k$-rank approximation 
+to the Term-Document matrix using Singular Value Decomposition (SVD). 
+This technique is called Latent Semantic Analysis \cite{landauer1998introduction}
+or Latent Semantic Indexing in the context of Information Retrieval 
+\cite{deerwester1990indexing}. 
+It is also a popular Text Mining technique for reducing the dimensionality 
+of text data and it is often used for 
+document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}. 
 
 
-brings up the latent structure of the vocabulary
+There are three major steps in Latent Semantic Analysis  \cite{evangelopoulos2012latent}:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
 \item
-  LSA closely approximates how humans learn and understand meaning of
-  words and similarity between words
+  Preprocess documents
 \item
-  it applies \href{Factor Analysis}{Factor Analysis} to texts to extract
-  concepts and then clusters documents into similar categories based on
-  factor scores
+  Construct a Term-Document matrix $D$ using the Vector Space Model
 \item
-  produces measures of word-word, word-passage, passage-passage
-  relations via dimensionality reduction technique \url{SVD}
-\item
-  Similarity estimates derived by LSA are not just frequencies or
-  co-occurrences counts: it can infer deeper relations: hence ``Latent''
-  and ``Semantic''
+  Reduce dimensionality of $D$ by using SVD
 \end{itemize}
 
-\textbf{Limitations}
+
+The first two steps are the same as for traditional Vector Space Models:
+consider a set of document $\mathcal D = \{ d_1, d_2, \ ... \ , d_n \}$
+with the vocabulary $\mathcal V = \{t_1, t_2, \ ... \ , t_m \}$, then 
+$D$ is a $m \times n$ Term-Document Matrix. If the matrix $D$ has 
+rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-\item
-  makes no use of words order, punctuation
+\item $U$ is an $m \times r$ orthogonal matrix, i.e. $U U^T = I$;
+\item $\Sigma$ is a diagonal $r \times r$ matrix with singular values ordered by their magnitude;
+\item $V$ is an $n \times r$ orthogonal matrix, $V V^T = I$.
 \end{itemize}
 
+The dimensionality reduction is done by finding the best $k$-rank approximation 
+of $D$, which is obtained by keeping only the first $k$ singular values of $\Sigma$
+and setting the rest to 0. 
+Typically, not only $\Sigma$ is truncated, but also $U$ and $V$, 
+and therefore, the $k$-rank approximation of $D$ using SVD is written as
+$D \approx D_k = U_k \Sigma_k V_k^T$ where $U_k$ is an $m \times k$ 
+matrix with first $k$ columns of $U$, $\Sigma_k$ is an $k \times k$ 
+diagonal matrix with singular values, and $V_k$ is an $n \times k$ 
+matrix with first $k$ columns of $V$.  This decomposition 
+is called \emph{rank-reduced} SVD and when applied to text data 
+it reveals the ``true'' latent semantic space. The parameter $k$ corresponds 
+to the number of ``latent concepts'' in the data. 
 
-\textbf{LSA Steps}
-
-3 major steps in LSA \cite{evangelopoulos2012latent}
+Let us illustrate LSA with an example (from \cite{deerwester1990indexing}
+and \cite{landauer1998introduction}). Consider the following nine documents:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-\item
-  Prepare documents
-\item
-  Construct \href{Vector Space Models}{Term-Document matrix} $D$
-\item
-  Reduce dimensionality of $D$ via \url{SVD}
+\item $c_1$: ``Human machine interface for ABC computer applications''
+\item $c_2$: ``A survey of user opinion of computer system response time''
+\item $c_3$: ``The EPS user interface management system''
+\item $c_4$: ``System and human system engineering testing of EPS''
+\item $c_5$: ``Relation of user perceived response time to error measurement''
+\item $m_1$: ``The generation of random, binary, ordered trees''
+\item $m_2$: ``The intersection graph of paths in trees''
+\item $m_3$: ``Graph minors IV: Widths of trees and well-quasi-ordering''
+\item $m_4$: ``Graph minors: A survey''
 \end{itemize}
 
-
-Representation: Term-Document Matrix
-
-Construct a Term-Document Matrix $D$ using the
-\href{Vector Space Model}{Vector Space Model}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  typically rows of $D$ - terms, columns of $D$ -
-  documents/passages,
-
-  \begin{itemize}
-  \itemsep1pt\parskip0pt\parsep0pt
-  \item
-    or sometimes, rows of $D$ are documents, columns of $D$ - terms
-  \end{itemize}
-\item
-  not necessarily documents, it can have passages: paragraphs or entire
-  texts
-\item
-  each cell - typically a frequency with which a word occurs in a doc
-\item
-  also apply weighting: TF or TF-IDF
-\end{itemize}
-
-SVD and Dimensionality Reduction
-
-Let $D$ be an $t \times p$ Term-Passage matrix
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $t$ rows are terms, $p$ columns are passages,
-  $\text{rank } D = r$
-\item
-  then SVD decomposition is $D = T \cdot
-  \Sigma \cdot P^T$
-\item
-  $T$ is $t \times r$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains left singular
-  vectors, corresponds to term vectors
-\item
-  $\Sigma$ is $r \times r$ a diagonal
-  matrix of singular values
-\item
-  $P$ is $r \times p$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains right singular
-  vectors, corresponds to passage vectors
-\item
-  and then $T \sqrt\Sigma$ are loadings
-  for terms and $P \sqrt\Sigma$ - for
-  passages
-\end{itemize}
-
-Now reduce the dimensionality:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  want to combine the surface text information into some deeper
-  abstraction
-\item
-  finding the optimal dimensionality for final representation in the
-  Semantic Space is important to properly capture mutual usage of words
-\item
-  the ``True Semantic Space'' should address the problems of ambiguity
-\end{itemize}
-
-So, Apply reduced-rank \url{SVD}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $D \approx T_k \cdot
-  \Sigma_k \cdot P^T_k$
-\item
-  keep only $k$ largest singular values
-\item
-  the result: best $k$-dim approximation of the original matrix $D$
-\item
-  for NLP $k = 300 \pm 50$ usually works the best
-\item
-  but it should be \href{Parameter Tuning}{tuned} because it heavily
-  depends on the domain
-\end{itemize}
-
-Semantic Space
-
-LSA constructs a semantic space via SVD:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $T$ is $t \times r$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains left singular
-  vectors, corresponds to term vectors
-\item
-  $\Sigma$ is $r \times r$ a diagonal
-  matrix of singular values
-\item
-  $P$ is $r \times p$
-  \href{Orthogonal Matrix}{Orthogonal Matrix}, contains right singular
-  vectors, corresponds to passage vectors
-\item
-  and then $T \sqrt\Sigma$ are loadings
-  for terms and $P \sqrt\Sigma$ - for
-  passages
-\end{itemize}
-
-Language-theoretic interpretation:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  LSA vectors approximate:
-\item
-  the meaning of a word as its average effect of the meaning of passages
-  in which they occur
-\item
-  the meaning of a passage as meaning of its words
-\end{itemize}
-
-After doing the SVD, we get the reduced space - this is the semantic
-space
-
-Examples
-
-Let's consider titles of some articles example from \cite{landauer1998introduction} \cite{deerwester1990indexing}
-
-
-TODO: change it to identifiers!
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $c_1$: ``Human machine interface for ABC computer applications''
-\item
-  $c_2$: ``A survey of user opinion of computer system response
-  time''
-\item
-  $c_3$: ``The EPS user interface management system''
-\item
-  $c_4$: ``System and human system engineering testing of EPS''
-\item
-  $c_5$: ``Relation of user perceived response time to error
-  measurement''
-\item
-  $m_1$: ``The generation of random, binary, ordered trees''
-\item
-  $m_2$: ``The intersection graph of paths in trees''
-\item
-  $m_3$: ``Graph minors IV: Widths of trees and well-quasi-ordering''
-\item
-  $m_4$: ``Graph minors: A survey''
-\end{itemize}
-
-Matrix:
+Let the vocabulary be $\mathcal V = \{$ human, interface, computer, user, system, response, time, EPS, survey, trees, graph, minors $\}$. Then, the term-document matrix $D$
+with terms weighed by TF is 
 
 $$D =
 \left[\begin{array}{c|ccccccccc}
@@ -261,28 +109,14 @@ $$D =
 \text{minors} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
 \end{array} \right] $$
 
-Note:
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  row vectors for ``human'' and ``user'' are orthogonal: their dot
-  product is zero, but they are supposed to be similar, so it must be
-  positive
-\item
-  also, ``human'' and ``minors'' are orthogonal, but they are not
-  similar, so it must be negative
-\end{itemize}
+We can observe that the row vectors for ``human'' and  ``user'' are 
+orthogonal: their inner produce is zero, but these terms are similar 
+and the inner product should be positive. 
 
-Let's apply SVD:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  $D = W \Sigma P$
-\item
-  2-dim approximation: $D_2 = W_2 \Sigma_2 P_2$
-\end{itemize}
+Let us apply SVD to find the best rank-2 approximation for $D$: 
+$D \approx D_2 = U_2 \Sigma_2 V_2^T$. The rank-2 approximation $D_2$
+is 
 
 $$D_2 =
 \left[\begin{array}{c|ccccccccc}
@@ -303,104 +137,142 @@ $$D_2 =
 \end{array}\right]$$
 
 
-What's the effect of dimensionality reduction here?
+What is the effect of dimensionality reduction here? The frequencies of
+words have changed, and some of the entries even become negative. 
+Consider two cells: (``survey'', $m_4$) and (``trees'', $m_4$). 
+In the original document we have 
+$D[\text{survey}, m_4] = 1$ and $D[\text{trees}, m_4] = 0$, but in the reduced space we have 
+$D_2 [\text{survey}, m_4] = 0.42$ and $D_2[\text{trees}, m_4] = 0.66$.
+Note that the count for ``survey'' went down while the count for 
+``trees'' went up. The reason for this is that the document $m_4$
+contains ``graph'' and ``minor'', which are graph related, 
+so another graph related word ``trees'' got additional score. 
+On the other hand the term ``survey'' was not expected in this 
+context, so the count went down. 
+
+Additionally, we can compute the similarity in the reconstructed 
+space as well. For example, the terms ``user'' and ``human'' are 
+no longer orthogonal and have positive dot product. Thus, it tells
+us that the terms are similar even though they never co-occur 
+together in the original input space. 
+
+
+LSA can be used for clustering as well, and this is usually done 
+by first transforming the document space to the LSA space
+and then doing applying transitional cluster analysis techniques
+there \cite{schutze1997projections}. 
+
+However these is not need to reconstruct the rank-reduced matrix 
+to apply clustering, and in many cases it is not possible: 
+the original input space is very sparse, but the rank-reduced 
+reconstructed matrix becomes very dense. Therefore we do not 
+reconstruct the entire matrix, but instead keep only the low 
+dimensional representation $V_k \Sigma_k$, which is enough 
+for many clustering algorithms.
+
+For example, consider the inner product. Document-document similarity 
+in the original space is calculated as $D D^T$ (the columns of $D$ 
+are the document $\mathbf d_1, \ ... \ , \mathbf d_n$), and by applying 
+SVD we have $D^T D = V \Sigma^T U^T U \Sigma V^T = V \Sigma^T \Sigma V^T = 
+(V \Sigma) (V \Sigma)^T$. Thus, to compute the similarity between
+document $\mathbf d_i$ and $\mathbf d_j$ we compute the inner product 
+between $i$th and $j$th rows of $V \Sigma$. Likewise, to compute 
+the similarity between documents $i$ and $j$ in the reduced representation,
+we compute the inner product between the respective rows of $V_k \Sigma_k$.
+
+Additionally, the Euclidean distance in the reduced space can also be computed 
+directly on the rows of $V_k \Sigma_k$. Recall that the Euclidean distance can
+be expressed as an inner product
+$\| \mathbf d_i - \mathbf d_j \|^2 = \mathbf d_i^T \mathbf d_i - 2 \, \mathbf d_i^T \mathbf d_j + \mathbf d_j^T \mathbf d_j$, and since we know how to compute the inner product 
+in the semantic space, we can compute the distance in this space as well
+by using the rows of $V_k \Sigma_k$.
+
+This means that we can apply any clustering algorithm,
+including $K$-means, on the rows of $V_k \Sigma_k$ and without having
+to reconstruct the entire term-document matrix. 
+
+A generic LSA-based clustering algorithm therefore consists of the following steps:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-\item
-  words appear less or more frequent than originally
-\item
-  consider two cells: (``survey'', $m_4$) and (``trees'', $m_4$)
-\item
-  original document: 1 and 0
-\item
-  reduced document: 0.42 and 0.66
-\item
-  because $m_4$ contains ``graph'' and ``minor'', the 0 for ``trees''
-  was replaced by 0.42 - they are related terms
-\item
-  so it can be seen as estimate of how many times word ``trees'' would
-  occur in other samples that contain ``graph'' and ``minor''
-\item
-  the count for ``survey'' went down - it's not expected in this context
-\end{itemize}
-
-So in the reconstructed space:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  dot product between ``user'' and ``human'' is positive
-\item
-  dot product between ``human'' and ``minors'' is negative
-\item
-  it tells us way better whether terms are similar or not even when they
-  never co-occur together
-\end{itemize}
-
-Taking 2 principal components is the same as taking only 2 abstract
-concepts
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  each word in the vocabulary has some amount of these 2 concepts (we
-  see how much by looking at 1st and 2nd column of $W$)
-\end{itemize}
-
-The idea:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  we don't want to reconstruct the underlying data perfectly, but
-  instead we hope to find the correlation and the abstract concepts
-\end{itemize}
-
-Latent Semantic Analysis (LSA) $\approx$ Latent Semantic Indexing (LSI)
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  LSI is the alias of LSA for \href{Information Retrieval}{Information   Retrieval}
-\item
-  indexing and retrieval method that uses
-  \href{Singular Value Decomposition}{SVD} to identify patterns in
-  relations between terms and concepts
-\item
-  instead of literal match between query and documents (e.g. using
-  cosine in the traditional vector space morels), convert both into the
-  Semantic Space and calculate the cosine there
+  \item Build a term-document matrix $D$ from the document collection
+  \item Select number of latent concepts $k$ and apply rank-reduced SVD on $D$ to get $V_k \Sigma_k$
+  \item Apply the cluster algorithm on the rows of $V_k \Sigma_k$
 \end{itemize}
 
 
+LSA has some drawbacks. Because SVD looks for orthogonal basis 
+for the new document space, there are negative values that are harder
+to interpret. Additionally, with negative values in the reconstructed 
+space can cause the cosine to take negative values as well. 
+However, it does not affect significantly the properties of the 
+cosine distance: it still will always give the results larger than 0. 
+This problem can be solved by using a different matrix decomposition
+technique instead of SVD, and we discuss one of them in the next
+section. 
 
-After doing dimenstionality reduction with LSA/SVD apply usual k-means (cite papers where
-this approach is used)
-
-
-
-\subsection{Semantic Domains}
-
-The theory that connects linguistics and LSA \cite{gliozzo2009semantic}
-
-Formal definition of Semantic Domain, why useful (why Semantic Domain may
-be better concept for namespaces than Clusters),
-Domain Spaces (sort of Semantic Spaces), how can be discovered with LSA
-
+% in many cases it still gives good performance 
 
 
 
 \subsection{Non-Negative Matrix Factorization} \label{sec:nmf}
 
-There are many different factorization techniques for document clustering \cite{osinski2006improving}
-
-One of them is NMF \cite{lee1999nnmf}
-
-NMF can be directly interpreted as cluster assignment and has been
-used for document clustering as an alternative to LSA \cite{xu2003document}
+Apart from SVD there are many other different matrix decomposition 
+techniques that can be applied for document clustering and for discovering 
+the latent structure of the term-document matrix \cite{osinski2006improving},
+and one of them in Non-Negative Matrix Factorization (NMF) \cite{lee1999nnmf}. 
 
 
+NMF is a matrix decomposition technique. When it is applied to non-negative
+data, NMF produces non-negative rank-reduced approximations. 
+Since term-document matrices do not have negative values, it makes 
+NMF a good candidate to replace SVD in LSA. The main conceptual difference 
+between SVD and NMF is that SVD looks for orthogonal directions to 
+represent document space, while NMF does not require orthogonality.
+As the result, SVD often produces semantic spaces with negative values, 
+but NMF does not \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
 
 
+\begin{figure}[h]
+\centering\includegraphics[width=0.75\textwidth]{nmf-svd.png}
+\caption{\textbf{TODO redraw} Directions found by  SVD (on the left) vs directions by NMF (on the right)}
+\label{fig:nmf-svd}
+\end{figure}
 
+
+The NMF of an $m \times n$ term-document matrix $D$ is $D \approx D_k = U  V^T$ 
+where $U$ is an $m \times k$ matrix, $V$ is an $n \times k$ matrix and  
+$k$ is the number of semantic concepts in $D$.
+Non-negativity of elements in $D_k$ is very good for interpretability: it 
+ensures that documents can be seen as a non-negative combination of 
+the key concepts.
+
+
+Additionally, NMF is useful for clustering: the results of NMF can 
+be directly interpreted as cluster assignment and there is no need 
+to use separate clustering algorithms \cite{xu2003document}. 
+
+What is more, NMF is a co-clustering algorithms: it clusters both
+rows of $D$ and columns of $D$ at the same time. For a term-document
+matrix $D \approx U V^T$, where $U$ defines the reduced vector space for terms
+and $V$ defines the reduced vector space for documents. Since all elements 
+are non-negative, it can have the following interpretation: 
+elements $(U)_{ij}$ of $U$ represent the degree to which terms $i$ belongs to cluster $j$, 
+and elements $(V)_{ij}$ represent the degree to which document $i$ belongs to cluster $j$. 
+
+\ \\
+
+The document clustering using NMF consists of the following 
+steps \cite{xu2003document}:
+
+\begin{itemize}
+  \item Construct the term-document matrix $D$;
+  \item Perform NMF on $D$ to get $U$ and $V$;
+  \item Normalize rows $\mathbf v_i$ of $V$ by using $\mathbf v_i' = \mathbf v_i \cdot \| \mathbf u_i \|$ and rows $\mathbf u_i$ of $U$ with $\mathbf u_i' = \mathbf u_i / \| \mathbf u_i \|$;
+  \item To determine the cluster assignment for document $\mathbf d_i$, examine $\mathbf v_i'$ (the $i$th row of $V$) and find the largest component of this vector. That is, 
+      $i$th document belongs to cluster $x$ if $x = \operatorname{arg \, max}_j v_{ij}$ where $v_{ij}$ are components of $\mathbf v_i$;
+  \item If the desired number of clusters $K$ is larger than the rank $k$ of the reduced matrix $D_k$, the clustering can be performed directly on the rows of $V$, for example, 
+      by using $K$-Means.
+\end{itemize}
+
+% The computational complexity on NMF is $O(kn)$ 

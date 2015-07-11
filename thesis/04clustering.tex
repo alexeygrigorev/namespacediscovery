@@ -89,7 +89,7 @@ afterwards \cite{steinbach2000comparison}.
 
 
 
-\subsection{K-Means} \label{sec:kmeans}
+\subsection{$K$-Means} \label{sec:kmeans}
 
 Unlike agglomerative clustering algorithms, K-Means is an iterative 
 algorithm, which means that it can correct the mistakes made 
@@ -101,18 +101,18 @@ it iteratively improves the Euclidean distance between each data
 point and the centroid, closest to it. 
 
 
-Let $\mathcal D = \{  \mathbf d_1, \ ... \ , \mathbf d_n \}$ be the document 
-collection, where documents $\mathbf d_i$ are represented is some document
-vector space $\mathbb R^m$ and $k$ is the desired number of clusters. 
-Then we define $k$ cluster centroids $\boldsymbol \mu_j$ that are 
+Let $\mathcal D = \{  \mathbf d_1, \mathbf d_2, \ ... \ , \mathbf d_n \}$ 
+be the document collection, where documents $\mathbf d_i$ are represented 
+is some document vector space $\mathbb R^m$ and $k$ is the desired 
+number of clusters. Then we define $k$ cluster centroids $\boldsymbol \mu_j$ that are 
 also in the same document vector space $\mathbb R^m$. 
 Additionally for each document $\mathbf d_i$ we maintain the assignment 
-variable $c_i \in \{ 1, 2, \ ... \ , k \}$, which specifies to what 
-cluster centroid $\boldsymbol \mu_1, \ ... \ , \boldsymbol \mu_k$ 
-$\mathbf d_i$ belongs. 
+variable $c_i \in \{ 1, 2, \ ... \ , k \}$, which specifies to what
+cluster centroid $\boldsymbol \mu_1, \boldsymbol \mu_2, \ ... \ , \boldsymbol \mu_k$ 
+the document $\mathbf d_i$ belongs. 
 
 
-The algorithms consists of three steps: (1) initialization step, 
+The algorithms consists of three steps: (1) seed selection step, 
 where each $\boldsymbol \mu_j$ is randomly assigned some value, 
 (2) cluster assignment step, where we iterate over all document vectors
 $\mathbf d_i$ and find its closest centroid, and (3)  move centroids step,
@@ -128,7 +128,7 @@ in the listing~\ref{algo:k-means}.
 \begin{algorithmic}[0]
   \Statex
   \Function{K-Means}{no. clusters $k$, documents $\mathcal D$}
-    \For{$j \leftarrow 1 \ .. \ k$} \Comment{random initialization}
+    \For{$j \leftarrow 1 \ .. \ k$} \Comment{random seed selection}
       \Let{$\boldsymbol \mu_j$}{random $\mathbf d \in \mathcal D$}
     \EndFor
 
@@ -144,7 +144,7 @@ in the listing~\ref{algo:k-means}.
       \EndFor
     \EndWhile
 
-    \State \Return{$(c_1, \ ... \ , c_n)$}
+    \State \Return{$(c_1, c_2, \ ... \ , c_n)$}
   \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -188,9 +188,9 @@ in listing~\ref{algo:minibatch-k-means}.
         {$(1 - \eta) \cdot \boldsymbol \mu_{c_i} + \eta \cdot \mathbf d_i$}
                                         \Comment{gradient step}
       \EndFor
-    \Until{not converged}
+    \Until{converged}
 
-    \State \Return{$(c_1, \ ... \ , c_n)$}
+    \State \Return{$(c_1, c_2, \ ... \ , c_n)$}
   \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -225,9 +225,12 @@ Algorithm:
 \begin{itemize}
   \item start with a single cluster
   \item choose a cluster to split (for example, the largest one)
-  \item apply $K$-means to this cluster with $k=2$ to split it
+  \item apply $K$-means to this cluster with $K=2$ to split it
   \item repeat until have desired number of clusters
 \end{itemize}
+
+
+\textbf{TODO: pseudocode}
 
 % may repeat this procedure several times and take the clusters with highest overall similarity
 
@@ -267,7 +270,7 @@ overlaps between their typical terms.
 However, when there are many documents, the centroids tend 
 to contain a lot of words, which leads to a significant slowdown. 
 A solution to this problem is a center adjustment method, called
-vector average dumping WHAT IS IT? \cite{larsen1999fast}. 
+vector average dumping \textbf{TODO} \cite{larsen1999fast}. 
 Alternatively, some terms of the centroid can be 
 truncated. There are several possible ways of trucating
 the terms: for example, we can keep only the top $c$ terms, or
@@ -302,8 +305,6 @@ the neighborhood, and they all are assigned to the same cluster, as $p$.
 If $p$ is not a core point, but it has a core point in its neighborhood, then 
 it's a border point and it is assigned to the same cluster and the core point.
 But if it is a noise point, then it is marked as noise or discarded. 
-Pseudocode (taken from Wiki)
-
 
 
 \begin{algorithm}
@@ -326,7 +327,7 @@ Pseudocode (taken from Wiki)
         \State{mark $p$ as \texttt{NOISE}}
       \Else
         \Let{$\mathcal C$}
-            {\textsc{Expand-Cluster}$(p, \mathcal N, C, \varepsilon, \text{MinPts})$}
+            {\textsc{Expand-Cluster}$(p, \mathcal N, \varepsilon, \text{MinPts})$}
         \Let{result}{result $\cup \ \{ \mathcal C \}$}
       \EndIf
     \EndFor
@@ -368,121 +369,67 @@ Pseudocode (taken from Wiki)
 \end{algorithm}
 
 
-Can be adapted to take similarity measure instead of distance
+The DBSCAN algorithm uses the Euclidean distance, 
+but can be adapted to use any other distance or similarity function.
+For example, to modify the algorithm to use the Cosine similarity 
+(or any other similarity function)  
+the \textsc{Region-Query} has to be modified to return
+$\{ x \ : \ \text{similarity}(x, p) \geqslant \varepsilon \}$.
 
+The details of implementation of \textsc{Region-Query} 
+are not specified, and it can be implemented differently. 
+For example, it can use Inverse Index (see section~\ref{sec:index}, and listing~\ref{algo:inverted-index} for the pseudocode) 
+to make the similarity search faster. 
 
 
 \subsection{Extensions of DBSCAN} \label{sec:dbscan-ext}
 
-SNN Clustering: \cite{ertoz2003finding}
+As discussed, DBSCAN can be extended to use any distance or similarity function. 
+Shared Nearest Neighbors Similarity (SNN Similarity) \cite{ertoz2003finding} 
+is a special similarity function that is particularity useful for 
+high-dimensional spaces. 
+And this similarity function is applicable to document clustering 
+and topic discovery \cite{ertoz2004finding}. 
 
-Different similarity measure
-
-Applicable to document clustering and discovering topics \cite{ertoz2004finding}
-
-The goal:
-find clusters of different shapes, sizes and densities in high-dimensional data
- [[DBSCAN]] is good for finding clusters of different shapes and sizes, but it fails to find clusters with different densities
-it will find only one cluster:
- http://habrastorage.org/files/ff4/b40/6fc/ff4b406fc5d948d7bf3b2d4e3c18a71d.png
- (figure source: Ertoz2003)
-
-
-Distance:
- [[Euclidean Distance]] is not good for high-dimensional data
- use different similarity measure in terms of [[KNN]]s - "Shared Nearest Neighbors"
- then define density in terms of this similarity
+SNN Similarity is specified in terms of the $K$ nearest neighbors. 
+Let $\text{NN}_{K, \, \text{sim}}(p)$ be a function that returns 
+top $K$ closest points of $p$ according to some similarity function 
+\texttt{sim}. Then the SNN similarity function is  defined as 
+$$\text{snn}(p, q) = \big| \text{NN}_{K, \, \text{sim}}(p) \cup \text{NN}_{K, \, \text{sim}}(q) \big|$$
 
 
-"Jarvis-Patrick" algorithm, as in Jarvis1973
+The extension of DBSCAN that uses the SNN Similarity is called 
+SSN Clustering algorithm. The user needs to specify the SSN similarity
+function by setting parameter $K$ and choosing the base similarity 
+function $\text{\texttt{sim}}(\cdot, \cdot)$ (typically Cosine, Jaccard 
+or Euclidean). The algorithm itself has the same
+parameters as DBSCAN: radius $\varepsilon$ (such that $\varepsilon < K$) 
+and the core points density threshold MinPts. The 
+$\textsc{Region-Query}$ function is modified to return
+$\{ q \ : \ \text{snn}(p, q) \geqslant \varepsilon \}$. For pseudocode, 
+see the listing~\ref{algo:snn-clustering}. 
 
+\begin{algorithm} \caption{SNN Clustering Algorithm} \label{algo:snn-clustering}
 
-Step 1: SNN sparsification:
- construct an SSN [[Graph]] from data matrix as follows
- if $p$ and $q$ have each others in the KNN list
- then create a link between them
+\begin{algorithmic}[0]
+  \Statex
+  \Function{SNN-Cluster}{database $\mathcal D$, $K$, similarity function \texttt{sim}, radius $\varepsilon$, MinPts}
+    \ForAll{$p \in \mathcal D$} \Comment{Pre-compute the $K$NN lists}
+      \Let{$\text{NN}[p]$}{$\text{NN}_{K, \, \text{sim}}(p)$}
+    \EndFor
 
+    \ForAll{$(p, q) \in (\mathcal D \times \mathcal D)$} \Comment{Pre-compute the SNN similarity matrix}
+      \Let{$A[p, q]$}{$\big| \, \text{NN}[p] \ \cup \ \text{NN}[q] \, \big|$}
+    \EndFor
 
-Step 2: Weighting
- weight the links with $\text{sim}(p, q) = \big| \, \text{NN}(p) \ \cup \ \text{NN}(q) \, \big|$
- where $\text{NN(p)}$ and $\text{NN(q)}$ are $k$ neighbors of $p$ and $q$ resp.
+    \State \Return{\textsc{DBSCAN}$(A, \varepsilon, \text{MinPts})$}
+  \EndFunction
+\end{algorithmic}
 
+\end{algorithm}
 
-Step 3: Filtering
- then filter the edges:
- remove all edges with weight less than some threshold
+The algorithm's running time complexity is $O(n^2)$ time, where $n = |\mathcal D|$, 
+but it can be sped up by using the Inverted Index.
 
-
-Step 4: Clusters
- let all connected components be clusters
-
-
-Illustration
- http://habrastorage.org/files/b2b/174/cd8/b2b174cd84e3488a8d1dad51687bf194.png
- (figure source: Ertoz2003)
- note that this procedure removed the noise
- and clusters are of uniform density: it breaks the links in the transition regions
-
-
-Usual density is not good:
- In the Euclidean space, the density is the number of points per unit volume
- but as dimensionality increases, the volume increases rapidly
- so unless the number of points increases exponentially with dimensionality, the density tends to 0
- Density-based algorithms (e.g. [[DBSCAN]]) will not work properly
-
-
-Need different intuition of density
- can use a related concept from
- if $k$th nearest neighbor is close, then the region is most likely of high density
- so the distance to $k$th neighbor gives a measure of density of a point
- because of the [[Curse of Dimensionality]], the approach is not good for [[Euclidean Distance]], [[Cosine Similarity]] or others
- but we can use the SNN-Similarity to define density
-
-
-SSN-based measures of density:
- sum of SSN similarities over all KNNs
- why sum an not just $k$th?
- to reduce random variation - which happens when we look only at one point
- to be consistent with the graph-based view of the problem
- of it can be the number of points within some radius - specified in terms of SNN distance
- like in [[DBSCAN]], but with SSN distance
-
-
-SNN Clustering algorithm is a combination of
- Jarvis-Patrick algorithm and
- DBSCAN with SSN Similarity and SSN Density
-
-
-Parameters
- $k$
- $\epsilon$
- $\text{min\_pts} < k$
-
-
-Steps:
- compute the similarity matrix
- sparsify the matrix by keeping only $k$ most similar neighbors for each data point
- construct the SSN graph (use the Jarvis-Patrick algo)
- find SSN density of each point $p$:
- in the KNN list of $p$ count $q$ s.t. $\text{sim}(p, q) \geqslant \epsilon$
- find the core points
- all points with SSN density greater than $\text{min\_pts}$ are the core ones
- form clusters from the core points
- all non-core points not within $\epsilon$ from the core ones are discarded as noise
- align non-noise non-core points to clusters
-
-
-Parameter tuning:
- $k$ controls granularity of clusters
- if $k$ is small, then it will find small and very tight clusters
- if $k$ is large, it'll find big and well-separated clusters
-
-
- The algorithm runs in $O(n^2)$ time
- can speed up with [[Kd-Trees]] or [[R-Tree]]s
- alternatively, can use [[Canopy Clustering|canopies]]
-
-
-\subsection{Scaling?}
-
-LSH etc
+% \subsection{Scaling?}
+% LSH etc

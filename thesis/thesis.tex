@@ -8,6 +8,11 @@
 \usepackage{amssymb}
 \usepackage{amsfonts}
 
+% cyrillic chars 
+\usepackage[cp1251]{inputenc}
+\usepackage[T2A]{fontenc}
+% \usepackage[russian]{babel}
+
 \usepackage[margin=4cm]{geometry}
 
 % source code
@@ -17,7 +22,7 @@
 % \usepackage{courier}
 \lstset{
    basicstyle=\footnotesize\ttfamily,
-   numberstyle=\tiny, 
+   numberstyle=\tiny,
    numbersep=5pt,
    tabsize=2,
    extendedchars=true,
@@ -51,6 +56,10 @@
 \usepackage{graphicx}
 \graphicspath{{}{./figures/}}
 
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{url}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true}
 
@@ -69,7 +78,7 @@
 
 \newpage
 \tableofcontents
-\newpage 
+\newpage
 
 
 \include{01intro}
@@ -78,9 +87,6 @@
 
 \include{03namespaces}
 
-\include{04clustering}
-
-\include{05latent}
 
 \include{06implementation}
 

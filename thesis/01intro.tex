@@ -1,10 +1,5 @@
 \section{Introduction}
 
-namespaces are ... 
-In this thesis we extend the notion of namespaces to mathematical formulae. 
-
-Review CS and extend in 
-
 \subsection{Namespaces in Computer Science}
 
 In computer science, a \emph{namespace} refers to a collection of terms that are managed
@@ -16,233 +11,202 @@ XML (eXtensible Markup Language) is a framework for defining markup languages.
 XML lets users define a set of tags to represent information in some
 specific domain \cite{moller2006introduction}. For example, XHMTL is an XML
 language for hypertext markup and MathML is a language for describing mathematical
-notation. 
+notation.
 
-However, different XML languages may use the same names for elements and attributes. 
-For example, consider two XML languages: XHTML for specifying the layout of web 
-pages, and some XML language for describing furniture. Both these languages have 
-the \verb|<table>| elements there, in XHTML table is used to present some data in 
-a tabular form (see listing~\ref{code:xhtml-table}), 
-while the second one uses it to describe a particular piece of
-furniture in the database (see listing~\ref{code:xml-table}). 
+However, different XML languages may use the same names for elements and attributes.
+For example, consider two XML languages: XHTML for specifying the layout of web
+pages, and some XML language for describing furniture. Both these languages have
+the \verb|<table>| elements there, in XHTML table is used to present some data in
+a tabular form, while the second one uses it to describe a particular piece of
+furniture in the database.
 
-\begin{lstlisting}[language=XML,caption={Describing tabular data in XHTML with 
-the \texttt{<table>} tag},label={code:xhtml-table}]
-<table>
-  <tr><th>China</th><th>Germany</th><th>Russia</th></tr>
-  <tr><td>10</td><td>3</td><td>1</td></tr>
-</table>
-\end{lstlisting}
-
-\begin{lstlisting}[language=XML,caption={The \texttt{<table>} tag in an XML language for describing furniture},label={code:xml-table}]
-<table id="table31337"> 
-  <width unit="cm">130</width>
-  <length unit="cm">90</length>
-  <color>Black</color>
-</table>
-\end{lstlisting}
-
-The \verb|<table>| elements have very different semantics in these languages 
-and there should be a way to distinguish between these two elements. 
-In XML this problem is solved with XML namespaces~\cite{xmlnamespaces}: 
+The \verb|<table>| elements have very different semantics in these languages
+and there should be a way to distinguish between these two elements.
+In XML this problem is solved with XML namespaces~\cite{xmlnamespaces}:
 the namespaces are used to ensure the uniqueness of attributes and resolve ambiguity.
-It is done by binding a short namespace alias with some uniquely defined URI 
-(Unified Resource Identifier), and then appending the alias to 
-all attribute names that come from this namespace. In the example above, 
+It is done by binding a short namespace alias with some uniquely defined URI
+(Unified Resource Identifier), and then appending the alias to
+all attribute names that come from this namespace. In the example above,
 we can bind an alias \verb|h| with XHTML's URI \url{http://www.w3.org/TR/xhtml1}
-and then use \verb|<h:table>| to refer to XHTML's table. Likewise, 
-in the furniture database language the element names can be prepended 
-with a prefix \verb|d|, where \verb|d| is bound to some URI, e.g. 
-\url{http://www.furniture.de/2015/db} (see listing~\ref{code:namespaces}).
-
-\begin{lstlisting}[language=XML,caption={Namespaces in XML},label={code:namespaces}]
-<html xmlns:h="http://www.w3.org/TR/xhtml1">
-  <h:body>
-    <h:table>
-      <h:tr><h:th>China</h:th><h:th>Germany</h:th><h:th>Russia</h:th></h:tr>
-      <h:tr><h:td>10</h:td><h:td>3</h:td><h:td>1</h:td></h:tr>
-    </h:table>
-  </h:body>
-</html>
-
-<database xmlns:d="http://www.furniture.de/2015/db">
-  <d:table id="table31337">
-    <d:width unit="cm">130</d:width>
-    <d:length unit="cm">90</d:length>
-    <d:color>Black</d:color>
-  </d:table>
-<database>
-\end{lstlisting}
-
+and then use \verb|<h:table>| to refer to XHTML's table. Likewise,
+in the furniture database language the element names can be prepended
+with a prefix \verb|d|, where \verb|d| is bound to some URI, e.g.
+\url{http://www.furniture.de/2015/db}.
 
 
 % Ralf's comment: ``namespaces" were deeply studied mainly in
 % the field of distributed systems/ middleware (like DCE, CORBA, etc.) in the middle
 % of the 80s/ 90s ...
 
-\ \\
 
-The namespaces are also used in programming languages for organizing 
-variables, procedures and other identifiers into groups and 
-for resolving name collisions. In programming languages without 
-namespaces the programmers have to take special care to avoid 
-naming conflicts. For example, in the PHP programming language 
-prior to version 5.3 \cite{mcarthur2008php6} there is no notion of namespace, and 
-the namespaces have to be emulated to ensure that the names 
-are unique, and this often results in long names like 
+The namespaces are also used in programming languages for organizing
+variables, procedures and other identifiers into groups and
+for resolving name collisions. In programming languages without
+namespaces the programmers have to take special care to avoid
+naming conflicts. For example, in the PHP programming language
+prior to version 5.3 \cite{mcarthur2008php6} there is no notion of namespace, and
+the namespaces have to be emulated to ensure that the names
+are unique, and this often results in long names like
 \verb|Zend_Search_Lucene_Analysis_Analyzer|\footnote{\url{http://framework.zend.com/apidoc/1.7/Zend_Search_Lucene/Analysis/Zend_Search_Lucene_Analysis_Analyzer.html}}.
 
 
-Other programming languages have the notion of namespaces built in 
-from the very first versions. For example, the Java programming 
-language~\cite{gosling2014java} uses packages to organize identifiers into 
-namespaces. In Java, packages solve the problem of ambiguity. For example, 
-in the standard Java API there are two classes with the name \texttt{Date}: 
-one in the package \texttt{java.util} and another in the package \texttt{java.sql}. 
-To be able to distinguish between them, the classes are referred by their 
+Other programming languages have the notion of namespaces built in
+from the very first versions. For example, the Java programming
+language~\cite{gosling2014java} uses packages to organize identifiers into
+namespaces. In Java, packages solve the problem of ambiguity. For example,
+in the standard Java API there are two classes with the name \texttt{Date}:
+one in the package \texttt{java.util} and another in the package \texttt{java.sql}.
+To be able to distinguish between them, the classes are referred by their
 \emph{fully qualified name}: an unambiguous name that uniquely specifies the class
-by combining the package name with the class name. Thus, to refer to a particular 
-\texttt{Date} class in Java  \texttt{java.util.Date} or  \texttt{java.sql.Date} 
+by combining the package name with the class name. Thus, to refer to a particular
+\texttt{Date} class in Java  \texttt{java.util.Date} or  \texttt{java.sql.Date}
 should be used. 
 
-It is not always convenient to use the fully qualified name in the code to 
-refer to some class from another package. Therefore in Java it is possible to 
-\emph{import} the class by using the import statement which associates 
+It is not always convenient to use the fully qualified name in the code to
+refer to some class from another package. Therefore in Java it is possible to
+\emph{import} the class by using the import statement which associates
 a short name alias with its fully qualified name.
-For example, to refer to \texttt{java.sql.Date} it is possible to import 
-it by using \texttt{import java.sql.Date} and then refer to it by the alias 
+For example, to refer to \texttt{java.sql.Date} it is possible to import
+it by using \texttt{import java.sql.Date} and then refer to it by the alias
 \texttt{Date} in the class \cite{gosling2014java}.
 
 
-Although there  is no strict requirement to organize the classes into 
-well defined groups, it is a good software design practice to put 
-related objects into the same namespace and by doing this achieve 
-better modularity. There are design principles that tell software engineers 
-how to best organize the source code: classes in a well designed system 
-should be grouped in such a way that namespaces 
-exhibit low \emph{coupling} and high \emph{cohesion}~\cite{larman2005applying}. 
-Coupling describes the degree of dependence between namespaces, and 
-low coupling means that the interaction between classes of different 
+Although there is no strict requirement to organize the classes into
+well defined groups, it is a good software design practice to put
+related objects into the same namespace and by doing this achieve
+better modularity. There are design principles that tell software engineers
+how to best organize the source code: classes in a well designed system
+should be grouped in such a way that namespaces
+exhibit low \emph{coupling} and high \emph{cohesion}~\cite{larman2005applying}.
+Coupling describes the degree of dependence between namespaces, and
+low coupling means that the interaction between classes of different
 namespaces should be as low as possible. Cohesion, on the other hand,
-refers to the dependence within the classes of the same namespace, 
-and the high cohesion principle says that the related classes 
-should all be put together in the same namespace. 
+refers to the dependence within the classes of the same namespace,
+and the high cohesion principle says that the related classes
+should all be put together in the same namespace.
+
+% TODO What's the significance?
 
 
-\subsection{Namespaces in Mathematics}
+\subsection{Namespaces in Mathematical Notation}
 
 Informally, a mathematical formula is a rule that shows the relationship
-between different variables. For example, 
-$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}$ is a formula for solving 
+between different variables. For example,
+$x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}$ is a formula for solving
 a quadratic equation $a x^2 + b x + c = 0$.
 
 
-To give a more formal definition of formula, we first need to define 
+To give a more formal definition of formula, we first need to define
 a first-order language that contains primitive symbols such as
-(1) parentheses, brackets and other boundary symbols 
-(2) \emph{constants} ($1$, $2$, $\hslash$, ...) and variables ($x$, $y$, ...)
+(1) parentheses, brackets and other boundary symbols
+(2) \emph{constants} ($1$, $2$, $3$, ...) and variables ($x$, $y$, ...)
 (3) \emph{functions} ($+$, $\cdot$, ...) and
-(4) \emph{predicates}, e.g. binary relation symbols (``$=$'', ``$<$'', ``$\geqslant$'', ...). 
+(4) \emph{predicates}, e.g. binary relation symbols (``$=$'', ``$<$'', ``$\geqslant$'', ...)
+\cite{barwise2000language}.
 
-In this language, \emph{constants} are symbols with pre-defined meaning 
-from some alphabet and variables are symbols that can be assigned 
+In this language, \emph{constants} are symbols with pre-defined meaning
+from some alphabet and variables are symbols that can be assigned
 a value from this alphabet.
-Any symbol can be a variable, for example, $x$, $y$, $\mathbf w$, or it can 
+Any symbol can be a variable, for example, $x$, $y$, $\mathbf w$, or it can
 be a symbol with subscripts, for example, $x_1, x_2, \ ...$ or even $w_\text{slope}$.
 
-A \emph{well-formed term} $t$ (or just \emph{term}) in this language is defined as 
-$$t \equiv c \mid x \mid f(t_1, t_2, \ ... \ , t_n)$$, which means that the term
-$t$ can be a constant, a variable or an $n$-ary function 
-$f(t_1, t_2, \ ... \ , t_n)$. An  \emph{$n$-ary function} is an 
-function that takes $n$ terms $t_1, t_2, \ ... \ , t_n$ and produces 
+A \emph{well-formed term} $t$ (or just \emph{term}) in this language is defined as
+$$t \equiv c \mid x \mid f(t_1, t_2, \ ... \ , t_n) \ ,$$ which means that the term
+$t$ can be a constant, a variable or an $n$-ary function
+$f(t_1, t_2, \ ... \ , t_n)$. An  \emph{$n$-ary function} is an
+function that takes $n$ terms $t_1, t_2, \ ... \ , t_n$ and produces
 some new term. An \emph{$n$-ary predicate} (or an \emph{$n$-ary relation symbol})
-is typically a boolean-valued function that can be evaluated to \texttt{True} 
-or \texttt{False} depending on the values it gets. 
+is typically a boolean-valued function that can be evaluated to \texttt{True}
+or \texttt{False} depending on the values it gets.
 
-Then an \emph{atomic well-formed formula} (or just \emph{formula}) in this language 
-is a $n$-ary predicate with $n$ terms evaluated to \texttt{True} \cite{barwise2000language}. 
+Then an \emph{atomic well-formed formula} (or just \emph{formula}) in this language
+is a $n$-ary predicate with $n$ terms evaluated to \texttt{True} \cite{barwise2000language}.
 
-For example, $x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}$ is a formula 
+For example, $x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}$ is a formula,
 because it represents an equation that always holds true for a quadratic equation
-$a\, x^2 + b\, x + c = 0$. The equality symbol ``$=$'' is a predicate that shows 
-the relationship between variables $x_1, x_2$ and variables $a, b, c$. 
+$a x^2 + b x + c = 0$. The equality symbol ``$=$'' is a predicate that shows
+the relationship between variables $x_1, x_2$ and variables $a, b, c$.
 
-In logic we can use any symbol for variables without changing the meaning of the formula. 
-For example, the energy-mass equivalence relation $E = mc^2$ can be written 
-as $x = y z^2$ and it still will still hold true and remain a valid formula. 
+In logic we can use any symbol for variables without changing the meaning of the formula.
+For example, the energy-mass equivalence relation $E = mc^2$ can be written
+as $x = y z^2$ and it still will still hold true and remain a valid formula.
 However, there are research communities in mathematics that have developed
-a special system of naming these variables, and these naming systems are 
-called \emph{mathematical notations}. For each symbol in a formula, 
-the notation assigns a precise semantic meaning. Therefore, because of the 
-notation, in Physics it is more common to write $E = mc^2$ rather 
+a special system of naming these variables, and these naming systems are
+called \emph{mathematical notations} \cite{wikinotation}. For each symbol in a formula,
+the notation assigns a precise semantic meaning. Therefore, because of the
+notation, in Physics it is more common to write $E = mc^2$ rather
 than $x = y z^2$, because the notation assigns unambiguous meaning to the symbols
-``$E$'', ``$m$'' and ``$c$'', and the meaning of these symbols is recognized 
-among physicists. 
+``$E$'', ``$m$'' and ``$c$'', and the meaning of these symbols is recognized
+among physicists.
 
-% TODO: ``notation'' taken from wiki - need to find a better source 
+% TODO: ``notation'' taken from wiki - need to find a better source
 % https://en.wikipedia.org/wiki/Mathematical_notation
-% maybe Wolska's thesis? 
+% maybe Wolska's thesis?
 
-However the notations may conflict. For example, while it is common to use 
-symbol $E$ to denote ``Energy'' in Physics, it also is used in Probability and 
-Statistics to denote ``Expected Value'', or in Linear Algebra to denote 
-``Elimination Matrix''. 
+However the notations may conflict. For example, while it is common to use
+symbol $E$ to denote ``Energy'' in Physics, it also is used in Probability and
+Statistics to denote ``Expected Value'', or in Linear Algebra to denote
+``Elimination Matrix''.
 We can compare the conflict of notations with the name collision problem in namespaces,
-and solve it by extending the notion of namespaces to mathematical notation. 
+and solve it by extending the notion of namespaces to mathematical notation.
 
 Thus, let us define a \emph{notation} $\mathcal N$ as a set of pairs $\{ (i, s) \}$,
 where $i$ is a symbol and $s$ is its semantic meaning,
-such that for any pair $(i, s) \in \mathcal N$ there does not exist a pair 
-$(i', s') \in \mathcal N$ with $i = i'$. 
-Let us call $i$  \emph{identifier} and $s$ \emph{definition}, and 
+such that for any pair $(i, s) \in \mathcal N$ there does not exist a pair
+$(i', s') \in \mathcal N$ with $i = i'$.
+Let us call $i$  \emph{identifier} and $s$ \emph{definition}, and
 then $(i, s)$ is an \emph{identifier-definition pair}.
-We say that two notations $\mathcal N_1$ and $\mathcal N_2$
-\emph{conflict} if there exists a pair $(i_1, s_1) \in \mathcal N_1$ and a pair
-$(i_2, s_2) \in \mathcal N_2$ such that $i_1 = i_2$ and $s_1 \ne s_2$. 
+Two notations $\mathcal N_1$ and $\mathcal N_2$
+\emph{conflict}, if there exists a pair $(i_1, s_1) \in \mathcal N_1$ and a pair
+$(i_2, s_2) \in \mathcal N_2$ such that $i_1 = i_2$ and $s_1 \ne s_2$.
 
-Then we can define \emph{namespace} as a named notation, i.e. a pair 
-$(\text{name}, \mathcal N)$ where $\mathcal N$ is a notation and ``name'' is
-a string that uniquely defines the notation. For convenience we can use 
-the Java syntax to refer to specific entries of a namespace. If 
-$(\text{name}, \mathcal N)$ is a namespace and $i$ is an identifier such that 
-$(i, s) \in \mathcal N$ for some $s$, then ``name.$i$'' is a 
-\emph{fully qualified name} of the identifier $i$ that relates it to the 
-definition $s$. For example, 
-given a namespace $\big( \text{``Physics''},$ $\{ (E, \text{``energy''}),$ 
-$(m, \text{``mass''}),$ $(c, \text{``speed of light''}) \} \big)$, 
-``Physics.$E$'' refers to ``energy'' -- the definition of $E$ in the 
-namespace ``Physics''. 
+Then we can define \emph{namespace} as a named notation, i.e. a pair
+$(\text{uid}, \mathcal N)$ where $\mathcal N$ is a notation and ``uid'' is
+a some string that uniquely identifies the notation. For convenience, in this
+work we can use the Java syntax to refer to specific entries of a namespace. If
+$(\text{name}, \mathcal N)$ is a namespace and $i$ is an identifier such that
+$(i, s) \in \mathcal N$ for some $s$, then ``name.$i$'' is a
+\emph{fully qualified name} of the identifier $i$ that relates it to the
+definition $s$. For example,
+given a namespace $\big( \text{``Physics''},$ $\{ (E, \text{``energy''}),$
+$(m, \text{``mass''}),$ $(c, \text{``speed of light''}) \} \big)$,
+``Physics.$E$'' refers to ``energy'' -- the definition of $E$ in the
+namespace ``Physics''.
 
 % TODO extend it to hierarchies ?
 
-Analogously to namespaces in Computer Science, formally a mathematical namespace 
-can contain any set of identifier-definition pairs that satisfies the definition of 
+Analogously to namespaces in Computer Science, formally a mathematical namespace
+can contain any set of identifier-definition pairs that satisfies the definition of
 the namespace, but typically namespaces of mathematical notation
-exhibit the same properties as well-designed Java packages: they 
-have low coupling and high cohesion, meaning that all definitions 
-come from the same area of mathematical knowledge and the definitions 
-from different notations do not intersect heavily. 
+exhibit the same properties as well-designed Java packages: they
+have low coupling and high cohesion, meaning that all definitions
+come from the same area of mathematical knowledge and the definitions
+from different notations do not intersect heavily.
 
-Additionally, we can introduce a document-centric view on the mathematical 
-namespaces: suppose we have a collection of documents of $n$ documents 
-$\mathcal D = \{ d_1, d_2, \ ... \ , d_n \}$ and a set of namespaces 
-$\{(n_1, \mathcal N_1), (n_2, \mathcal N_2), \ ... \ ,$ $(n_K, \mathcal N_K) \}$. 
-A document $d_j$ can use a namespace $(n_k, \mathcal N_k)$ by \emph{importing} 
-identifiers from it. To import an identifier, the document uses an import statement 
+Additionally, we can introduce a document-centric view on the mathematical
+namespaces: suppose we have a collection of documents of $n$ documents
+$\mathcal D = \{ d_1, d_2, \ ... \ , d_n \}$ and a set of $K$ namespaces
+$\{(n_1, \mathcal N_1), (n_2, \mathcal N_2), \ ... \ ,$ $(n_K, \mathcal N_K) \}$.
+A document $d_j$ can use a namespace $(n_k, \mathcal N_k)$ by \emph{importing}
+identifiers from it. To import an identifier, the document uses an import statement
 where the identifier $i$ is referred by its fully qualified name
-defined by this namespace. 
+defined by this namespace.
 
-\textbf{TODO}: Continue, re-introduce low coupling and high cohesion in terms of 
-document collection. 
+
+
+
+
+\textbf{TODO}: Continue, re-introduce low coupling and high cohesion in terms of
+document collection.
 
 
 However, in real-life scientific documents there are no import statements in the document
 preamble, and therefore ...
 
-The goal is to automatically discover the set of mathematical namespaces 
-given a collection of documents. 
+The goal is to automatically discover the set of mathematical namespaces
+given a collection of documents.
 
-Manual labeling is time consuming 
+Manual labeling is time consuming
 
 Want: approximation via ML algorithms
 
@@ -258,29 +222,185 @@ To do that need to be able to extract definition from text
 % extracting the definitions from the text that surrounds the formula. We explore these methods
 % in section \ref{section:definitionextraction}.
 
+\subsection{Namespaces in Mathematical Notation} \label{sec:namespaces}
 
 
-\subsection{Outcomes}
+An \emph{identifier namespace} is a coherent structure where
+each identifier is used only once and has a unique definition.
 
-% maybe there should be a better name for the section?
+How to find a namespace? Namespaces can be constructed by
+manually labeling each identifier/definition pair with appropriate
+name. But this is very time consuming, and in this work we suggest
+a different approach: use Machine Learning techniques for
+discovering namespaces automatically from a collection of scientific
+documents containing mathematical formulae.
 
-\textbf{TODO:} taken form the proposal.
-The main idea here to describe what can happen if we solve the problem of 
-namespace discovery in notation.
+
+Many modern programming languages use namespaces for modularity.
+For example, in the Java programming language \cite{gosling2014java}
+namespaces are called ``packages'' and
+a class may refer to classes from other packages via the \texttt{import}
+statement.
+
+% Example?
+
+
+Typically in a well-designed application, we can distinguish between
+two types of application packages \cite{evans2004domain}:
+
+\begin{itemize}
+  \item \emph{type 1}: domain-specific packages that deal with one particular concept, and
+  \item \emph{type 2}: packages that use many other packages of the first type
+\end{itemize}
+
+
+For example, we have an application \verb|org.company.app|
+with several domain-specific packages: \verb|org.company.app.domain.user|
+with classes related to users, \verb|org.company.app.domain.account|
+with classes related to user accounts, and a system-related package
+\verb|org.company.app.tools.auth| that deals with authentication and
+authorization. Then we also have a package \verb|org.company.app.web.manage|,
+which belongs to the type 2: it handles web requests
+while relying on classes from \verb|user| and \verb|account| to
+implement the business logic and on \verb|auth| for making sure the
+requests are authorized.
+
+We can observe that the type 1 packages are mostly self-contained
+and not highly coupled between each other,
+but type2 packages mostly use other packages of type 1: they
+depend on them.
 
 \ \\
 
-Once such namespaces are found, they can give good categorization of scientific documents based on formulae and notation used in them.
+We can extend this idea to scientific documents and identifier
+namespaces. A document can be seen as a class that uses concepts defined
+in other documents. Then the documents can be grouped such that
+some groups are of \emph{type 1}: they define the namespaces. In some
+sense the documents of type 1 are ``pure'' - they contain infromation
+about closely related concepts and not highly coupled
+with other document groups. But some documents are of \emph{type 2} and they
+are not pure: they draw from different concepts.
 
-We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach \cite{xmlnamespaces} and prepend namespace to the identifier, e.g. ``physics.$E$'', then it will give additional context and make it clear that ``physics.$E$'' means ``energy" rather than ``expected value".
 
-We also expect that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of \emph{dangling identifiers} \cite{pagael2014mlp} - identifiers that are used in formulae but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
+This intuition allows us to have the following assumptions:
+
+\begin{enumerate}
+ \item documents are ``mixtures'' of namespaces: they take identifiers from several namespaces
+ \item there are some documents are more ``pure'' than others: they either take identifiers exclusively from one namespace or from few very related namespaces
+\end{enumerate}
+
+
+With these assumptions we can refer to ``pure'' groups as
+\emph{namespace defining} groups. These groups can be seen as
+``type 1'' packages: they define namespaces that are used by other
+``type 2'' document groups.
+
+
+Additionally, we can assume that there is a strong correlation
+between identifiers in a document and the namespace of the document,
+and this correlation can be exploit to categorize
+documents into groups.
+
+
+% The goal of this work is to automatically discover identifier namespaces in
+% mathematical notation. But mathematical notation does not exist in isolation
+% and it is usually used in documents. Therefore we can approximate
+% namespace discovery from notation by namespace discovery from scientific
+% documents.
+
+
+Thus by combining these assumptions we can conclude that it should
+be approximate the process of namespace discovery by discovering
+groups of namespace defining documents, and this can be done by
+applying cluster analysis techniques to documents, represented
+by identifiers they contain.
+
+In the next section we will argue why we can use traditional
+document clustering techniques and what are the characteristics
+that texts and identifiers have in common.
+
+
+\subsection{Discovering Namespaces with Document Cluster Analysis} \label{sec:clusters-namespaces}
+
+
+We believe that cluster analysis techniques developed for
+text documents should work for identifiers.
+
+Let us consider the characteristics of text data:
+
+There are many distinct words in natural language. For example,
+if $\mathcal V$ is a set of all possible words, then usually $|\mathcal V| \approx 10^5$,
+but each individual document may contain only 500 distinct words, or
+sometimes even less if we consider sentences or small documents
+(e.g. tweets)
+
+number of words across different document may wary a lot
+
+ word distributions follow Power Laws (e.g. Zipf's law)
+
+
+The identifiers have the same properties!
+
+\ \\
+
+
+Natural languages suffer from lexical problems of variability and ambiguity,
+and the two main problems are synonymy and polysemy \cite{deerwester1990indexing}
+\cite{gliozzo2009semantic}:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item two words are \emph{synonymous} if they have the same meaning
+        (for example, ``word'' and ``term'' are synonyms),
+  \item a word is \emph{polysemous} is it can have multiple meanings
+        (for example, ``trunk'' can refer to a part of elephant or a part of a car).
+\end{itemize}
+
+
+We can note that identifiers have the same problems. For example,
+in Information Theory, the Shannon Entropy is usually denoted by
+``$H$'', but sometimes it is also denoted by ``$I$'' or by ``$S$'',
+thus these identifiers may be seen as synonyms.
+Also, ``$E$'' can stand both for ``Energy'' and ``Expected value'',
+so ``$E$'' is polysemous.
+
+These problems have been studied in Information Retrieval and
+Natural Language Processing literature.
+One possible solution for the polysemy problem is \emph{Word Sense Disambiguation}
+\cite{jurafsky2000speech}: either replace a word with its sense
+\cite{stokoe2003word} or append the sense to the word, for example
+if the polysemous word is ``bank'' with meaning ``financial institution'',
+then we replace it with ``bank\_finance''. The same idea can be used
+for identifiers, for example ``$E$'' can be replaced with ``$E$\_energy''.
+% We will expand this idea in the chapter~\ref{sec:ism}
+
+Document clustering techniques usually use Vector Space Models
+\cite{oikonomakou2005review} \cite{aggarwal2012survey} to represent documents.
+We can define ``Identifier Spaces'' analogous to Vector Space Models.
+We assume that Identifier Spaces exhibit the same characteristics as
+traditional Vector Space Models, and thus
+
+In the next section we review the Vector Space Model,
+and then introduce the Identifier VSM in the chapter~\ref{sec:ism}
+
+Then we can apply cluster analysis techniques to document-identifier matrices.
+
+
+
+% \subsection{Outcomes}
+
+% maybe there should be a better name for the section?
+
+% \textbf{TODO:} taken form the proposal.
+% The main idea here to describe what can happen if we solve the problem of
+% namespace discovery in notation.
+
 
 
 \subsection{Thesis Outline}
 
 
-This work is organized as follows: 
+This work is organized as follows:
 In chapter~\ref{sec:definitionextraction-top} we discuss how extract
 definitions for identifiers in texts with mathematical formulae;
 in chapter~\ref{sec:namespaces-top} the approaces to namespace

@@ -1,13 +1,13 @@
 \section{Implementation} \label{sec:implementation}
 
 
-In section~\ref{sec:dataset} we describe the data set that we use, 
-then we describe how we extract identifiers from this dataset 
+In section~\ref{sec:dataset} we describe the data set that we use,
+then we describe how we extract identifiers from this dataset
 (section~\ref{sec:defextraction-impl}) and how this dataset is cleaned
 (section~\ref{sec:datacleaning}). Next, the implementation of clustering
 algorithms is described in the section~\ref{sec:datacleaning}. After
-the clusters are found, we combine them into a hierarchy in 
-the section~\ref{sec:hierarchy}. 
+the clusters are found, we combine them into a hierarchy in
+the section~\ref{sec:hierarchy}.
 
 Finally, in the section~\ref{sec:jlp} we explore how the same set of techniques
 can be applied to source code in Java.
@@ -15,129 +15,229 @@ can be applied to source code in Java.
 
 \subsection{Data set} \label{sec:dataset}
 
-In this work we apply the discussed techniques to the English version of
-Wikipedia \cite{enwikidump}.
-It's a big web encyclopedia where articles are written and edited by 
-the community. For our work wikipedia is interesting because 
-there are many math pages. 
+Wikipedia is a big online encyclopedia where the content 
+are written and edited by the community. It contains a large 
+amount of articles on a variety of topics, including articles about
+Mathematics and Mathematics-related fields such as Physics. It 
+is multilingual and available in several languages, including
+English, German, French, Russian and others. 
+The content of wikipedia pages are authored in a special 
+markup language and the content of the entire encyclopedia
+is freely available for download.
 
 
-At present (\today) English wikipedia contains about 4.9 mln
-articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}
-and it is 1.5 Gb in the compressed form. However, only a small portion
-of these articles are math related: only about 30.000 pages contain at least 
-one \verb|<math>| tag. 
+% why wiki? 
 
-The math information is enriched with semantic information by MediaWiki 
-and we use this augmented data representation. 30.000 math pages with 
-augmented math tags occupy around 1.5 Gb in uncompressed form. 
+The techniques discussed in this work are mainly applied 
+to the English version of Wikipedia. At the moment of writing 
+(\today) English Wikipedia contains about 4.9 million 
+articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}.
+However, just a small portion of these articles are math related: 
+there are only 30.000 pages that contain at least one \verb|<math>| tag.
 
-Apart from the text data and formulas wikipedia articles have information
-about categories, which can also be exploited. It is hard to 
-extract category information from the raw wikipedia mark up, but this 
-information is available in a structured form in DBPedia \cite{bizer2009dbpedia}.
+Apart from the text data and formulas Wikipedia articles have information
+about categories, and we can exploit this information as well. 
+The category information is encoded directly into each Wikipedia page 
+with a special markup tag. For example, the article 
+``Linear Regression''\footnote{\url{https://en.wikipedia.org/wiki/Linear_regression}}
+belongs to the category ``Regression analysis'' and \verb|[[Category:Regression analysis]]| 
+tag encodes this information. 
+However there are other indirect ways to associate a page with some 
+category, for example, by using Wiki templates. A template is a user-defined macro
+that is executed by the Wikipedia engine, and the content of a template 
+can include category association tags. It is hard 
+to extract the content information from the template tag and therefore 
+we use category information available in a structured 
+machine-processable form in DBPedia \cite{bizer2009dbpedia}. 
+Additionally, DBPedia provides extra information  such as parent 
+categories (categories of categories) that is very easy to process 
+and incorporate into analysis. 
+
+
+Wikipedia is available in other languages, not only English. 
+While the most of the analysis is performed on the English Wikipedia,
+we also apply some of the techniques to the Russian version \cite{ruwikidump}
+to compare it with the results obtained on the English Wikipedia.
+Russian Wikipedia is smaller that the English Wikipedia and contains 
+1.9 million
+articles\footnote{\url{https://en.wikipedia.org/wiki/Russian_Wikipedia}},
+among which only 15.000 pages are math-related (i.e. contain at 
+least one \verb|<math>| tag).
 
 
 \subsection{Definition Extraction} \label{sec:defextraction-impl}
 
-Before we can proceed to discovering identifier namespaces, we  
-need to extract identifier-definition relations. For this we use the probabilistic 
-approach, discussed in the section~\ref{sec:mlp}. 
-The extraction process in implemented using Apache Flink \cite{flink}.
+Before we can proceed to discovering identifier namespaces, we
+need to extract identifier-definition relations. For this we use the probabilistic
+approach, discussed in the section~\ref{sec:mlp}.
+The extraction process is implemented using Apache Flink \cite{flink}
+and it is based on the open source implementation provided by Pagael and 
+Schubotz in \cite{pagael2014mlp}\footnote{\url{https://github.com/rbzn/project-mlp}}.
 
-But before the original dataset can be preprocessed, it is enriched with 
-augmented MathML (see section~\ref{sec:mathml}), 
-and then the dataset is filtered such that only articles with
-the math tag are retained. 
 
-In the wikipedia dataset each document is represented using wiki XML. It 
-makes it easy to extract title and content, and then, the all the formulas 
-are extracted from the content. The formulas are extracted by 
-looking for \verb|<math>| tags. However some formulas are typed without 
-the tag, but only with unicode characters. Such formulas are not easy to 
-detect and therefore in this word we choose not to process them.
-Once all \verb|<math>| tags are found, they (along with the content) 
-are replaced with a special placeholder \verb|FORMULA_%HASH%|, where 
-\verb|%HASH%| is MD5 hash \cite{rivest1992md5} of the tag's content represented as 
-a hexadecimal string. After that 
-the content of the tags is kept separately from the document content. 
+The first step is to keep only mathematical articles and discard the rest. 
+This is done by retaining only those articles that contain
+at least one \verb|<math>| tag. Once the data set is filtered, then 
+all the \LaTeX\ formulas form the \verb|<math>| tags are converted 
+to MathML, an XML-based representation of mathematical
+formulae \cite{mathml}. 
 
-Once formulas are retrieved, we extract the definitions from them. 
-We are not interested in the semantics of a formula, only in the identifiers 
-it contains. Hence we need only to look for all \verb|<ci>| tags. 
-There are two types of identifiers: simple identifiers such as 
-``$t$'', ``$C$'', ``$\mu$''; and complex identifiers with subscripts such as
-``$x_1$'', ``$\xi_i$'' or even ``$\beta_{\text{slope}}$''. We do not process 
-superscripts because they are usually powers (for example, $x^2$), 
-and therefore they are not interesting for this work. 
+The dataset is stored in a big XML file in the Wiki XML
+format. It makes it easy to extract the title and the content 
+of each document, and then process the documents separately. 
+The formulas are extracted by looking for the \verb|<math>| tags. 
+However some formulas for some reasons are typed without the tags 
+using the unicode symbols, and such formulas are very hard to 
+detect and therefore we choose not to process them.
+Once all \verb|<math>| tags are found, they (along with the content)
+are replaced with a special placeholder \verb|FORMULA_%HASH%|, where
+\verb|%HASH%| is MD5 hash \cite{rivest1992md5} of the tag's content represented as
+a hexadecimal string. After that
+the content of the tags is kept separately from the document content.
+
+The next step is to find the definitions for identifiers in formulas.
+We are not interested in the semantics of a formula, only in the identifiers
+it contains. In MathML \verb|<ci>| corresponds to identifiers, and 
+hence extracting identifiers from MathML formulas amounts to finding 
+all \verb|<ci>| tags and retrieving their content. It is enough to 
+extract simple identifiers such as ``$t$'', ``$C$'', ``$\mu$'', but
+there also are complex identifiers with subscripts, such as 
+``$x_1$'', ``$\xi_i$'' or even ``$\beta_{\text{slope}}$''. 
+To extract them we need to look for tags \verb|<msub>|. We do not 
+process superscripts because they are usually powers (for example, ``$x^2$''),
+and therefore they are not interesting for this work.
 There are exceptions to this, for example, ``$\sigma^2$'' is an identifier,
-but these cases are rare and can be ignored. 
+but these cases are rare and can be ignored.
 
-Since MathML is XML, the identifiers are extracted with XPath queries:
+Since MathML is XML, the identifiers are extracted with XPath 
+queries \cite{moller2006introduction}:
 
 \begin{itemize}
   \item \verb|//m:mi[not(ancestor::m:msub)]/text()| for all \verb|<ci>| tags
-that are not subscript identifers
-  \item \verb|//m:msub| for subscript identifiers
+that are not subscript identifers;
+  \item \verb|//m:msub| for subscript identifiers.
 \end{itemize}
 
-Once the identifiers are extracted, the rest of the formula is discarded. 
-As the result, we have a ``Bag of Formulas''.
+Once the identifiers are extracted, the rest of the formula is discarded.
+As the result, we have a ``Bag of Formulae'': analogously to the Bag of Words
+approach (see section~\ref{sec:vsm}) we keep only the counts of occurrences 
+of different identifiers and we do not preserve any other structure. 
 
-The content of a wiki document is structured and authored with a special 
-markup language for specifying document layout elements such as
-headers, lists, text formatting and tables: Wiki markup. 
-Thus the next step is to process the Wiki markup and extract the textual 
-content of an article, and this is done using a Java library 
+
+The content of Wikipedia document is authored with Wiki markup -- 
+a special markup language for specifying document layout elements 
+such as headers, lists, text formatting and tables. 
+Thus the next step is to process the Wiki markup and extract the textual
+content of an article, and this is done using a Java library
 ``Mylyn Wikitext'' \cite{mylynwikitext}.
 Almost all annotations are discarded at this stage,
 and only inner-wiki links are kept: they can be useful as candidate definitions.
+The implementation of this step is taken entirely from \cite{pagael2014mlp}
+with only a few minor changes. 
 
-Once the markup annotations are removed and the text content of an article is 
+
+Once the markup annotations are removed and the text content of an article is
 extracted, we then apply Natural Language Processing (NLP) techniques.
-Thus, the next step is the NLP step, and for NLP we use StanfordNLP
-\cite{manning2014stanford}. 
-The first part at this stage is to tokenize the text and also split it by sentences. 
+Thus, the next step is the NLP step, and for NLP we use the 
+Stanford Core NLP library (StanfordNLP) \cite{manning2014stanford}.
+The first part of this stage is to tokenize the text and also split it by sentences.
 Once it is done, we then apply Math-aware POS tagging
-(see section~\ref{sec:postagging}).
-For identifiers and math formulas we introduce two new POS classes: 
-``\verb|ID|'' and ``\verb|MATH|'', respectively. 
-These classes are not a part of the 
-standard Penn Treebank POS Scheme \cite{santorini1990part} used by 
-StanfordNLP, therefore we need to label all the instances of these tags ourselves 
+(see section~\ref{sec:postagging}). For English documents from the English Wikipedia
+we use StanfordNLP's Maximal Entropy POS Tagger \cite{toutanova2003feature}.
+Unfortunately, there are no trained models available for POS tagging the Russian 
+language for the StanfordNLP library. Additionally, we were not able to find a 
+suitable implementation of any other POS taggers in Java, and therefore we 
+implemented a simple rule-based POS tagger ourselves. The implementation is based on 
+a PHP function from \cite{habr2012postag}: it is translated into Java 
+and seamlessly incorporated into the StanfordNLP pipeline. 
+The English tagger uses the Penn Treebank POS Scheme \cite{santorini1990part},
+and hence we follow the same convention for the Russian tagger.
+
+
+For handling mathematics we introduce two new POS classes: 
+``\verb|ID|'' for identifiers and ``\verb|MATH|'' for formulas. 
+These classes are not a part of the Penn Treebank POS Scheme, 
+and therefore we need to label all the instances of these tags ourselves
 during the additional post-processing step. If a token starts
-with ``\verb|FORMULA_|'', then we recognize that it is a placeholder 
+with ``\verb|FORMULA_|'', then we recognize that it is a placeholder
 for a math formula, and therefore we annotate it with the ``\verb|MATH|''
-tag. Additionally, if this formula contains only one identifier, this 
-placeholder token is replaced by the identifier and it is tagged with 
-``\verb|ID|''. Additionally, we keep track of all identifiers found in 
-the document and then for each token we check if this token is in the list. 
-If it is, then it is re-annotated with ``\verb|ID|'' as well.
+tag. Additionally, if this formula contains only one identifier, this
+placeholder token is replaced by the identifier and it is tagged with
+``\verb|ID|''. We also keep track of all identifiers found in
+the document and then for each token we check if this token is in the list.
+If it is, then it is re-annotated with the ``\verb|ID|'' tag.
 
-At the Wikipedia markup processing step we discard almost all markup 
-annotations, but keep only inter-wiki links, because these links
-are good definition candidates. To use them, we introduce 
-another POS Tag: ``\verb|LINK|''. To detect all inner-wiki links, 
-we first find all token subsequences that start with \verb|[[| 
-and end with \verb|]]|. 
-Then these subsequences are concatenated and tagged as ``\verb|LINK|''.
+At the Wikipedia markup processing step we discard almost all markup
+annotations, but we do keep inner Wikipedia links, because these links
+are good definition candidates. To use them, we introduce
+another POS Tag: ``\verb|LINK|''. To detect all inner-wiki links,
+we first find all token subsequences that start with \verb|[[|
+and end with \verb|]]|, and then these subsequences are 
+concatenated and tagged as ``\verb|LINK|''.
 
-Also we are interested in all sequences of successive nouns (both singular 
-and plural) possibly modified by an adjective. We concatenate all
-such sequences into one token tagged with ``\verb|NOUN_PHRASE|''.
+Successive nouns (both singular and plurals), possible modified 
+by an adjective, are also candidates for definitions. Therefore 
+we find all such sequences on the text and then concatenate each 
+into one single token tagged with ``\verb|NOUN_PHRASE|''.
 
-
-Next we select the most probably identifier-definition pairs. 
-At this stage we are interested only in tokens annotated with  ``\verb|LINK|''
-and ``\verb|NOUN_PHRASE|'': these tokens are definition candidates, and 
-we rank each token by a score that depends how far it is from the identifer
-of interest and how far is the closest formula that contains this 
+The next stage is selecting the most probable identifier-definition
+pairs, and this is done by ranking definition candidates. 
+The definition candidates are tokens annotated with ``\verb|NN|'' (noun singular),
+``\verb|NNS|'' (noun plural), ``\verb|LINK|'' and ``\verb|NOUN_PHRASE|''.
+We rank these tokens by a score that depends how far it is from the identifer
+of interest and how far is the closest formula that contains this
 identifier (see section~\ref{sec:mlp}). 
-The output of this step is a list of identifier-definition pairs along 
-with the score. Only pairs with scores above the user specified  
-threshold are retained. 
+The output of this step is a list of identifier-definition pairs along
+with the score, and only the pairs with scores above 
+the user specified threshold are retained. The implementation of
+this step is also taken entirely from \cite{pagael2014mlp} with very minor
+modifications. 
 
-The following is the list of the most common identifier-definition pairs:
+After some data cleaning, only 22515 documents are left: 
+the rest contained ``false identifiers'', and after 
+these identifiers are removed, the documents with no
+identifiers are discarded. 
+
+Euclidean algorithm page has 22766 identifiers - it's the largest
+
+
+There are 12.771 distinct identifiers extracted from the 
+the English Wikipedia, and together they occur about 2 million times.
+The most frequent identifiers are $x$ (125.500 times), $p$ (110.000), 
+$m$ (105.000) and $n$ (83.000), but about 3700 identifiers occur
+only once and 1950 just twice. Clearly, the distribution of 
+identifiers follows some power law (see fig.~\ref{fig:ed-wiki-ids}).
+
+
+\begin{figure}[h]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{en-wiki-ids-1.pdf}
+  \caption{Frequencies of the first 50 identifiers}
+  \label{fig:en-wiki-ids-1}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{en-wiki-ids-2-log.pdf}
+  \caption{Frequencies, log scale}
+  \label{fig:en-wiki-ids-2-log.pdf}
+\end{subfigure}
+\hfill
+\caption{Distribution of frequencies of identifiers}
+\label{fig:ed-wiki-ids}
+\end{figure}
+
+
+
+
+Only 115297 definitions are found
+
+
+The following is the list of the most common identifier-definition pairs 
+extracted from the English Wikipedia:
 
 \begin{itemize}
 \item $t$: ``time'' (1086)
@@ -160,81 +260,111 @@ The following is the list of the most common identifier-definition pairs:
 \item $n$: ``dimension'' (185)
 \item $n$: ``size'' (178)
 \item $M$: ``mass'' (171)
+\item $d$: ``distance'' (163)
+\item $X$: ``topological space'' (159)
 \end{itemize}
 
 
 
+And this is the list of relations extracted from the Russian one:
+
+\begin{itemize}
+\item $t$: ``функция'' (``function'') (215)
+\item $t$: ``время'' (``time'') (130)
+\item $X$: ``множество'' (``set'') (113)
+\item $m$: ``масса'' (``mass'') (103)
+\item $c$: ``скорость свет'' (``speed of light'') (89)
+\item $G$: ``группа'' (``group'') (87)
+\item $T$: ``температура'' (``temperature'') (69)
+\item $h$: ``постоянный планка'' (``Plank constant'') (68)
+\item $\rho$: ``плотность'' (``density'') (57)
+\item $M$: ``многообразие'' (``manifold'') (53)
+\item $K$: ``поль'' (``field'') (53)
+\item $X$: ``пространство'' (``space'') (50)
+\item $v$: ``скорость'' (``speed'') (50)
+\item $X$: ``топологический пространство'' (``topological space'') (46)
+\item $G$: ``граф'' (``graph'') (44)
+\item $R$: ``радиус'' (``radius'') (38)
+\item $R$: ``кольцо'' (``ring'') (36)
+\item $G$: ``гравитационный постоянный'' (``gravitational constant'') (34)
+\item $E$: ``энергия'' (``energy'') (34)
+\item $m$: ``модуль'' (``modulo'') (33)
+\item $S$: ``площадь'' (``area'') (32)
+\item $k$: ``постоянный больцмана'' (``Boltzmann constant'') (30)
+\end{itemize}
+
+
 \subsection{Data Cleaning} \label{sec:datacleaning}
 
-The Natural Language data is famous for being noisy and hard to 
-clean \cite{sonntag2004assessing}. The same is true for 
-mathematical identifiers and  scientific texts with formulas. 
-In this section we describe how the data was preprocessed and 
-cleaned at different stages of Definition Extraction 
+The Natural Language data is famous for being noisy and hard to
+clean \cite{sonntag2004assessing}. The same is true for
+mathematical identifiers and  scientific texts with formulas.
+In this section we describe how the data was preprocessed and
+cleaned at different stages of Definition Extraction
 (section~\ref{sec:defextraction-impl}).
 
 
-Often identifiers contain additional semantic information visually conveyed 
-by special diacritical marks or font features. For example, the diacritics can be   
-hats to denote ``estimates'' (e.g. ``$\hat w$''), bars to denote the expected value 
+Often identifiers contain additional semantic information visually conveyed
+by special diacritical marks or font features. For example, the diacritics can be
+hats to denote ``estimates'' (e.g. ``$\hat w$''), bars to denote the expected value
 (e.g. ``$\bar X$''), arrows to denote vectors (e.g. ``$\overrightarrow x$'') and others.
 As for the font features, boldness is often used to
-denote vectors (e.g. ``$\mathbf w$'') or matrices (e.g. ``$\mathbf X$''), calligraphic fonts are 
-used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces 
-(e.g. ``$\mathbb R$''), etc. 
+denote vectors (e.g. ``$\mathbf w$'') or matrices (e.g. ``$\mathbf X$''), calligraphic fonts are
+used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces
+(e.g. ``$\mathbb R$''), etc.
 Unfortunately there is no common notation established across all fields of
-mathematics and there is a lot of variance. For example, 
-a vector can be denoted by ``$\overrightarrow x$'', ``$\boldsymbol x$'' or ``$\mathbf x$'', 
-and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''. 
+mathematics and there is a lot of variance. For example,
+a vector can be denoted by ``$\overrightarrow x$'', ``$\boldsymbol x$'' or ``$\mathbf x$'',
+and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''.
 Therefore we discard all this additional information, such that
-``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$'' 
+``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$''
 becomes ``$R$''.
 
 
-The diacritic marks can easily be discarded because they are represented 
-by special MathML instructions that easily can be ignored 
+The diacritic marks can easily be discarded because they are represented
+by special MathML instructions that easily can be ignored
 (see the section~\ref{sec:mathml} for details). But, on the other hand,
-the visual features are encoded directly on the character level: 
-the identifiers use special unicode symbols to convey font features such 
+the visual features are encoded directly on the character level:
+the identifiers use special unicode symbols to convey font features such
 as boldness or Fraktur, so it needs to be normalized by converting characters
 from special ``Mathematical Alphanumeric Symbols'' unicode block \cite{allen2007unicode}
 back to the standard ASCII positions (``Basic Latin'' block).
 
-Additionally, the is a lot of noise on the annotation level in MathML formulas: 
-many non-identifiers are captures as identifiers inside \verb|<ci>| tags. Among 
+Additionally, the is a lot of noise on the annotation level in MathML formulas:
+many non-identifiers are captures as identifiers inside \verb|<ci>| tags. Among
 them there are many mathematic-related symbols
-like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$''; 
+like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$'';
 miscellaneous symbols like ``$\diamond$'' or
 ``$\circ$'', arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
 ``$\lceil$''.
 
-To filter out these one-symbol false identifiers we fully exclude all characters from 
-the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'', 
-``Geometric Shapes'', ``Arrows'', ``Miscellaneous Technical'', ``Box Drawing'', 
+To filter out these one-symbol false identifiers we fully exclude all characters from
+the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'',
+``Geometric Shapes'', ``Arrows'', ``Miscellaneous Technical'', ``Box Drawing'',
 ``Mathematical Operators'' (except ``$\nabla$'' which is sometimes used as an identifier)
 and ``Supplemental Mathematical Operators'' \cite{allen2007unicode}.
 Some symbols (like ``='', ``+'', ``\verb|~|'', ``\%'', ``?'', ``!'')
-belong to commonly used unicode blocks which we cannot exclude altogether. 
+belong to commonly used unicode blocks which we cannot exclude altogether.
 For these symbols we manually prepare a stop list for filtering them.
 
 It also captures multiple-symbol false positives: operators and functions
-like ``\texttt{sin}'', ``\texttt{cos}'', ``\texttt{exp}'', ``\texttt{max}'', ``\texttt{trace}''; 
+like ``\texttt{sin}'', ``\texttt{cos}'', ``\texttt{exp}'', ``\texttt{max}'', ``\texttt{trace}'';
 words commonly used in formulas like ``\texttt{const}'', ``\texttt{true}'', ``\texttt{false}'',
 ``\texttt{vs}'', ``\texttt{iff}''; English stop words like ``\texttt{where}'', ``\texttt{else}'',
-``\texttt{on}'', ``\texttt{of}'', ``\texttt{as}'', ``\texttt{is}''; 
+``\texttt{on}'', ``\texttt{of}'', ``\texttt{as}'', ``\texttt{is}'';
 units like ``\texttt{mol}'', ``\texttt{dB}'', ``\texttt{mm}''.
 These false identifiers are excluded by a stop list as well: if a
 candidate identifier is in the list, it is filtered out.
 
 
-Then, at the next stage, the definitions are extracted. However many 
-shortlisted definitions are either not valid definitions or too general. 
-For example, some identifiers become associated with ``\texttt{if and only if}'', 
-``\texttt{alpha}'', ``\texttt{beta}'', ``\texttt{gamma}'', which are not valid definitions. 
-Other definitions like ``\texttt{element}'', ``\texttt{number}'' or 
+Then, at the next stage, the definitions are extracted. However many
+shortlisted definitions are either not valid definitions or too general.
+For example, some identifiers become associated with ``\texttt{if and only if}'',
+``\texttt{alpha}'', ``\texttt{beta}'', ``\texttt{gamma}'', which are not valid definitions.
+Other definitions like ``\texttt{element}'', ``\texttt{number}'' or
 ``\texttt{variable}'' are valid, but
-they are too general and not descriptive. We maintain a stop list of such 
-false definitions and filter them out from the result. 
+they are too general and not descriptive. We maintain a stop list of such
+false definitions and filter them out from the result.
 
 The next stage is using identifier/defintion pairs for document clustering
 We can note that if some definition is used only once throughout the entire
@@ -244,14 +374,14 @@ Therefore all such definitions are excluded.
 
 \subsection{Document Clustering} \label{sec:clustering-impl}
 
-At the Document Clustering stage we want to find cluster of documents 
-that are good namespace candidates. 
+At the Document Clustering stage we want to find cluster of documents
+that are good namespace candidates.
 
-Before we can do this, we need to vectorize our dataset: i.e. build the 
-Identifier Space (see section~\ref{sec:ism}) and represent each document 
-in this space. 
+Before we can do this, we need to vectorize our dataset: i.e. build the
+Identifier Space (see section~\ref{sec:ism}) and represent each document
+in this space.
 
-There are three choices for dimensions of the Identifier space: 
+There are three choices for dimensions of the Identifier space:
 
 \begin{itemize}
   \item identifiers alone
@@ -259,31 +389,31 @@ There are three choices for dimensions of the Identifier space:
   \item ``strong'' association: use identifier-definition pairs
 \end{itemize}
 
-In the first case we are only interested in identifier information and 
-discard the definitions altogether. 
+In the first case we are only interested in identifier information and
+discard the definitions altogether.
 
-In the second and third cases we keep the definitions and use them to 
-index the dimensions of the Identifier Space. Bur there is some 
-variability in the definitions: for example, the same identifier 
+In the second and third cases we keep the definitions and use them to
+index the dimensions of the Identifier Space. Bur there is some
+variability in the definitions: for example, the same identifier
 ``$\sigma$'' in one document can be assigned to ``Cauchy stress tensor'' and
-in other it can be assigned to ``stress tensor'', which are almost the same thing. 
-To reduce this variability we perform some preprocessing: we tokenize 
-the definitions and use individual tokens to index dimensions of the space. 
-For example, suppose we have two pairs ($\sigma$, ``Cauchy stress tensor'') 
+in other it can be assigned to ``stress tensor'', which are almost the same thing.
+To reduce this variability we perform some preprocessing: we tokenize
+the definitions and use individual tokens to index dimensions of the space.
+For example, suppose we have two pairs ($\sigma$, ``Cauchy stress tensor'')
 and ($\sigma$, ``stress tensor''). In the ``weak'' association case
 we have will dimensions $(\sigma, \text{Cauchy}, \text{stress}, \text{tensor})$,
-while for the ``strong'' association case we will have 
+while for the ``strong'' association case we will have
 $(\sigma\text{\_Cauchy}, \sigma\text{\_stress}, \sigma\text{\_tensor})$.
 
 Additionally, the effect of variability can be decreased further
-by applying a stemming technique for each definition token. 
-In this work we use Snowball stemmer for English \cite{porter2001snowball} 
-implemented in NLTK \cite{bird2006nltk}: a python library for 
-Natural Language Processing. 
+by applying a stemming technique for each definition token.
+In this work we use Snowball stemmer for English \cite{porter2001snowball}
+implemented in NLTK \cite{bird2006nltk}: a python library for
+Natural Language Processing.
 
 Each document is vectorized (converted to a vector form) by using
-\verb|TfidfVectorizer| from  scikit-learn \cite{scikit-learn}. 
-We use the following settings: 
+\verb|TfidfVectorizer| from  scikit-learn \cite{scikit-learn}.
+We use the following settings:
 
 \begin{itemize}
   \item \verb|use_idf=True, min_df=2|
@@ -292,86 +422,86 @@ We use the following settings:
 \end{itemize}
 
 
-In the first case we use inverse document frequency (IDF) to assign additional 
+In the first case we use inverse document frequency (IDF) to assign additional
 collection weight for "terms"
-(see section~\ref{sec:vsm}), while in second and in third we use only 
+(see section~\ref{sec:vsm}), while in second and in third we use only
 term frequency (TF).
 In the second case we apply a sublinear transformation to the TF component
-to reduce  the influence of frequently occurring words. 
-In all three cases we keep 
-only "terms" that are used in at least two documents. 
+to reduce  the influence of frequently occurring words.
+In all three cases we keep
+only "terms" that are used in at least two documents.
 
 The output is a document-identifier matrix (analogous to ``document-term''):
-documents are rows and identifiers/definitions are columns. 
+documents are rows and identifiers/definitions are columns.
 The output of \verb|TfidfVectorizer| is row-normalized, i.e.
-all rows has unit length. 
+all rows has unit length.
 
 
 Once we the documents are vectorized, we can apply clustering techniques
-to them. We use $K$-Means (class \verb|KMeans| in scikit-learn) and 
+to them. We use $K$-Means (class \verb|KMeans| in scikit-learn) and
 Mini-Batch $K$-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}.
-Note that if rows are unit-normalized, then running $K$-Means with 
-Euclidean distance is equivalent to cosine distance 
+Note that if rows are unit-normalized, then running $K$-Means with
+Euclidean distance is equivalent to cosine distance
 (see section~\ref{sec:kmeans}).
 
-Bisecting $K$-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of 
-scikit-learn: at each step we take a subset of the dataset and apply 
-$K$-Means with $K = 2$ to this subset. If the subset is big (with number of 
-documents $n > 2000$), then we use Mini-Batch $K$-means with $K=2$ 
-because it converges much faster. 
+Bisecting $K$-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of
+scikit-learn: at each step we take a subset of the dataset and apply
+$K$-Means with $K = 2$ to this subset. If the subset is big (with number of
+documents $n > 2000$), then we use Mini-Batch $K$-means with $K=2$
+because it converges much faster.
 
-Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans-ext}), was 
-implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because 
+Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans-ext}), was
+implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because
 scikit-learn's implementation of $K$-Means does not allow using user-defined distances.
 
 DBScan (section~\ref{sec:dbscan}) and SNN Clustering (section~\ref{sec:dbscan-ext})
 algorithms were also implemented manually:
-available DBScan implementations usually take distance measure rather than 
-a similarity measure. The similarity matrix cleated by similarity measures 
-are typically very sparse, because usually only a small fraction of the documents 
-are similar to some given document. Similarity measures 
-can be converted to distance measures, but in this case 
+available DBScan implementations usually take distance measure rather than
+a similarity measure. The similarity matrix cleated by similarity measures
+are typically very sparse, because usually only a small fraction of the documents
+are similar to some given document. Similarity measures
+can be converted to distance measures, but in this case
 the matrix will no longer be sparse, and we would like to avoid that.
-Additionally, available implementations are usually general purpose 
+Additionally, available implementations are usually general purpose
 implementations and do not take advantage of the structure of the data:
-in text-like data clustering algorithms can be sped up significantly 
+in text-like data clustering algorithms can be sped up significantly
 by using an inverted index (section~\ref{sec:index})
 
 
-Dimensionality reduction techniques are also important: they 
-not only reduce the dimensionality, but also help reveal the latent 
+Dimensionality reduction techniques are also important: they
+not only reduce the dimensionality, but also help reveal the latent
 structure of data. In this work we use Latent Semantic Analysis (LSA) (section~\ref{sec:lsa})
-which is implemented using randomized Singular Value Decomposition (SVD) 
-\cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn 
-\cite{scikit-learn} - method \verb|randomized_svd|. Non-negative Matrix Factorization 
-is an alternative technique for dimensionality reduction (section~\ref{sec:nmf}). 
-Its implementation is also taken from scikit-learn \cite{scikit-learn}, 
+which is implemented using randomized Singular Value Decomposition (SVD)
+\cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn
+\cite{scikit-learn} - method \verb|randomized_svd|. Non-negative Matrix Factorization
+is an alternative technique for dimensionality reduction (section~\ref{sec:nmf}).
+Its implementation is also taken from scikit-learn \cite{scikit-learn},
 class \verb|NMF|.
 
-To assess the quality of produced clusters we use wikipedia categories. It is 
+To assess the quality of produced clusters we use wikipedia categories. It is
 quite difficult to extract category information from raw wikipedia text,
-therefore we use DBPedia \cite{bizer2009dbpedia} for that: it provides 
-machine-readable information about categories for each wikipedia article. 
-Additionally, categories in wikipedia form a hierarchy, and this hierarchy 
-is available as a SKOS ontology. 
+therefore we use DBPedia \cite{bizer2009dbpedia} for that: it provides
+machine-readable information about categories for each wikipedia article.
+Additionally, categories in wikipedia form a hierarchy, and this hierarchy
+is available as a SKOS ontology.
 
-A cluster is said to be ``pure'' if all documents have the same category. 
-Using categories information we can find the most frequent category of the 
-cluster, and then we can define purity as 
+A cluster is said to be ``pure'' if all documents have the same category.
+Using categories information we can find the most frequent category of the
+cluster, and then we can define purity as
 
 $$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|}$$
 
-(\textbf{TODO}: Add backlink to purity definition). 
+(\textbf{TODO}: Add backlink to purity definition).
 
-Then we can calculate the overall purity of a cluster assignment and use 
-this to compare results of different clustering algorithms. However it is not 
-enough just to find the most pure cluster assignment: because as the number 
-of clusters increases the overall purity also grows. 
-Thus we can also optimize for the number of clusters with purity $p$ of 
-size at least $n$. 
+Then we can calculate the overall purity of a cluster assignment and use
+this to compare results of different clustering algorithms. However it is not
+enough just to find the most pure cluster assignment: because as the number
+of clusters increases the overall purity also grows.
+Thus we can also optimize for the number of clusters with purity $p$ of
+size at least $n$.
 
-When the number of clusters increase, the purity always grows 
-(see fig.~\ref{fig:k-vs-purity}), but at some point the number of pure clusters 
+When the number of clusters increase, the purity always grows
+(see fig.~\ref{fig:k-vs-purity}), but at some point the number of pure clusters
 will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 
 
@@ -394,14 +524,14 @@ will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 \subsection{Building Hierarchy} \label{sec:hierarchy}
 
 
-Once 
+Once
 
 AMS Mathematics Subject Classification (2010) \cite{ams2010msc}
-Excluded all subcategories those code end with '99': they are 
-usually 'Miscellaneous topics' or 'None of the above, but in this section'. 
+Excluded all subcategories those code end with '99': they are
+usually 'Miscellaneous topics' or 'None of the above, but in this section'.
 top level categories 'General', 'History and biography', and 'Mathematics education'
-were also excluded. 
-Additionally we exclude the following: 
+were also excluded.
+Additionally we exclude the following:
 
 \begin{itemize}
 \item Quantum theory $\to$ Axiomatics, foundations, philosophy
@@ -413,96 +543,96 @@ Additionally we exclude the following:
 \item Functional analysis $\to$ Miscellaneous applications of functional analysis
 \end{itemize}
 
-So these categories do not interfere with PACS. 
+So these categories do not interfere with PACS.
 
 
 APS Physics and Astronomy Classification Scheme (2010) \cite{aps2010pacs}
 
-We remove the ``GENERAL'' top-level category. 
-In PACS there are 3 levels of categories, but we merge all 3-rd level categories into 
+We remove the ``GENERAL'' top-level category.
+In PACS there are 3 levels of categories, but we merge all 3-rd level categories into
 2nd level.
 
-ACM Classification Scheme \cite{rous2012acm} available as a SKOS \cite{miles2005skos} ontology 
+ACM Classification Scheme \cite{rous2012acm} available as a SKOS \cite{miles2005skos} ontology
 at their website \cite{amc2012ccs}. The SKOS ontology graph was processed with RDFLib \cite{rdflib}
 
 We keep the following top level categories:
-``Hardware'', ``Computer systems organization'', ``Networks'', 
-``Software and its engineering'', ``Theory of computation'', 
+``Hardware'', ``Computer systems organization'', ``Networks'',
+``Software and its engineering'', ``Theory of computation'',
 ``Information systems'', ``Security and privacy'',
 ``Human-centered computing'', ``Computing methodologies''.
 
-After obtaining the data and parsing, all categories, the hierarchies 
-are merged into one and then we try to match the found namespaces 
-with second-level category in the hierarchy. 
+After obtaining the data and parsing, all categories, the hierarchies
+are merged into one and then we try to match the found namespaces
+with second-level category in the hierarchy.
 
-This is done by keywords matching: we extract all words from the 
+This is done by keywords matching: we extract all words from the
 category (this includes top level category name, subcategory name
-and all sub-sub categories concatenated). From the cluster 
+and all sub-sub categories concatenated). From the cluster
 we also extract the category information.
-Then we try to do keyword matching using cosine similarity 
-between the cluster and each category. The cluster is assigned 
-to the category with the best cosine. 
+Then we try to do keyword matching using cosine similarity
+between the cluster and each category. The cluster is assigned
+to the category with the best cosine.
 
-If the cosine score is low (below $0.2$) or there is only one 
-keyword matched, then the cluster is assigned to the ``OTHERS'' 
+If the cosine score is low (below $0.2$) or there is only one
+keyword matched, then the cluster is assigned to the ``OTHERS''
 category.
 
 
 \subsection{Java Language Processing} \label{sec:jlp}
 
-\textbf{TODO:} also refer back to the introduction 
+\textbf{TODO:} also refer back to the introduction
 
-In chapter~\ref{sec:namespaces-top} we have compared the identifier namespaces
-with namespaces in programming languages and with packages in the Java 
-programming language in particular. We motivated the assumption that there 
-exist ``namespace defining'' groups of documents by arguing that these 
+ we have compared the identifier namespaces
+with namespaces in programming languages and with packages in the Java
+programming language in particular. We motivated the assumption that there
+exist ``namespace defining'' groups of documents by arguing that these
 groups also exist in programming languages. Thus, the same set of techniques
-for namespace discovery should be applicable to source code as well. 
+for namespace discovery should be applicable to source code as well.
 
-If a programming language is statically typed, like Java or Pascal, 
+If a programming language is statically typed, like Java or Pascal,
 usually it is possible to know the type of a variable from the declaration
 of this variable. Therefore we can see variable names as ``identifiers''
 and variable types as ``definitions''. Clearly, there is a difference
 between variable types and identifier definitions, but we believe
 that this comparison is valid because the type carries additional semantic
-information about the variable and in what context it can be used -- 
+information about the variable and in what context it can be used --
 like the definition of an identifier.
 
 The information about variables and their types can be extracted from a
-source code repository, and each source file can be processed to 
-obtain its Abstract Syntax Tree (AST). By processing the ASTs, 
-we can extract the variable declaration information. Thus, each 
-source file can be seen as a document, which is represented 
-by all its variable declarations. 
+source code repository, and each source file can be processed to
+obtain its Abstract Syntax Tree (AST). By processing the ASTs,
+we can extract the variable declaration information. Thus, each
+source file can be seen as a document, which is represented
+by all its variable declarations.
 
-In this work we process Java source code, and for parsing it 
+In this work we process Java source code, and for parsing it
 and building ASTs we use a library JavaParser \cite{javaparser}.
-The Java programming language was chosen because it requires the programmer 
-to always specify the type information when declaring a variable. 
-It is different for other languages when the type information is 
-usually inferred by the compilers at compilation time. 
+The Java programming language was chosen because it requires the programmer
+to always specify the type information when declaring a variable.
+It is different for other languages when the type information is
+usually inferred by the compilers at compilation time.
 
 
-In Java a variable can be declared in three places: 
-as an inner class variable (or a ``field''), as a method (constructor) 
+In Java a variable can be declared in three places:
+as an inner class variable (or a ``field''), as a method (constructor)
 parameter or as a local variable inside a method or a constructor.
-We need to process all three types of variable declarations 
-and then apply additional preprocessing, such as converting the name 
-of the type from short to fully qualified using the information from the 
-import statements. For example, \verb|String| is converted to 
+We need to process all three types of variable declarations
+and then apply additional preprocessing, such as converting the name
+of the type from short to fully qualified using the information from the
+import statements. For example, \verb|String| is converted to
 \verb|java.lang.String| and \verb|List<Integer>| to \verb|java.util.List<Integer>|,
-but primitive types like \verb|byte| or \verb|int| are left unchanged. 
-Secondly, 
+but primitive types like \verb|byte| or \verb|int| are left unchanged.
+Secondly,
 
 
-Consider an example in the listing~\ref{code:javaclass}. There is a 
-class variable \texttt{threshold}, a method parameter \texttt{in} and 
-two local variables \texttt{word} and \texttt{posTag}. The following 
+Consider an example in the listing~\ref{code:javaclass}. There is a
+class variable \texttt{threshold}, a method parameter \texttt{in} and
+two local variables \texttt{word} and \texttt{posTag}. The following
 relations will be extracted from this class: (``threshold'', \verb|double|),
-(``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|), 
+(``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|),
 (``posTag'', \verb|java.lang.String|).
 Since all primitives and classes from packages that star with
-\verb|java| are discarded, at the end the class \verb|WordProcesser| 
+\verb|java| are discarded, at the end the class \verb|WordProcesser|
 is represented with only one relation (``in'', \verb|domain.Word|).
 
 
@@ -524,17 +654,17 @@ public class WordProcesser  {
     // ...
 
 }
-\end{lstlisting}  
+\end{lstlisting}
 
 
-In the experiments we applied this source code analysis to 
+In the experiments we applied this source code analysis to
 the source code of Apache Mahout 0.10 \cite{mahout}, which is an open-source
 library for scalable Machine Learning and Data Mining.
 
-As on 2015-07-15, this dataset consists of 1560 java classes with 45878 
+As on 2015-07-15, this dataset consists of 1560 java classes with 45878
 variable declarations. After discarding declarations from the standard Java API,
-primitives and types with generic parameters, only 15869 declarations were 
-retained. 
+primitives and types with generic parameters, only 15869 declarations were
+retained.
 
 The following is top-15 variable/type declarations:
 

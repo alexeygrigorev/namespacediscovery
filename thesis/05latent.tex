@@ -1,10 +1,10 @@
 \section{Discovering Latent Semantics} \label{sec:latent-semantics}
-In chapter~\ref{sec:namespaces-top} we have discussed the 
-lexical variability and ambiguity problems in natural language: synonymy 
-and polysemy. We can treat these problems as ``statistical noise'' and 
+In chapter~\ref{sec:namespaces-top} we have discussed the
+lexical variability and ambiguity problems in natural language: synonymy
+and polysemy. We can treat these problems as ``statistical noise'' and
 apply dimensionality reduction techniques to find the optimal dimensionality
-for the data and thus reduce the amount of noise there. 
-In this chapter we discuss two approaches for doing this: 
+for the data and thus reduce the amount of noise there.
+In this chapter we discuss two approaches for doing this:
 Latent Semantic Analysis in section~\ref{sec:lsa}
 and Non-Negative Matrix Factorization in section~\ref{sec:nmf}.
 
@@ -20,17 +20,17 @@ and Non-Negative Matrix Factorization in section~\ref{sec:nmf}.
 \subsection{Latent Semantic Analysis} \label{sec:lsa}
 
 The Vector Space Model discussed in section~\ref{sec:vsm}.
-The solution to this problem is to assume that there exists 
+The solution to this problem is to assume that there exists
 some optimal document vector space where the document vectors
-do not suffer from the ... 
-This vector space can be found by finding the best $k$-rank approximation 
-to the Term-Document matrix using Singular Value Decomposition (SVD). 
+do not suffer from the ...
+This vector space can be found by finding the best $k$-rank approximation
+to the Term-Document matrix using Singular Value Decomposition (SVD).
 This technique is called Latent Semantic Analysis \cite{landauer1998introduction}
-or Latent Semantic Indexing in the context of Information Retrieval 
-\cite{deerwester1990indexing}. 
-It is also a popular Text Mining technique for reducing the dimensionality 
-of text data and it is often used for 
-document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}. 
+or Latent Semantic Indexing in the context of Information Retrieval
+\cite{deerwester1990indexing}.
+It is also a popular Text Mining technique for reducing the dimensionality
+of text data and it is often used for
+document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}.
 
 
 There are three major steps in Latent Semantic Analysis  \cite{evangelopoulos2012latent}:
@@ -48,8 +48,8 @@ There are three major steps in Latent Semantic Analysis  \cite{evangelopoulos201
 
 The first two steps are the same as for traditional Vector Space Models:
 consider a set of document $\mathcal D = \{ d_1, d_2, \ ... \ , d_n \}$
-with the vocabulary $\mathcal V = \{t_1, t_2, \ ... \ , t_m \}$, then 
-$D$ is a $m \times n$ Term-Document Matrix. If the matrix $D$ has 
+with the vocabulary $\mathcal V = \{t_1, t_2, \ ... \ , t_m \}$, then
+$D$ is a $m \times n$ Term-Document Matrix. If the matrix $D$ has
 rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
 
 \begin{itemize}
@@ -59,137 +59,54 @@ rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
 \item $V$ is an $n \times r$ orthogonal matrix, $V V^T = I$.
 \end{itemize}
 
-The dimensionality reduction is done by finding the best $k$-rank approximation 
+The dimensionality reduction is done by finding the best $k$-rank approximation
 of $D$, which is obtained by keeping only the first $k$ singular values of $\Sigma$
-and setting the rest to 0. 
-Typically, not only $\Sigma$ is truncated, but also $U$ and $V$, 
+and setting the rest to 0.
+Typically, not only $\Sigma$ is truncated, but also $U$ and $V$,
 and therefore, the $k$-rank approximation of $D$ using SVD is written as
-$D \approx D_k = U_k \Sigma_k V_k^T$ where $U_k$ is an $m \times k$ 
-matrix with first $k$ columns of $U$, $\Sigma_k$ is an $k \times k$ 
-diagonal matrix with singular values, and $V_k$ is an $n \times k$ 
-matrix with first $k$ columns of $V$.  This decomposition 
-is called \emph{rank-reduced} SVD and when applied to text data 
-it reveals the ``true'' latent semantic space. The parameter $k$ corresponds 
-to the number of ``latent concepts'' in the data. 
+$D \approx D_k = U_k \Sigma_k V_k^T$ where $U_k$ is an $m \times k$
+matrix with first $k$ columns of $U$, $\Sigma_k$ is an $k \times k$
+diagonal matrix with singular values, and $V_k$ is an $n \times k$
+matrix with first $k$ columns of $V$.  This decomposition
+is called \emph{rank-reduced} SVD and when applied to text data
+it reveals the ``true'' latent semantic space. The parameter $k$ corresponds
+to the number of ``latent concepts'' in the data. The idea 
+of LSA is very nicely illustrated by examples  in 
+\cite{deerwester1990indexing} and \cite{landauer1998introduction}.
 
-Let us illustrate LSA with an example (from \cite{deerwester1990indexing}
-and \cite{landauer1998introduction}). Consider the following nine documents:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item $c_1$: ``Human machine interface for ABC computer applications''
-\item $c_2$: ``A survey of user opinion of computer system response time''
-\item $c_3$: ``The EPS user interface management system''
-\item $c_4$: ``System and human system engineering testing of EPS''
-\item $c_5$: ``Relation of user perceived response time to error measurement''
-\item $m_1$: ``The generation of random, binary, ordered trees''
-\item $m_2$: ``The intersection graph of paths in trees''
-\item $m_3$: ``Graph minors IV: Widths of trees and well-quasi-ordering''
-\item $m_4$: ``Graph minors: A survey''
-\end{itemize}
-
-Let the vocabulary be $\mathcal V = \{$ human, interface, computer, user, system, response, time, EPS, survey, trees, graph, minors $\}$. Then, the term-document matrix $D$
-with terms weighed by TF is 
-
-$$D =
-\left[\begin{array}{c|ccccccccc}
- & c_1 & c_2 & c_3 & c_4 & c_5 & m_1 & m_2 & m_3 & m_4 \\
-\hline
-\text{human} & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-\text{interface} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-\text{computer} & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-\text{user} & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 0 \\
-\text{system} & 0 & 1 & 1 & 2 & 0 & 0 & 0 & 0 & 0 \\
-\text{response} & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-\text{time} & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-\text{EPS} & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 \\
-\text{survey} & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
-\text{trees} & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 0 \\
-\text{graph} & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
-\text{minors} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
-\end{array} \right] $$
-
-
-We can observe that the row vectors for ``human'' and  ``user'' are 
-orthogonal: their inner produce is zero, but these terms are similar 
-and the inner product should be positive. 
-
-Let us apply SVD to find the best rank-2 approximation for $D$: 
-$D \approx D_2 = U_2 \Sigma_2 V_2^T$. The rank-2 approximation $D_2$
-is 
-
-$$D_2 =
-\left[\begin{array}{c|ccccccccc}
- & c_1 & c_2 & c_3 & c_4 & c_5 & m_1 & m_2 & m_3 & m_4 \\
-\hline
-\text{human} & 0.16 & 0.4 & 0.38 & 0.47 & 0.18 & -0.05 & -0.12 & -0.16 & -0.09 \\
-\text{interface} & 0.14 & 0.37 & 0.33 & 0.4 & 0.16 & -0.03 & -0.07 & -0.1 & -0.04 \\
-\text{computer} & 0.15 & 0.51 & 0.36 & 0.41 & 0.24 & 0.02 & 0.06 & 0.09 & 0.12 \\
-\text{user} & 0.26 & 0.84 & 0.61 & 0.7 & 0.39 & 0.03 & 0.08 & 0.12 & 0.19 \\
-\text{system} & 0.45 & 1.23 & 1.05 & 1.27 & 0.56 & -0.07 & -0.15 & -0.21 & -0.05 \\
-\text{response} & 0.16 & 0.58 & 0.38 & 0.42 & 0.28 & 0.06 & 0.13 & 0.19 & 0.22 \\
-\text{time} & 0.16 & 0.58 & 0.38 & 0.42 & 0.28 & 0.06 & 0.13 & 0.19 & 0.22 \\
-\text{EPS} & 0.22 & 0.55 & 0.51 & 0.63 & 0.24 & -0.07 & -0.14 & -0.2 & -0.11 \\
-\text{survey} & 0.1 & 0.53 & 0.23 & 0.21 & 0.27 & 0.14 & 0.31 & 0.44 & 0.42 \\
-\text{trees} &-0.06 & 0.23 & -0.14 & -0.27 & 0.14 & 0.24 & 0.55 & 0.77 & 0.66 \\
-\text{graph} &-0.06 & 0.34 & -0.15 & -0.3 & 0.2 & 0.31 & 0.69 & 0.98 & 0.85 \\
-\text{minors} &-0.04 & 0.25 & -0.1 & -0.21 & 0.15 & 0.22 & 0.5 & 0.71 & 0.62 \\
-\end{array}\right]$$
-
-
-What is the effect of dimensionality reduction here? The frequencies of
-words have changed, and some of the entries even become negative. 
-Consider two cells: (``survey'', $m_4$) and (``trees'', $m_4$). 
-In the original document we have 
-$D[\text{survey}, m_4] = 1$ and $D[\text{trees}, m_4] = 0$, but in the reduced space we have 
-$D_2 [\text{survey}, m_4] = 0.42$ and $D_2[\text{trees}, m_4] = 0.66$.
-Note that the count for ``survey'' went down while the count for 
-``trees'' went up. The reason for this is that the document $m_4$
-contains ``graph'' and ``minor'', which are graph related, 
-so another graph related word ``trees'' got additional score. 
-On the other hand the term ``survey'' was not expected in this 
-context, so the count went down. 
-
-Additionally, we can compute the similarity in the reconstructed 
-space as well. For example, the terms ``user'' and ``human'' are 
-no longer orthogonal and have positive dot product. Thus, it tells
-us that the terms are similar even though they never co-occur 
-together in the original input space. 
-
-
-LSA can be used for clustering as well, and this is usually done 
+LSA can be used for clustering as well, and this is usually done
 by first transforming the document space to the LSA space
 and then doing applying transitional cluster analysis techniques
-there \cite{schutze1997projections}. 
+there \cite{schutze1997projections}.
 
-However these is not need to reconstruct the rank-reduced matrix 
-to apply clustering, and in many cases it is not possible: 
-the original input space is very sparse, but the rank-reduced 
-reconstructed matrix becomes very dense. Therefore we do not 
-reconstruct the entire matrix, but instead keep only the low 
-dimensional representation $V_k \Sigma_k$, which is enough 
+However these is not need to reconstruct the rank-reduced matrix
+to apply clustering, and in many cases it is not possible:
+the original input space is very sparse, but the rank-reduced
+reconstructed matrix becomes very dense. Therefore we do not
+reconstruct the entire matrix, but instead keep only the low
+dimensional representation $V_k \Sigma_k$, which is enough
 for many clustering algorithms.
 
-For example, consider the inner product. Document-document similarity 
-in the original space is calculated as $D D^T$ (the columns of $D$ 
-are the document $\mathbf d_1, \ ... \ , \mathbf d_n$), and by applying 
-SVD we have $D^T D = V \Sigma^T U^T U \Sigma V^T = V \Sigma^T \Sigma V^T = 
+For example, consider the inner product. Document-document similarity
+in the original space is calculated as $D D^T$ (the columns of $D$
+are the document $\mathbf d_1, \ ... \ , \mathbf d_n$), and by applying
+SVD we have $D^T D = V \Sigma^T U^T U \Sigma V^T = V \Sigma^T \Sigma V^T =
 (V \Sigma) (V \Sigma)^T$. Thus, to compute the similarity between
-document $\mathbf d_i$ and $\mathbf d_j$ we compute the inner product 
-between $i$th and $j$th rows of $V \Sigma$. Likewise, to compute 
+document $\mathbf d_i$ and $\mathbf d_j$ we compute the inner product
+between $i$th and $j$th rows of $V \Sigma$. Likewise, to compute
 the similarity between documents $i$ and $j$ in the reduced representation,
 we compute the inner product between the respective rows of $V_k \Sigma_k$.
 
-Additionally, the Euclidean distance in the reduced space can also be computed 
+Additionally, the Euclidean distance in the reduced space can also be computed
 directly on the rows of $V_k \Sigma_k$. Recall that the Euclidean distance can
 be expressed as an inner product
-$\| \mathbf d_i - \mathbf d_j \|^2 = \mathbf d_i^T \mathbf d_i - 2 \, \mathbf d_i^T \mathbf d_j + \mathbf d_j^T \mathbf d_j$, and since we know how to compute the inner product 
+$\| \mathbf d_i - \mathbf d_j \|^2 = \mathbf d_i^T \mathbf d_i - 2 \, \mathbf d_i^T \mathbf d_j + \mathbf d_j^T \mathbf d_j$, and since we know how to compute the inner product
 in the semantic space, we can compute the distance in this space as well
 by using the rows of $V_k \Sigma_k$.
 
 This means that we can apply any clustering algorithm,
 including $K$-means, on the rows of $V_k \Sigma_k$ and without having
-to reconstruct the entire term-document matrix. 
+to reconstruct the entire term-document matrix.
 
 A generic LSA-based clustering algorithm therefore consists of the following steps:
 
@@ -201,35 +118,32 @@ A generic LSA-based clustering algorithm therefore consists of the following ste
 \end{itemize}
 
 
-LSA has some drawbacks. Because SVD looks for orthogonal basis 
+LSA has some drawbacks. Because SVD looks for orthogonal basis
 for the new document space, there are negative values that are harder
-to interpret. Additionally, with negative values in the reconstructed 
-space can cause the cosine to take negative values as well. 
-However, it does not affect significantly the properties of the 
-cosine distance: it still will always give the results larger than 0. 
+to interpret. Additionally, with negative values in the reconstructed
+space can cause the cosine to take negative values as well.
+However, it does not affect significantly the properties of the
+cosine distance: it still will always give the results larger than 0.
 This problem can be solved by using a different matrix decomposition
 technique instead of SVD, and we discuss one of them in the next
-section. 
-
-% in many cases it still gives good performance 
+section.
 
 
+\ \\
 
-\subsection{Non-Negative Matrix Factorization} \label{sec:nmf}
-
-Apart from SVD there are many other different matrix decomposition 
-techniques that can be applied for document clustering and for discovering 
+Apart from SVD there are many other different matrix decomposition
+techniques that can be applied for document clustering and for discovering
 the latent structure of the term-document matrix \cite{osinski2006improving},
-and one of them in Non-Negative Matrix Factorization (NMF) \cite{lee1999nnmf}. 
+and one of them in Non-Negative Matrix Factorization (NMF) \cite{lee1999nnmf}.
 
 
 NMF is a matrix decomposition technique. When it is applied to non-negative
-data, NMF produces non-negative rank-reduced approximations. 
-Since term-document matrices do not have negative values, it makes 
-NMF a good candidate to replace SVD in LSA. The main conceptual difference 
-between SVD and NMF is that SVD looks for orthogonal directions to 
+data, NMF produces non-negative rank-reduced approximations.
+Since term-document matrices do not have negative values, it makes
+NMF a good candidate to replace SVD in LSA. The main conceptual difference
+between SVD and NMF is that SVD looks for orthogonal directions to
 represent document space, while NMF does not require orthogonality.
-As the result, SVD often produces semantic spaces with negative values, 
+As the result, SVD often produces semantic spaces with negative values,
 but NMF does not \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
 
 
@@ -240,38 +154,38 @@ but NMF does not \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
 \end{figure}
 
 
-The NMF of an $m \times n$ term-document matrix $D$ is $D \approx D_k = U  V^T$ 
-where $U$ is an $m \times k$ matrix, $V$ is an $n \times k$ matrix and  
+The NMF of an $m \times n$ term-document matrix $D$ is $D \approx D_k = U  V^T$
+where $U$ is an $m \times k$ matrix, $V$ is an $n \times k$ matrix and
 $k$ is the number of semantic concepts in $D$.
-Non-negativity of elements in $D_k$ is very good for interpretability: it 
-ensures that documents can be seen as a non-negative combination of 
+Non-negativity of elements in $D_k$ is very good for interpretability: it
+ensures that documents can be seen as a non-negative combination of
 the key concepts.
 
 
-Additionally, NMF is useful for clustering: the results of NMF can 
-be directly interpreted as cluster assignment and there is no need 
-to use separate clustering algorithms \cite{xu2003document}. 
+Additionally, NMF is useful for clustering: the results of NMF can
+be directly interpreted as cluster assignment and there is no need
+to use separate clustering algorithms \cite{xu2003document}.
 
 What is more, NMF is a co-clustering algorithms: it clusters both
 rows of $D$ and columns of $D$ at the same time. For a term-document
 matrix $D \approx U V^T$, where $U$ defines the reduced vector space for terms
-and $V$ defines the reduced vector space for documents. Since all elements 
-are non-negative, it can have the following interpretation: 
-elements $(U)_{ij}$ of $U$ represent the degree to which terms $i$ belongs to cluster $j$, 
-and elements $(V)_{ij}$ represent the degree to which document $i$ belongs to cluster $j$. 
+and $V$ defines the reduced vector space for documents. Since all elements
+are non-negative, it can have the following interpretation:
+elements $(U)_{ij}$ of $U$ represent the degree to which terms $i$ belongs to cluster $j$,
+and elements $(V)_{ij}$ represent the degree to which document $i$ belongs to cluster $j$.
 
 \ \\
 
-The document clustering using NMF consists of the following 
+The document clustering using NMF consists of the following
 steps \cite{xu2003document}:
 
 \begin{itemize}
   \item Construct the term-document matrix $D$;
   \item Perform NMF on $D$ to get $U$ and $V$;
   \item Normalize rows $\mathbf v_i$ of $V$ by using $\mathbf v_i' = \mathbf v_i \cdot \| \mathbf u_i \|$ and rows $\mathbf u_i$ of $U$ with $\mathbf u_i' = \mathbf u_i / \| \mathbf u_i \|$;
-  \item To determine the cluster assignment for document $\mathbf d_i$, examine $\mathbf v_i'$ (the $i$th row of $V$) and find the largest component of this vector. That is, 
+  \item To determine the cluster assignment for document $\mathbf d_i$, examine $\mathbf v_i'$ (the $i$th row of $V$) and find the largest component of this vector. That is,
       $i$th document belongs to cluster $x$ if $x = \operatorname{arg \, max}_j v_{ij}$ where $v_{ij}$ are components of $\mathbf v_i$;
-  \item If the desired number of clusters $K$ is larger than the rank $k$ of the reduced matrix $D_k$, the clustering can be performed directly on the rows of $V$, for example, 
+  \item If the desired number of clusters $K$ is larger than the rank $k$ of the reduced matrix $D_k$, the clustering can be performed directly on the rows of $V$, for example,
       by using $K$-Means.
 \end{itemize}
 

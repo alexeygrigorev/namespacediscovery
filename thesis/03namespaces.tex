@@ -29,178 +29,131 @@ model \cite{manning2008introduction}, but it is also used for various
 Text Mining tasks such as Document Classification \cite{sebastiani2002machine}
 and Document Clustering \cite{oikonomakou2005review} \cite{aggarwal2012survey}.
 
-The process of transforming a text to its vector representation is
-called ``vectorization''. But before documents can be
-vectorized they are preprocessed. The preprocessing usually consists of the
-following steps:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item tokenization: extracting individual words from the text;
-  \item stop words removal: removes functional words that have no discriminative power;
-  \item word normalization (includes stemming or lemmatization): reduces words to some common form;
-\end{itemize}
-
-There are two assumptions made about the data:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item \emph{Bag of Words assumption}: the order of words is not important,
-     only word counts;
-  \item \emph{Independence assumption}: we treat all words as independent.
-\end{itemize}
-
+In Vector Space Model we make two assumptions about the data: 
+(1) \emph{Bag of Words assumption}: the order of words is not important,
+only word counts;
+(2) \emph{Independence assumption}: we treat all words as independent.
 % Bag of Words = unordered list of terms
 % good enough for topic similarity
-
 Both assumptions are quite strong, but nonetheless this method often
 gives good results.
 
+Let $\mathcal V = \{t_1, t_2, \ ... \ , t_m \}$ be a set of $n$ terms.
+Then documents can be represented as $m$-vectors 
+$\mathbf d_i = (w_1, w_2, \ ... \ , w_m)$, where $w_j$ is the weight 
+of term $t_j$ in the document $\mathbf d_i$,
+and the document collection can be represented by a \emph{term-document matrix} 
+$D$, where columns of $D$ are document vectors 
+$\mathbf d_1, \mathbf d_2, \ ... \ , \mathbf d_n$ 
+and rows of $D$ are indexed by terms $t_1, t_2, \ ... \ , t_m$
+(see fig.~\ref{fig:document-vsm}).
 
-Document-Term Matrix - representation of a document for text analysis
-each row of the matrix - is a ''document vector''
-each component of the document vectors is a concept, a key word, or a term, but usually it's terms
-documents don't contain many distinct words, so the matrix is sparse
+\begin{figure}[h]
+\centering\includegraphics[width=0.6\textwidth]{document-vsm.png}
+\caption{\textbf{TODO redraw in vector} Documents $\mathbf d_1, \mathbf d_2, \mathbf d_3$ 
+in a document space with dimensions $t_1, t_2, t_3$}
+\label{fig:document-vsm}
+\end{figure}
 
-
-Notation:
-let $\mathcal D = \{d_1, \ ... \ , d_n \}$ be a set of $m$ documents
-and let $\mathcal V = \{t_1, \ ... \ , t_m \}$ be a set of $n$ terms (the vocabulary).
-Each document is set of weighed terms $d_i = \{ w_1, \ ... \ , w_m \}$
-where $w_j$ is the weight of term $t_j$.
 
 There are following term weighting schemes \cite{manning2008introduction}:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-  \item binary: 1 if a term is present, 0 otherwise
-  \item term frequency (TF): number of occurrences of the term in a document
-  \item document frequency (DF): number of documents containing the term
-  \item TF-IDF: combination of TF and inverse DF
+  \item binary: 1 if a term is present, 0 otherwise;
+  \item term frequency (TF): number of occurrences of the term in a document;
+  \item document frequency (DF): number of documents containing the terml
+  \item TF-IDF: combination of TF and inverse DF.
 \end{itemize}
 
 
 \textbf{Term Frequency (TF)} weights terms by local frequency in the document.
 That is, the term is weighed by how many times it occurs in the document.
-We can define TF formally as
-$$\text{tf}(t, d) = \big| \{ t' \in d  \ : \ t' = t \} \big|$$
-
-
-\textbf{Sublinear TF}: sometimes the term is used too often in
-a document and we want to reduce its influence compared to
-other less frequent tokens. This can be done by applying
-some sublinear transformation to TF, for instance, a squared root
-$\sqrt{\text{tf}(w, d)}$ or a logarithm $\log \text{tf}(w, d)$.
-
+Sometimes a term is used too often in a document, and we want to 
+reduce its influence, and this is typically done by applying some 
+sublinear transformation to TF, for instance, a square root or a logarithms. 
 
 \textbf{Document Frequency (DF)} weights terms by their global frequency
 in the collection, which is the number of documents that contain the token.
-Formally it can be defined as
-$$\text{df}(t, \mathcal D) = \big| \{ d \in \mathcal D \ : \  t \in d \} \big|$$
-
-
-\textbf{Inverse Document Frequency (IDF)}: more often we are interested
-in domain specific words than in neutral words, and these domain specific
-words tent to occur less frequently and they usually have more discriminative
-power: that is, they are better in telling one document apart from another.
-So IDF should give more weights to rare words rather than to frequent words.
-Typically IDF is defined as follows:
-$$\text{idf}(t, \mathcal D) = \log \cfrac{ |\mathcal D| }{\text{df}(t, \mathcal D)}$$
-
-
+But more often we are interested in domain specific words than in neutral words, 
+and these domain specific words tent to occur less frequently and they usually 
+have more discriminative power: that is, they are better in telling one document apart from another. So we use \textbf{Inverse Document Frequency (IDF)} to give more 
+weight to rare words rather than to frequent words. 
 
 A good weighting system gives the best performance when it assigns
 more weights to terms with high TF, but low DF \cite{salton1988term}.
 This can be achieved by combining both TF and IDF
-schemes. TF is good for getting high frequency words, but using
-just TF is not enough if high frequency words are contained in
-many documents, thus need a collection dependent factor that favors
-terms that are contained in fewer documents: IDF.
-
-Usually a sublinear TF is used to avoid the dominating effect of
+schemes. Usually a sublinear TF is used to avoid the dominating effect of
 words that occur too frequently. As the result, terms appearing
 too rarely or too frequently are ranked low.
-
-So, we can combine TF and IDF then my multiplying:
-$$\text{tf-idf}(t, d \mid \mathcal D) = (1 + \log \text{tf}(t, d)) \cdot \log \cfrac{|\mathcal D|}{\text{df}(t, \mathcal D)}$$
-
+The TF and IDF are combined together in \textbf{TF-IDF} weighting scheme:
+$$\text{tf-idf}(t, \mathbf d) = (1 + \log \text{tf}(t, \mathbf d)) \cdot \log \cfrac{n}{\text{df}(t)} \, ,$$
+where $\text{tf}(t, \mathbf d)$ is term frequency of term $t$ in document 
+$\mathbf d$ and $\text{df}(t)$ is the document frequency of term $t$ in 
+the document collection.
 
 \ \\
 
-Once the weighting scheme is established, documents can be represented
-by vectors $d_i = (w_1, \ ... \ w_m)$ where $w_j$ is the weight of term
-$t_j$.
 
-Then these vectors can be put together to form a matrix. Let $D$ be
-a $m \times n$ matrix, where rows of $D$ are indexed by terms $t_i$,
-columns of $D$ are indexed by documents $d_j$, and element $(D)_{ij}$
-is a weight $w_i$ of term $t_i$ in document $d_j$. Then
-such matrix $D$ is called a \emph{term-document matrix}.
+The Vector Space Model can be adjusted to represent documents by identifers 
+they contain instead of words. To do that we replace the vocabulary $\mathcal V$ 
+with  a set of identifiers $\mathcal I = \{ i_1, i_2, \ ... \ , i_m \}$, 
+but documents are still represented as $m$-vectors $\mathbf d_j = (w_1, w_2, \ ... \ w_m)$, 
+where $w_k$ is a weight of identifier $i_k$ in the document $\mathbf d_j$. 
+Likewise, we can define an identifier-document matrix $D$ as a matrix where
+columns are document vectors and rows are indexed by the identifiers. 
 
-Alternatively, $D$ can be $n \times m$ matrix with rows being indexed
-by documents $d_j$ and columns - by terms $t_i$. Then such $D$ is called
-\emph{document-term matrix}. Note that if $D$ is a term-document matrix,
-then $D^T$ is a document-term matrix. In Information Retrieval
-literature term-document matrices are used more often, than
-document-term matrices, but in some applications, like Clustering,
-it is more convenient to use document-term matrix.
-
-
-Let us consider the column space of the term-document matrix $D$.
-The column of $D$ are documents from the corpus $\mathcal D$,
-so the column space of $D$ contains document vectors where
-dimensions are terms $t_1,  t_2, \ ... \ , t_m$. This vector space is
-called the \emph{Document VSM} (see fig.~\ref{fig:document-vsm}).
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.6\textwidth]{document-vsm.png}
-\caption{\textbf{TODO redraw in vector}}
-\label{fig:document-vsm}
-\end{figure}
-
-
-\subsection{Identifier Space Model} \label{sec:ism}
-
-The Vector Space Model gives a good foundation. In this work documents
-are not represented by words they contain, but rather by identifiers they
-have. Because  words and identifiers exhibit similar properties
-(see section~\ref{sec:clusters-namespaces}) we can replace the
-Term VSM by \emph{Identifier VSM}: a vector space where documents are represented as
-vectors indexed by identifiers they contain.
-Thus, the ``vocabulary'' of this space is $\text{id}_1, \ ... \ , \text{id}_k$, and
-documents are represented as $d_j = (w_1, \ ... \ , w_k)$ where
-$w_i$ is the weight of identifier $\text{id}_i$.
-
-Then we can define an identifier-document matrix $D$ as $k \times n$
-matrix where columns are documents and rows are identifers.
-
-The Identifer VSM also suffers from the problems of polysemy
-and synonymy (see section~\ref{sec:clusters-namespaces}). They
-can be solved by extracting definitions for all the identifers
-and incorporating these definitions into the Identifier VSM.
-
-There are three ways of adding the definition information into
-Identifier VSM:
-
+Identifiers, as terms, suffer from the problems of synonymy and polysemy, 
+and we solve this problem by extracting definitions for all the identifiers. 
+There are several ways of incorporating the extracted definitions into the 
+model:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-  \item use only identifier information, and no not include the definitions;
+  \item do not include definition information at all, use only identifiers; 
   \item use ``weak'' identifier-definition association: include identifiers and
         definitions as separate dimensions;
   \item use ``strong'' association: append definition to identifier.
 \end{itemize}
 
-To illustrate how it is done, consider two relations ($\lambda$, ``regularization'')
-and ($w$, ``weight vector'')
-
+To illustrate how it is done, consider three relations ($E$, ``energy''), 
+($m$, ``mass'') and ($c$, ``speed of light''), and three documents 
+$d_1 = \{E, m, c\}, d_2 = \{ m, c\}, d_3 = \{ E \}$. Then 
 
 \begin{itemize}\itemsep1pt\parskip0pt\parsep0pt
-  \item no definitions: dimension of the Identifier VSM are ($\lambda$, $w$)
-  \item ``weak'' association:  dimensions are ($\lambda$, $w$, regularization, weight vector)
-  \item ``strong'' association:  dimensions are ($\lambda$\_regularization, $w$\_weight vector)
+  \item no definitions: dimensions are ($E$, $m$, $c$) and the identifier-document matrix is 
+  $$D = \left[
+    \begin{array}{c|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E & 1 & 0 & 1  \\
+      m & 1 & 1 & 0 \\
+      c & 1 & 1 & 0 \\
+    \end{array}
+  \right];$$
+  \item ``weak'' association: dimensions are ($E$, $m$, $c$, energy, mass, 
+  speed of light), and the matrix is $$D = \left[
+    \begin{array}{r|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E                     & 1 & 0 & 1  \\
+      m                     & 1 & 1 & 0 \\
+      c                     & 1 & 1 & 0 \\
+      \text{energy}         & 1 & 0 & 1  \\
+      \text{mass}           & 1 & 1 & 0 \\
+      \text{speed of light} & 1 & 1 & 0 \\
+    \end{array}
+  \right];$$
+  \item ``strong'' association: dimensions are ($E$\_energy, $m$\_mass, $c$\_speed of light), and the matrix is $$D = \left[
+    \begin{array}{r|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E\text{\_energy} & 1 & 0 & 1  \\
+      m\text{\_mass} & 1 & 1 & 0 \\
+      c\text{\_speed of light} & 1 & 1 & 0 \\
+    \end{array}
+  \right].$$
 \end{itemize}
-
 
 
 \subsection{Similarity Measures and Distances} \label{sec:similarity-distance}
@@ -213,15 +166,8 @@ or using a distance function, sometimes called ``dissimilarity function'',
 which is the opposite of similarity (the higher the values, the less similar
 the objects).
 
-We will consider the following similarity and distance functions:
-
-
-\begin{itemize}\itemsep1pt\parskip0pt\parsep0pt
-  \item Euclidean distance
-  \item Inner product (or dot product)
-  \item Cosine similarity
-  \item Jaccard coefficient
-\end{itemize}
+We will consider Euclidean distance, inner product, cosine similarity and 
+Jaccard coefficient.
 
 
 \subsubsection{Euclidean Distance} \ \\
@@ -232,23 +178,21 @@ the geometric distance between two data points in the vector space.
 For example, if we have two points $\mathbf x$ and
 $\mathbf z$, then the Euclidean distance is the
 length of the line that connects these two points.
-It is defined as
+The square of the Euclidean distance is defined as
 $$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z)  =\sum_i (x_i - z_i)^2$$
 
-Euclidean distance is useful for low-dimensional data,
-but it does not always work well in high dimensions, especially
-with sparse vector such as document vectors \cite{ertoz2003finding}.
-
+This distance is useful for low-dimensional data, but it does not always work 
+well in high dimensions, especially with sparse vector such as 
+document vectors \cite{ertoz2003finding}.
 
 
 \subsubsection{Inner product} \ \\
 
 The inner product between two vectors can be used as a similarity function:
 the more similar two vectors are, the larger is their inner product.
-
 Geometrically the inner product between two vectors $\mathbf x$ and $\mathbf z$
 is defined as
-$$\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$$
+$\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$
 where $\theta$ is the angle between vectors $\mathbf x$ and $\mathbf z$.
 In Linear Algebra, however, the inner product
 is defined as a sum of element-wise products of two vectors:
@@ -269,7 +213,7 @@ The geometric and algebraic definitions are equivalent \cite{huges2013calculus}.
 
 
 Inner product is sensitive to the length of vectors, and thus
-it may make sense to consider only the angle between them: 
+it may make sense to consider only the angle between them:
 the angle does not depend on the magnitude, but it is still
 a very good indicator of vectors being similar or not.
 
@@ -277,9 +221,9 @@ The angle between two vectors can be calculated from the geometric
 definition of inner product:
 $\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$.
 By rearranging the terms we get
-$$\cos \theta = \frac{\mathbf x^T \mathbf z}{\|\mathbf x \| \, \| \mathbf z \|} \ .$$ 
+$\cos \theta = \mathbf x^T \mathbf z / (\|\mathbf x \| \, \| \mathbf z \|)$.
 
-We do not need to the angle itself and can use the cosine directly
+We do not need the angle itself and can use the cosine directly
 \cite{manning2008introduction}.
 Thus can define \emph{cosine similarity} between two documents $\mathbf d_1$ and
 $\mathbf d_2$ as
@@ -287,63 +231,45 @@ $$\text{cosine}(\mathbf d_1, \mathbf d_2) = \cfrac{\mathbf d_1^T \mathbf d_2}{\|
 If the documents have unit lengths, then cosine similarity is the same as
 dot product: $\text{cosine}(\mathbf d_1, \mathbf d_2) = \mathbf d_1^T \mathbf d_2$.
 
-The cosine similarity can be converted to cosine distance.
-The maximal possible cosine
-is 1 for two identical documents. Therefore we can define \emph{cosine distance}
-between two vectors $\mathbf d_1$ and $\mathbf d_2$ as
-$d_c(\mathbf d_1, \mathbf d_2) = 1 - \text{cosine}(\mathbf d_1, \mathbf d_2)$. 
+The cosine similarity can be converted to a distance function.
+The maximal possible cosine is 1 for two identical documents. 
+Therefore we can define \emph{cosine distance} between two vectors 
+$\mathbf d_1$ and $\mathbf d_2$ as 
+$d_c(\mathbf d_1, \mathbf d_2) = 1 - \text{cosine}(\mathbf d_1, \mathbf d_2)$.
 The cosine distance is not a proper metric \cite{korenius2007principal},
 but it is nonetheless useful.
 
 The cosine distance and the Euclidean distance are connected \cite{korenius2007principal}.
-For two unit-normalized vectors $\mathbf d_1 = \mathbf d_1' / \| \mathbf d_1' \|$ and
-$\mathbf d_2 = \mathbf d_1' / \| \mathbf d_1' \|$
-the Euclidean distance between them is
-$$\| \mathbf d_1 - \mathbf d_2 \|^2 = \| \mathbf d_1 \|^2 - 2 \, \mathbf d_1^T \mathbf d_2 + \| \mathbf d_2 \|^2 = 2 - 2 \, \mathbf d_1^T \mathbf d_2  .$$
-
-Since the vectors are unit-normalized, we know that
-$\text{cosine}(\mathbf d_1, \mathbf d_2) = \mathbf d_1^T \mathbf d_2$, so we have
-$\| \mathbf d_1 - \mathbf d_2 \|^2 = 2 \, \big(1 - \text{cosine}(\mathbf d_1, \mathbf d_2)\big) = 2 \, d_c(\mathbf d_1, \mathbf d_2)$.
-
-
-Thus we can use Euclidean distance on unit-normalized vectors
-and interpret it as cosine distance.
+For two unit-normalized vectors $\mathbf d_1$ and $\mathbf d_2$ the Euclidean distance 
+between them is $\| \mathbf d_1 - \mathbf d_2 \|^2 = 2 - 2 \, \mathbf d_1^T \mathbf d_2 =2 \, d_c(\mathbf d_1, \mathbf d_2)$. Thus we can use Euclidean distance on 
+unit-normalized vectors and interpret it as cosine distance.
 
 
 \subsubsection{Jaccard Coefficient} \ \\
 
-\textbf{Jaccard similarity, jaccard distance}
+Finally, the Jaccard Coefficient is a function that compares how similar 
+two sets are. Given two sets $A$ and $B$, it is computed as 
+$J(A, B) = \frac{|A \cap B|}{|A \cup B|}$.
+It is also applicable to document vectors with binary weights, and it can 
+be defined as $J(\mathbf d_1, \mathbf d_2) = 
+\frac{\mathbf d_1^T \mathbf d_2}{\| \mathbf d_1^T \|^2 + \| \mathbf d_2^T \|^2 - \mathbf d_1^T \mathbf d_2}$ \cite{manning2008introduction}.
+
 
 
 \subsection{Document Clustering Techniques} \label{sec:doc-clustering}
 
-Cluster analysis is a set of techniques for
-organizing collection of items into coherent groups.
-In Text Mining clustering is often used for finding topics
-in a collection of document.
+Cluster analysis is a set of techniques for organizing collection 
+of items into coherent groups. In Text Mining clustering is often 
+used for finding topics in a collection of document.
 In Information Retrieval clustering is used to assist the users and group
 retrieved results into clusters.
 
-
 There are several types of clustering algorithms:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item Hierarchical (Agglomerative and Divisive)
-  \item Partitioning
-  \item Density-based
-  \item and others
-\end{itemize}
-
-In this chapter we will review some of the clustering techniques:
-in section~\ref{sec:clustering-heierarchical} we will discuss
-Agglomerative clustering. We discuss K-Means, a partitioning algorithms,
-and its extensions in section~\ref{sec:kmeans-ext}.
-Finally, a density-based algorithm DBSCAN is explained in
-section~\ref{sec:dbscan} along with its extensions.
+hierarchical (agglomerative and divisive), partitioning, 
+density-based, and others.
 
 
-\subsection{Agglomerative clustering} \label{sec:clustering-heierarchical}
+\subsubsection{Agglomerative clustering} \label{sec:clustering-heierarchical} \ \\
 
 The general idea of agglomerative clustering algorithms is to start with
 each document being its own cluster and iteratively merge clusters based
@@ -361,43 +287,17 @@ Thus, a typical agglomerative clustering algorithms consists of the following st
   \item repeat until everything belongs to the same cluster
 \end{enumerate}
 
-These algorithms differ only in the way they calculate
-similarity between clusters.
+These algorithms differ only in the way they calculate similarity between 
+clusters. It can be \textbf{Single Linkage}, when the clusters are merged based
+on the closest pair; \textbf{Complete Linkage}, when the clusters are merged
+based on the worst-case similarity -- the similarity between the most
+distant objects on the clusters; \textbf{Group-Average Linkage}, based 
+on the average pair-wise similarity between all objects in the clusters;
+and \textbf{Ward's Method} when the clusters to merge are chosen to 
+minimize the within-cluster error between each object and its centroid
+is minimized \cite{oikonomakou2005review}.
 
-It can be:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item \textbf{Single Linkage (SLINK)}: The clusters are merged based
-on the closest pair. It can be very efficient, but it encourages
-chaining behavior.
-
-% similarity is usually not transitive:
-%i.e. if $A$ is similar to $B$, and $B$ is similar to $C$, it doesn't mean that $A$ must be similar to $C$
-% but single linkage encourages grouping through transitivity chains
-% Sibson, Robin. "SLINK: an optimally efficient algorithm for the single-link cluster method." 1973.
-
-  \item \textbf{Complete Linkage (CLINK)}: The clusters are merged
-  based on the worst-case similarity - the similarity between the most
-  distant objects on the clusters. It's very expensive computationally,
-  but it avoids chaining altogether.
-
-% Defays, Daniel. "An efficient algorithm for a complete link method." 1977.
-
-  \item \textbf{Group-Average Linkage}: Similarity between clusters
-  is calculated as average pair-wise similarity between all objects
-  in the clusters, and the most similar clusters are merged.
-
-  \item \textbf{Ward's Method}: The clusters to merge are chosen such that the within-cluster
-  error (e.g. sum of squares) between each object and its centroid
-  is minimized.
-
-% El-Hamdouchi, Abdelmoula, and Peter Willett. "Hierarchic document classification using Ward's clustering method." 1986.
-
-\end{itemize}
-
-
-Among these algorithms only SLINK is computationally feasible
+Among these algorithms only Single Linkage is computationally feasible
 for large data sets, but it doesn't give good results compared to other
 agglomerative clustering algorithms. Additionally, these algorithms
 are not always good for document clustering because they tend to
@@ -406,21 +306,19 @@ afterwards \cite{steinbach2000comparison}.
 
 
 
-\subsection{$K$-Means} \label{sec:kmeans}
+\subsubsection{$K$-Means} \label{sec:kmeans} \ \\
 
 Unlike agglomerative clustering algorithms, K-Means is an iterative
 algorithm, which means that it can correct the mistakes made
-at earlier iterations.
-
-Lloyd's algorithm  is the most popular way of implementing K-Means
-\cite{xu2005survey}: given a desired number of clusters $k$,
+at earlier iterations. Lloyd's algorithm is the most popular way 
+of implementing K-Means \cite{xu2005survey}: given a desired number of clusters $K$,
 it iteratively improves the Euclidean distance between each data
 point and the centroid, closest to it.
 
 
 Let $\mathcal D = \{  \mathbf d_1, \mathbf d_2, \ ... \ , \mathbf d_n \}$
 be the document collection, where documents $\mathbf d_i$ are represented
-is some document vector space $\mathbb R^m$ and $k$ is the desired
+is a document vector space $\mathbb R^m$ and $K$ is the desired
 number of clusters. Then we define $k$ cluster centroids $\boldsymbol \mu_j$ that are
 also in the same document vector space $\mathbb R^m$.
 Additionally for each document $\mathbf d_i$ we maintain the assignment
@@ -433,10 +331,9 @@ The algorithms consists of three steps: (1) seed selection step,
 where each $\boldsymbol \mu_j$ is randomly assigned some value,
 (2) cluster assignment step, where we iterate over all document vectors
 $\mathbf d_i$ and find its closest centroid, and (3)  move centroids step,
-where the centroids are re-calculated. Steps (2) and (3) are repreated
+where the centroids are re-calculated. Steps (2) and (3) are repeated
 until the algorithm converges. The pseudocode for $K$-Means is presented
 in the listing~\ref{algo:k-means}.
-
 
 \begin{algorithm}
 \caption{Lloyd's algorithm for $K$-Means}
@@ -476,104 +373,44 @@ uses Mini-Batch Gradient Descent method, which is a different optimization techn
 that converges faster. The pseudocode for Mini-Batch $K$-Means is presented
 in listing~\ref{algo:minibatch-k-means}.
 
-\begin{algorithm}
-\caption{MiniBatch $K$-Means}
-\label{algo:minibatch-k-means}
-
-\begin{algorithmic}[0]
-  \Statex
-  \Function{MiniBatch-K-Means}{no. clusters $k$, no. iterations $t$, batch size $b$, documents $\mathcal D$}
-    \For{$j \leftarrow 1 \ .. \ k$} \Comment{random initialization}
-      \Let{$\boldsymbol \mu_j$}{random $\mathbf d \in \mathcal D$}
-    \EndFor
-
-    \Repeat{\ $t$ times}
-      \Let{$\mathcal M$}{$b$ random examples from $\mathcal D$}
-
-      \For{each $\mathbf d_i \in \mathcal M$}
-        \Let{$\text{centroids}[\mathbf d_i]$}
-            {$\operatorname{arg\, min}_j \| \mathbf d_i - \boldsymbol \mu_j \|^2$}
-             \Comment{cache the centroid nearest to $\mathbf d_i$}
-      \EndFor
-
-      \For{each $\mathbf d_i \in \mathcal M$}
-        \Let{$c_i$}{$\text{centroids}[\mathbf d_i]$}
-                                       \Comment{the centroid index of document $\mathbf d_i$}
-        \Let{$v[c_i]$}{$v[c_i] + 1$}   \Comment{counts per centroid $c_i$}
-        \Let{$\eta$}{$1 / v[c_i]$}     \Comment{per-centroid learning rate}
-        \Let{$\boldsymbol \mu_{c_i}$}
-        {$(1 - \eta) \cdot \boldsymbol \mu_{c_i} + \eta \cdot \mathbf d_i$}
-                                        \Comment{gradient step}
-      \EndFor
-    \Until{converged}
-
-    \State \Return{$(c_1, c_2, \ ... \ , c_n)$}
-  \EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-
-Note that $K$ means uses Euclidean distance, and Euclidean distance
-does not always behave well in high-dimensional sparse vector spaces
-like Document VSMs (see section~\ref{sec:similarity-distance}). However,
-as discussed in section~\ref{sec:similarity-distance},
-if document vectors are normalized, the Euclidean distance
-and Cosine distance are related, and therefore
-Euclidean $K$-means is the same as ``Cosine Distance'' $K$-Means.
+$K$-Means uses Euclidean distance, and it does not always behave 
+well in high-dimensional sparse vector spaces like document vector 
+spaces (see section~\ref{sec:similarity-distance}). However,
+as discussed in section~\ref{sec:similarity-distance}, if document vectors 
+are normalized, the Euclidean distance and Cosine distance are related, 
+and therefore Euclidean $K$-means is the same as ``Cosine Distance'' $K$-Means.
 
 $K$-Means is the most popular clustering algorithms and there are
-many extensions to this algorithm. In the next section we will
-discuss some of the extensions related to document clustering.
-
-
-% \subsection{Extensions of $K$-Means} \label{sec:kmeans-ext}
-\ \\
-
-There are several extensions of $K$-Means.
-
+many extensions to this algorithm. 
 
 For example, Bisecting K-Means \cite{steinbach2000comparison} is a combination
-of partitioning and hierarchical (divisive) algorithms. It's a variant of $K$-Means that
-gradually splits the document space in halves until the desired number of clusters
-is obtained. Bisecting K-Means can achieve good performance while
-giving the user additional information about ... ?
+of partitioning and hierarchical (divisive) algorithms. It's a 
+variant of $K$-Means that gradually splits the document space in halves 
+until the desired number of clusters is obtained. Bisecting $K$-Means can 
+achieve good performance while giving the user additional insight into 
+the clustering process. Additionally, in the results it produces 
+clusters of comparable sizes. 
 
-Algorithm:
-
-\begin{itemize}
-  \item start with a single cluster
-  \item choose a cluster to split (for example, the largest one)
-  \item apply $K$-means to this cluster with $K=2$ to split it
-  \item repeat until have desired number of clusters
-\end{itemize}
-
-
-\textbf{TODO: pseudocode}
-
-% may repeat this procedure several times and take the clusters with highest overall similarity
+The algorithm is simple: (1) item start with a single cluster;
+(2) choose a cluster to split (for example, the largest one);
+(3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
+(4) repeat until have desired number of clusters.
 
 \ \\
 
-Scatter/Gather is another popular variation of $K$-means, but
-initially used for clustering retrieved documents for Information
-Retrieval systems \cite{cutting1992scatter}. This variation
-includes: special smart seed selection procedure (applying
-hierarchical cluster on a subset of document vectors to
-initialize the centroids at the initialization step) and
-several cluster refinement operations.
-Additionally, in Scatter/Gather cluster centroids are concatenations
-of all terms in the cluster documents, not a mean value;
-and the cosine similarity is used instead of Euclidean
+Scatter/Gather is another popular variation of $K$-means, initially used for 
+clustering documents for Information Retrieval systems \cite{cutting1992scatter}. 
+This variation includes: special smart seed selection procedure and
+several cluster refinement operations. Additionally, in Scatter/Gather 
+cluster centroids are concatenations of all terms in the cluster documents, 
+not a mean value; finally, the cosine similarity is used instead of Euclidean
 distance.
-
 
 There are two cluster refinement operations: split and join.
 
-The split operation is used to continue splitting clusters,
-and it's applied only to the clusters that are not coherent
-enough. Essentially, the split operation splits the non-coherent
-clusters in the same way as Bisecting $K$-Means.
-The coherence is measured via \emph{self-similarity} of a cluster,
+The split operation selects the clusters that are not coherent
+enough and clusters them again using $K$-Means. The coherence is 
+measured via \emph{self-similarity} of a cluster,
 which is the mean similarity of all documents in the cluster to
 its centroid, or the mean pair-wise similarity between all documents
 of the cluster.
@@ -587,22 +424,17 @@ overlaps between their typical terms.
 
 However, when there are many documents, the centroids tend
 to contain a lot of words, which leads to a significant slowdown.
-A solution to this problem is a center adjustment method, called
-vector average dumping \textbf{TODO} \cite{larsen1999fast}.
-Alternatively, some terms of the centroid can be
-truncated. There are several possible ways of trucating
-the terms: for example, we can keep only the top $c$ terms, or
-remove the least frequent words such that at least 90\% (or 95\%) of
-the original vector norm is retained \cite{schutze1997projections}.
+To solve this problem, some terms of the centroid can be truncated. 
+There are several possible ways of trucating the terms: for example, 
+we can keep only the top $c$ terms, or remove the least frequent words 
+such that at least 90\% (or 95\%) of the original vector norm is 
+retained \cite{schutze1997projections}.
 
 
+\subsubsection{DBSCAN} \label{sec:dbscan} \ \\
 
-\subsection{DBSCAN} \label{sec:dbscan}
-
-
-DBSCAN is a clustering algorithm that can discover
-clusters of complex shapes based on the density of
-data points \cite{ester1996density}.
+DBSCAN is a density-based clustering algorithm that can discover
+clusters of complex shapes based on the density of data points \cite{ester1996density}.
 
 The \emph{density} associated with a data point is obtained by
 counting the number of points in a region of radius $\varepsilon$
@@ -623,7 +455,8 @@ and it is considered a cluster. Then the process is repeated for all points in
 the neighborhood, and they all are assigned to the same cluster, as $p$.
 If $p$ is not a core point, but it has a core point in its neighborhood, then
 it's a border point and it is assigned to the same cluster and the core point.
-But if it is a noise point, then it is marked as noise or discarded.
+But if it is a noise point, then it is marked as noise or discarded 
+(see listing~\ref{algo:dbscan}.
 
 
 \begin{algorithm}
@@ -687,29 +520,21 @@ But if it is a noise point, then it is marked as noise or discarded.
 
 \end{algorithm}
 
+The details of implementation of \textsc{Region-Query} are not specified, 
+and it can be implemented differently. For example, it can use 
+Inverse Index to make the similarity search faster \cite{ertoz2003finding} \cite{manning2008introduction}.
 
-The DBSCAN algorithm uses the Euclidean distance,
-but can be adapted to use any other distance or similarity function.
-For example, to modify the algorithm to use the Cosine similarity
-(or any other similarity function)
+
+The DBSCAN algorithm uses the Euclidean distance, but can be adapted to 
+use any other distance or similarity function. For example, to modify the 
+algorithm to use the cosine similarity (or any other similarity function)
 the \textsc{Region-Query} has to be modified to return
 $\{ x \ : \ \text{similarity}(x, p) \geqslant \varepsilon \}$.
 
-The details of implementation of \textsc{Region-Query}
-are not specified, and it can be implemented differently.
-For example, it can use Inverse Index (see section~\ref{sec:index}, and listing~\ref{algo:inverted-index} for the pseudocode)
-to make the similarity search faster.
-
-
-% \subsection{Extensions of DBSCAN} \label{sec:dbscan-ext}
-\ \\
-
-As discussed, DBSCAN can be extended to use any distance or similarity function.
 Shared Nearest Neighbors Similarity (SNN Similarity) \cite{ertoz2003finding}
 is a special similarity function that is particularity useful for
-high-dimensional spaces.
-And this similarity function is applicable to document clustering
-and topic discovery \cite{ertoz2004finding}.
+high-dimensional spaces, it works well with DBSCAN, and it is
+applicable to document clustering and topic discovery \cite{ertoz2004finding}.
 
 SNN Similarity is specified in terms of the $K$ nearest neighbors.
 Let $\text{NN}_{K, \, \text{sim}}(p)$ be a function that returns
@@ -748,64 +573,34 @@ see the listing~\ref{algo:snn-clustering}.
 
 \end{algorithm}
 
+
 The algorithm's running time complexity is $O(n^2)$ time, where $n = |\mathcal D|$,
-but it can be sped up by using the Inverted Index.
-
-% \subsection{Scaling?}
-% LSH etc
-
-
-% \section{Discovering Latent Semantics} \label{sec:latent-semantics}
-
-% \textbf{How to deal with these problems?} Term Extraction techniques:
-% these techniques create "artificial" terms that aren't really terms -
-% they are generated, and not the ones that actually occurred in the text
-% The original terms don't have the optimal dimensionality for document content representation
-% because of the problems of polysemy, homonymy and synonymy
-% so we want to find better representation that doesn't suffer from these issues
+but it can be sped up by using the Inverted Index \cite{ertoz2003finding}.
 
 
 \subsection{Latent Semantic Analysis} \label{sec:lsa}
 
-The Vector Space Model discussed in section~\ref{sec:vsm}.
-The solution to this problem is to assume that there exists
-some optimal document vector space where the document vectors
-do not suffer from the ...
-This vector space can be found by finding the best $k$-rank approximation
-to the Term-Document matrix using Singular Value Decomposition (SVD).
-This technique is called Latent Semantic Analysis \cite{landauer1998introduction}
-or Latent Semantic Indexing in the context of Information Retrieval
-\cite{deerwester1990indexing}.
-It is also a popular Text Mining technique for reducing the dimensionality
-of text data and it is often used for
-document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}.
+In chapter~\ref{sec:namespaces-top} we have discussed the
+lexical variability and ambiguity problems in natural language: synonymy
+and polysemy. We can treat these problems as ``statistical noise'' and
+apply dimensionality reduction techniques to find the optimal dimensionality
+for the data and thus reduce the amount of noise there.
 
+This technique is called Latent Semantic Analysis \cite{landauer1998introduction}
+or Latent Semantic Indexing \cite{deerwester1990indexing}, and 
+it is often used for document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}.
 
 There are three major steps in Latent Semantic Analysis  \cite{evangelopoulos2012latent}:
+(1) preprocess documents;
+(2) construct a term-document matrix $D$ using the Vector Space Model;
+(3) de-noise $D$ by reducing its dimensionality with Singular Value Decomposition (SVD).
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Preprocess documents
-\item
-  Construct a Term-Document matrix $D$ using the Vector Space Model
-\item
-  Reduce dimensionality of $D$ by using SVD
-\end{itemize}
-
-
-The first two steps are the same as for traditional Vector Space Models:
-consider a set of document $\mathcal D = \{ d_1, d_2, \ ... \ , d_n \}$
-with the vocabulary $\mathcal V = \{t_1, t_2, \ ... \ , t_m \}$, then
-$D$ is a $m \times n$ Term-Document Matrix. If the matrix $D$ has
-rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item $U$ is an $m \times r$ orthogonal matrix, i.e. $U U^T = I$;
-\item $\Sigma$ is a diagonal $r \times r$ matrix with singular values ordered by their magnitude;
-\item $V$ is an $n \times r$ orthogonal matrix, $V V^T = I$.
-\end{itemize}
+The first two steps are the same as for traditional Vector Space Models 
+and in the result we obtain a term-document matrix $D$. 
+If $D$ has rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
+$U$ is an $m \times r$ orthogonal matrix, i.e. $U U^T = I$;
+$\Sigma$ is a diagonal $r \times r$ matrix with singular values ordered by their magnitude;
+$V$ is an $n \times r$ orthogonal matrix, $V V^T = I$.
 
 The dimensionality reduction is done by finding the best $k$-rank approximation
 of $D$, which is obtained by keeping only the first $k$ singular values of $\Sigma$
@@ -937,4 +732,4 @@ steps \cite{xu2003document}:
       by using $K$-Means.
 \end{itemize}
 
-% The computational complexity on NMF is $O(kn)$ 
+% The computational complexity on NMF is $O(kn)$

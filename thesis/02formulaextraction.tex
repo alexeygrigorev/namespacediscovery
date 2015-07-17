@@ -8,13 +8,9 @@ For example, given the sentence ``The relation between energy and mass is
 described by  the mass-energy equivalence formula $E = mc^2$,
 where $E$ is energy, $m$ is mass and $c$ is the speed of light''
 the goal is to extract the following identifier-definition relations:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item ($E$, ``energy'')
-  \item ($m$, ``mass'')
-  \item ($c$, ``the speed of light'')
-\end{itemize}
+($E$, ``energy''),
+($m$, ``mass'') and
+($c$, ``the speed of light'').
 
 Consider another example: ``Let $e$ be the base of natural logarithm''.
 We would like to extract ($e$, ``the base of natural logarithm'').
@@ -23,7 +19,7 @@ Formally, a phrase that defines a mathematical expression consists of three part
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
-  \item \emph{definiendum} is the term to be defined: it is a mathematical expression 
+  \item \emph{definiendum} is the term to be defined: it is a mathematical expression
       or an identifier;
   \item \emph{definiens} is the definition itself: it is the word or phrase that defines the definiendum in a definition;
   \item \emph{definitor} is a relator verb that links definiendum and definiens.
@@ -36,7 +32,7 @@ In this work we are interested in the first two parts: \emph{definiendum} and
 $E$ is a definiendum, and ``energy'' is a definiens.
 
 In this chapter we will discuss how the relations can be discovered automatically.
-It is organized as follows: 
+It is organized as follows:
 then discuss
 the Math-Aware POS Tagging procedure in section~\ref{sec:postagging} and
 finally review the extraction methods in section~\ref{sec:definition-extraction-methods}
@@ -75,7 +71,7 @@ For example, consider the following sentence:
 ``The relation between energy and mass is
 described by  the mass-energy equivalence formula $E = mc^2$,
 where $E$ is energy, $m$ is mass and $c$ is the speed of light''.
-In this case we will assign the MATH tag to ``$E = mc^2$'', ``$E$'',
+In this case we will assign the \verb|MATH| tag to ``$E = mc^2$'', ``$E$'',
 ``$m$'' and ``$c$''
 
 However we can note that for finding identifier-definition relations
@@ -89,7 +85,7 @@ and introduce an additional tag \texttt{ID} to denote stand-alone identifiers.
 
 
 Thus, in the example above ``$E = mc^2$'' will be assigned the \texttt{MATH} tag
-and ``$E$'',``$m$'' and ``$c$'' will be annotated with \texttt{ID}.
+and ``$E$'', ``$m$'' and ``$c$'' will be annotated with \texttt{ID}.
 
 In the next section we discuss how this can be used to find identifier-definition
 relations.
@@ -191,15 +187,15 @@ Once the candidate pairs are found, we extract the following features \cite{kris
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
   \item boolean features for each of the patterns from
-    section~\ref{sec:pattern-matching} indicating if the pattern is matched
-  \item indicator if there's a colon or comma between candidate and identifier
-  \item indicator if there's another math expression between candidate and identifier
-  \item indicator if candidate is inside parentheses and identifier is outside
-  \item distance (in words) between the identifier and the candidate
-  \item the position of candidate relative to identifier
-  \item text and POS tag of one/two/three preceding and following tokens around the candidate
-  \item text of the first verb between candidate and identifier
-  \item many others
+    section~\ref{sec:pattern-matching} indicating if the pattern is matched,
+  \item indicator if there's a colon or comma between candidate and identifier,
+  \item indicator if there's another math expression between candidate and identifier,
+  \item indicator if candidate is inside parentheses and identifier is outside,
+  \item distance (in words) between the identifier and the candidate,
+  \item the position of candidate relative to identifier,
+  \item text and POS tag of one/two/three preceding and following tokens around the candidate,
+  \item text of the first verb between candidate and identifier,
+  \item many others.
 \end{itemize}
 
 Once the features are extracted, a binary classifier can be trained to predict
@@ -211,7 +207,7 @@ but, in principle, any other binary classifier can be applied
 as well.
 
 
-\subsubsection{Probabilistic Approaches} \label{sec:mlp}
+\subsubsection{Probabilistic Approaches} \label{sec:mlp} \ \\
 
 In the Mathematical Language Processing approach \cite{pagael2014mlp}
 a definition for an identifier is extracted by ranking

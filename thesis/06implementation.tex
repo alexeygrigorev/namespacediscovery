@@ -145,11 +145,11 @@ Once it is done, we then apply Math-aware POS tagging
 (see section~\ref{sec:postagging}). For English documents from the English Wikipedia
 we use StanfordNLP's Maximal Entropy POS Tagger \cite{toutanova2003feature}.
 Unfortunately, there are no trained models available for POS tagging the Russian
-language for the StanfordNLP library. Additionally, we were not able to find a
-suitable implementation of any other POS taggers in Java, and therefore we
+language for the StanfordNLP library and we were not able to find a
+suitable implementation of any other POS taggers in Java. Therefore we
 implemented a simple rule-based POS tagger ourselves. The implementation is based on
 a PHP function from \cite{habr2012postag}: it is translated into Java
-and seamlessly incorporated into the StanfordNLP pipeline.
+and seamlessly integrated into the StanfordNLP pipeline.
 The English tagger uses the Penn Treebank POS Scheme \cite{santorini1990part},
 and hence we follow the same convention for the Russian tagger.
 
@@ -199,13 +199,12 @@ The Natural Language data is famous for being noisy and hard to
 clean \cite{sonntag2004assessing}. The same is true for
 mathematical identifiers and  scientific texts with formulas.
 In this section we describe how the data was preprocessed and
-cleaned at different stages of Definition Extraction
-(section~\ref{sec:defextraction-impl}).
+cleaned at different stages of Definition Extraction.
 
 Often identifiers contain additional semantic information visually conveyed
 by special diacritical marks or font features. For example, the diacritics can be
 hats to denote ``estimates'' (e.g. ``$\hat w$''), bars to denote the expected value
-(e.g. ``$\bar X$''), arrows to denote vectors (e.g. ``$\overrightarrow x$'') and others.
+(e.g. ``$\bar X$''), arrows to denote vectors (e.g. ``$\vec x\, $'') and others.
 As for the font features, boldness is often used to
 denote vectors (e.g. ``$\mathbf w$'') or matrices (e.g. ``$\mathbf X$''), calligraphic fonts are
 used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces
@@ -213,7 +212,7 @@ used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces
 
 Unfortunately there is no common notation established across all fields of
 mathematics and there is a lot of variance. For example,
-a vector can be denoted by ``$\overrightarrow x$'', ``$\boldsymbol x$'' or ``$\mathbf x$'',
+a vector can be denoted by ``$\vec x\, $'', ``$\boldsymbol x$'' or ``$\mathbf x$'',
 and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''.
 In natural languages there are related problems of lexical ambiguity such as 
 synonymy, when different words refer to the same concept, and it can be solved
@@ -308,8 +307,9 @@ at all, and these documents are no longer considered for the analysis.
 Additionally, we discard all the documents that have only one identifier.
 This leaves only 22\,515 documents out of 30\,000, and they
 contain 12\,771 distinct identifiers, which occur about 2 million times.
+
 The most frequent identifiers are $x$ (125\,500 times), $p$ (110\,000),
-$m$ (105\,000) and $n$ (83\,000), but about 3\,700 identifiers occur
+$m$ (105\,000 times) and $n$ (83\,000 times), but about 3\,700 identifiers occur
 only once and 1\,950 just twice. Clearly, the distribution of
 identifiers follows some power law distribution (see fig.~\ref{fig:ed-wiki-ids}).
 
@@ -380,7 +380,7 @@ The median number of identifiers per document is 10.
 \end{figure}
 
 
-For the 12\,771 the algorithm found 115\,300 definitions, and the
+For 12\,771 identifiers the algorithm extracted 115\,300 definitions, and the
 number of found definitions follows a long tail distribution as well
 (see fig.~\ref{fig:en-wiki-doc-def.pdf}), with the median number of
 definitions per page being 4.
@@ -466,15 +466,15 @@ At the Document Clustering stage we want to find cluster of documents
 that are good namespace candidates.
 
 Before we can do this, we need to vectorize our dataset: i.e. build the
-Identifier Space (see section~\ref{sec:ism}) and represent each document
+Identifier Space (see section~\ref{sec:vsm}) and represent each document
 in this space.
 
 There are three choices for dimensions of the Identifier space:
 
 \begin{itemize}
-  \item identifiers alone
-  \item ``weak'' identifier-definition association
-  \item ``strong'' association: use identifier-definition pairs
+  \item identifiers alone,
+  \item ``weak'' identifier-definition association,
+  \item ``strong'' association: use identifier-definition pairs.
 \end{itemize}
 
 In the first case we are only interested in identifier information and
@@ -499,15 +499,16 @@ In this work we use Snowball stemmer for English \cite{porter2001snowball}
 implemented in NLTK \cite{bird2006nltk}: a python library for
 Natural Language Processing.
 
-Each document is vectorized (converted to a vector form) by using
-\verb|TfidfVectorizer| from  scikit-learn \cite{scikit-learn}.
+Using \verb|TfidfVectorizer|  from  scikit-learn \cite{scikit-learn} we vectorize 
+each document. 
+
 We use the following settings:
 
-\begin{itemize}
+\begin{enumerate}[label=\Alph*]
   \item \verb|use_idf=True, min_df=2|
   \item \verb|use_idf=False, min_df=2|
   \item \verb|use_idf=False, sublinear_tf=True, min_df=2|
-\end{itemize}
+\end{enumerate}
 
 
 In the first case we use inverse document frequency (IDF) to assign additional
@@ -532,17 +533,17 @@ Note that if rows are unit-normalized, then running $K$-Means with
 Euclidean distance is equivalent to cosine distance
 (see section~\ref{sec:kmeans}).
 
-Bisecting $K$-Means (see section~\ref{sec:kmeans-ext}) was implemented on top of
+Bisecting $K$-Means (see section~\ref{sec:kmeans}) was implemented on top of
 scikit-learn: at each step we take a subset of the dataset and apply
 $K$-Means with $K = 2$ to this subset. If the subset is big (with number of
 documents $n > 2000$), then we use Mini-Batch $K$-means with $K=2$
 because it converges much faster.
 
-Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans-ext}), was
+Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans}), was
 implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because
 scikit-learn's implementation of $K$-Means does not allow using user-defined distances.
 
-DBScan (section~\ref{sec:dbscan}) and SNN Clustering (section~\ref{sec:dbscan-ext})
+DBScan (section~\ref{sec:dbscan}) and SNN Clustering (also section~\ref{sec:dbscan})
 algorithms were also implemented manually:
 available DBScan implementations usually take distance measure rather than
 a similarity measure. The similarity matrix cleated by similarity measures
@@ -553,7 +554,7 @@ the matrix will no longer be sparse, and we would like to avoid that.
 Additionally, available implementations are usually general purpose
 implementations and do not take advantage of the structure of the data:
 in text-like data clustering algorithms can be sped up significantly
-by using an inverted index (section~\ref{sec:index})
+by using an inverted index.
 
 
 Dimensionality reduction techniques are also important: they
@@ -562,7 +563,7 @@ structure of data. In this work we use Latent Semantic Analysis (LSA) (section~\
 which is implemented using randomized Singular Value Decomposition (SVD)
 \cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn
 \cite{scikit-learn} - method \verb|randomized_svd|. Non-negative Matrix Factorization
-is an alternative technique for dimensionality reduction (section~\ref{sec:nmf}).
+is an alternative technique for dimensionality reduction (section~\ref{sec:lsa}).
 Its implementation is also taken from scikit-learn \cite{scikit-learn},
 class \verb|NMF|.
 
@@ -576,10 +577,8 @@ is available as a SKOS ontology.
 A cluster is said to be ``pure'' if all documents have the same category.
 Using categories information we can find the most frequent category of the
 cluster, and then we can define purity as
-
-$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|}$$
-
-(\textbf{TODO}: Add backlink to purity definition).
+$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
+where $C$ is a cluster, and $c_i$ is some category.
 
 Then we can calculate the overall purity of a cluster assignment and use
 this to compare results of different clustering algorithms. However it is not
@@ -595,16 +594,217 @@ will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 
 \begin{figure}[h]
 \centering\includegraphics[width=0.9\textwidth]{purity.pdf}
-\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases linearly with $K$}
+\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases linearly with $K$ ($R^2 = 0.99$)}
 \label{fig:k-vs-purity}
 \end{figure}
 
 
 \begin{figure}[h]
 \centering\includegraphics[width=0.9\textwidth]{pure-clusters.pdf}
-\caption{$K$ in $K$-Means vs the number of pure clusters: it grows initially, but after $K\approx 10\,000$ starts to decrease}
+\caption{$K$ in $K$-Means vs the number of pure clusters: it grows initially, but after $K\approx 8\,000$ starts to decrease}
 \label{fig:k-vs-pureclusters}
 \end{figure}
+
+
+
+\subsection{Parameter Tuning} \label{sec:param-tuning} \ \\
+
+There are many different clustering algorithms, each with its own set
+of parameter. In this section we describe how we find the settings that
+find the best namespaces. 
+
+The following things can be changed:
+
+\begin{itemize}
+  \item Ways to incorporate definition information (no definitions, soft association, hard association);
+  \item Weighting schemes for the identifier-document matrix $D$: TF, sublinear TF, TF-IDF;
+  \item There are different clustering algorithms: agglomerative clustering, DBSCAN, SNN clustering, $K$-Means, Bisecting $K$-Means, Scatter/Gather, each algorithm has its own set of parameters;
+  \item Dimensionality of $D$ can be reduced via SVD or NMF, parameter $k$ controls the rank of output.
+\end{itemize}
+
+The approach for finding 
+
+Distance and similarity measures used
+Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
+
+The approach for finding the best parameter set is a grid search: different combination
+are tries and the best result is kept.
+
+Agglomerative: Wald linkage: takes forever never finished
+
+
+
+\textbf{Only identifiers }
+
+\underline{Usual K-Means}
+
+some clusters are useful, but most of them aren't
+
+For example
+
+\begin{tabular}{|c|c|}
+\hline
+Article & Identifiers \\
+\hline
+APL (programming language) & $n, O, R$ \\
+Binary search tree & $O, n$ \\
+Boolean satisfiability problem & $O, n$ \\
+Complexity & $O, n$ \\
+Earley parser  & $O, n$ \\
+Heapsort   & $O, n, \Omega$ \\
+Lisp (programming language)& $O, n$ \\
+Priority queue & $O, n$ \\
+Sieve of Eratosthenes  & $O, n$ \\
+Smoothsort & $O, n$ \\
+Comb sort  & $\Omega, n, p, O$ \\
+Divide and conquer algorithm   & $O, n, \Omega$ \\
+Stack (abstract data type) & $O, n, t$ \\
+Skip list  & $n, p, O$ \\
+Graph minor& $O, n, h$ \\
+Flex lexical analyser  & $O, n$ \\
+Gift wrapping algorithm& $O, n, h$ \\
+Perlin noise   & $n, O$ \\
+Pseudo-polynomial time & $n, O, m$ \\
+Hirzebruch surface & $O, n, m, p$ \\
+Beap   & $n, O$ \\
+Pairing heap   & $O, n, \Omega$ \\
+Cost efficiency& $O, n, p$ \\  \hline
+\end{tabular}
+
+
+(54 documents in total)
+These articles appear to relate to
+
+
+\underline{DBSCAN SNN}
+
+$k = 10$
+dist = jaccard
+
+$\varepsilon$=7 points
+MinPts=5 points
+
+
+\begin{tabular}{|c|c|}
+\hline
+Article & Identifiers \\
+\hline
+Epsilon Eridani in fiction & $M_\odot$ \\
+Solar mass & $M_\odot$ \\
+Orders of magnitude (mass) & $M_\odot$ \\
+Carbon-burning process & $M_\odot$ \\
+Baryonic dark matter & $M_\odot$ \\
+PSR J1614–2230 & $M_\odot$ \\
+Kennicutt–Schmidt law & $M_\odot$ \\
+Portal:Star/Selected article/19 & $M_\odot$ \\
+NGC 6166 & $M_\odot$ \\
+Celestial Snow Angel & $M_\odot$ \\
+Huge-LQG & $M_\odot$ \\
+High-velocity cloud & $M_\odot$ \\
+NGC 4845 & $M_\odot$ \\
+Pulsating white dwarf & $M_\odot$ \\
+Robust associations of massive baryonic objects & $M_\odot$ \\
+Black Widow Pulsar & $M_\odot$ \\
+Betelgeuse & $M_\odot$ \\
+Andromeda Galaxy & $M_\odot$ \\
+\hline
+\end{tabular}
+
+
+In general doesn't give clusters
+
+TODO add some numbers and graphs
+
+
+\textbf{WEAK ASSOCIATION}
+
+K-Means weak association
+
+\underline{DBSCAN}
+k=15, eps=8, min\_pts=5
+
+\begin{tabular}{|c|c|}
+\hline
+Article & Identifiers \\
+\hline
+Papyrus 66 & $P \text{papyrus}$ \\
+Alexandrian text-type  & $P, \text{papyrus}$ \\
+Western text-type  & $P, \text{papyrus}$ \\
+Codex Ephraemi Rescriptus  & $P, \text{papyrus}$ \\
+Bodmer Papyri  & $P, \text{papyrus}$ \\
+Categories of New Testament manuscripts    & $P, \text{papyrus}$ \\
+Papyrus 4  & $P, \text{papyrus}$ \\
+Papyrus 75 & $P, \text{papyrus}$ \\
+Uncial 0308    & $P, M, \text{papyrus}, \text{47}$ \\
+Codex Athous Lavrensis & $P, \text{papyrus}$ \\
+Papyrus 92 & $P, \text{papyrus}$ \\
+Papyrus 90 & $P, \text{papyrus}$ \\
+Papyrus 9  & $P, \text{papyrus}$ \\
+Papyrus 15 & $P, \text{papyrus}$ \\
+Papyrus 16 & $P, \text{papyrus}$ \\
+Papyrus 20 & $P, \text{papyrus}$ \\
+Papyrus 39 & $P, \text{papyrus}$ \\
+Papyrus 49 & $P, \text{papyrus}$ \\
+Papyrus 65 & $P, \text{papyrus}$ \\
+Papyrus 111    & $P, \text{papyrus}$ \\
+Uncial 0243    & $P, \text{papyrus}$ \\
+Minuscule 1739 & $P, \text{papyrus}$ \\
+Minuscule 88   & $P, \text{papyrus}$ \\
+Authorship of the Epistle to the Hebrews   & $P, \text{papyrus}$ \\
+Egerton Gospel & $P, \text{papyrus}$ \\
+Rylands Library Papyrus P52    & $P, \text{papyrus}$ \\
+Codex Vaticanus    & $P, \text{papyrus}$ \\
+\hline
+\end{tabular}
+
+\underline{K-Means}
+
+\textbf{TODO}: think of different ways to represent it - maybe truncate some definitions?
+
+\begin{tabular}{|c|c|}
+\hline
+Article & Identifiers \\
+\hline
+Direct shear test & $angle, \varphi, friction$ \\
+Truncated dodecadodecahedron & $golden, ratio, \phi$ \\
+Golden triangle (mathematics) & $golden, section, \theta, \phi$ \\
+Petrophysics & $percentage \varphi, symbol, S_w$ \\
+Greedy algorithm for Egyptian fractions & $golden, terms, d, \phi, denominator, possible, expansion, y, x, ratio$ \\
+Pi Josephson junction & $\pi, junction, \varphi$ \\
+Snub dodecahedron & $golden, ratio, \tau, 2\xi, -, V, \xi$ \\
+Lucas number & $golden, terms, \phi, m, L, number, values, ratio, L_k, n, L_n, F_n, L_m$ \\
+54 (number) & $golden,\varphi,ratio$ \\
+Special right triangles & $\pi, c, b, ratio, c., \phi, m, golden, radians, n, line, integers, segment$ \\
+Universal code (data compression) & $golden, code, ratio, power, \phi, l, n, q, p, law$ \\
+Existential instantiation & $c symbol \varphi variable$ \\
+Perles configuration & $golden ratio \phi$ \\
+Wythoff array & $golden ratio \phi column m number n \varphi fibonacci$ \\
+Golomb sequence & $a_n, n, golden, ratio, \phi$\\
+Almost integer & $constant \pi, gelfonds,\varphi,example$ \\
+16:10 & $golden, ratio, \phi$ \\
+Leonardo number & $golden, ratio, \phi, computations, \psi, L, n, roots$ \\
+Rogers–Ramanujan continued fraction & $golden functions ratio G \phi H q modular$ \\
+Great rhombic triacontahedron & $golden ratio \phi$ \\
+108 (number) & $golden \varphi ratio$ \\
+Random Fibonacci sequence & $golden B ratio M_n probability \phi f_n sequence n random increases values f_1 f_2 M_3 F_n$ \\
+Rhombic triacontahedron & $golden ratio \phi r_i S edge r_m V$ \\
+Exact trigonometric constants & $function \pi ratio \phi image golden values x V \theta example$ \\
+Bilunabirotunda & $golden ratio \phi$ \\
+Feigenbaum constants & $map z ratio places f \phi golden c_n \alpha \delta variable x x_i$ \\
+\hline
+\end{tabular}
+
+Found some interesting clusters but in general doesn't show good results.
+Need to use semantic menthols
+
+Batch, k = 2500 .. 10000 with step 50
+SVD with n=600
+
+
+
+HEre results
+
+
 
 
 
@@ -612,14 +812,27 @@ will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 \subsection{Building Hierarchy} \label{sec:hierarchy}
 
 
-Once
+After the namespaces are found, we need to organize them into a hierarchical 
+structure. It is hard to fully automatically, and we choose to use 
+existing hierarchies for mathematical knowledge, and then map the 
+found namespaces to these hierarchies.
 
-AMS Mathematics Subject Classification (2010) \cite{ams2010msc}
-Excluded all subcategories those code end with '99': they are
-usually 'Miscellaneous topics' or 'None of the above, but in this section'.
-top level categories 'General', 'History and biography', and 'Mathematics education'
-were also excluded.
-Additionally we exclude the following:
+The first hierarchy that we use is ``Mathematics Subject Classification'' (MSC)
+hierarchy \cite{ams2010msc} by the American Mathematical Society, and it 
+is used for categorizing mathematical articles. In this scheme there are 
+64 top-level categories such as ``Mathematical logic'', ``Number theory'',
+or ``Fourier analysis''. It also includes some physics categories such 
+as ``Fluid mechanics'' or ``Quantum Theory''. The following top level 
+categories are excluded: ``General'', ``History and biography'' and 
+``Mathematics education''.
+
+Each top-level category contains second-level categories and third-level
+categories. In this work we exclude all subcategories those code 
+ends with 99: they are usually ``Miscellaneous topics'' or 
+``None of the above, but in this section''. 
+
+Additionally, we excluded the following second level categories because 
+they interfere with PACS, a hierarchy for Physics: 
 
 \begin{itemize}
 \item Quantum theory $\to$ Axiomatics, foundations, philosophy
@@ -631,27 +844,35 @@ Additionally we exclude the following:
 \item Functional analysis $\to$ Miscellaneous applications of functional analysis
 \end{itemize}
 
-So these categories do not interfere with PACS.
+The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS) 
+\cite{aps2010pacs}, which is a scheme for categorizing articles about Physics. 
+Like in MSC, we remove the top-level category  ``GENERAL''. 
 
+Finally, we also use the ACM Classification Scheme \cite{rous2012acm} 
+available as a SKOS \cite{miles2005skos} ontology at their website \cite{amc2012ccs}. 
+The SKOS ontology graph was processed with RDFLib \cite{rdflib}. 
 
-APS Physics and Astronomy Classification Scheme (2010) \cite{aps2010pacs}
-
-We remove the ``GENERAL'' top-level category.
-In PACS there are 3 levels of categories, but we merge all 3-rd level categories into
-2nd level.
-
-ACM Classification Scheme \cite{rous2012acm} available as a SKOS \cite{miles2005skos} ontology
-at their website \cite{amc2012ccs}. The SKOS ontology graph was processed with RDFLib \cite{rdflib}
-
-We keep the following top level categories:
+We use the following top level categories: 
 ``Hardware'', ``Computer systems organization'', ``Networks'',
 ``Software and its engineering'', ``Theory of computation'',
 ``Information systems'', ``Security and privacy'',
 ``Human-centered computing'', ``Computing methodologies''.
 
-After obtaining the data and parsing, all categories, the hierarchies
-are merged into one and then we try to match the found namespaces
-with second-level category in the hierarchy.
+
+After obtaining and processing the data, the three hierarchies 
+are merged into one. Then each found namespace is mapped to 
+the most suitable second-level category.
+
+
+However these categories are only good for the English wikipedia and 
+a different hierarchy is needed for Russian. One of such hierarchies is 
+``Ãîñóäàðñòâåííûé ðóáðèêàòîð íàó÷íî-òåõíè÷åñêîé èíôîðìàöèè'' (ÃÐÍÒÈ) -- 
+``State categorizator of scientific and technical information'', which 
+is a state-recommended scheme for categorizing scientific articles published 
+in Russian  \cite{feodosimov2000grnti}. The dataset is retrieved from the 
+official website \url{http://grnti.ru/} \cite{grntiweb}.
+
+
 
 This is done by keywords matching: we extract all words from the
 category (this includes top level category name, subcategory name

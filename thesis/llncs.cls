@@ -224,7 +224,7 @@
 \setlength\textfloatsep{8mm\@plus 2\p@ \@minus 4\p@}
 \setlength\intextsep   {8mm\@plus 2\p@ \@minus 2\p@}
 
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{3}
 
 \newcounter {chapter}
 \renewcommand\thechapter      {\@arabic\c@chapter}
@@ -341,12 +341,12 @@
                        {-18\p@ \@plus -4\p@ \@minus -4\p@}%
                        {12\p@ \@plus 4\p@ \@minus 4\p@}%
                        {\normalfont\large\bfseries\boldmath
-                        \rightskip=\z@ \@plus 8em\pretolerance=10000 }}
+                        \rightskip=\z@ \@plus 10em\pretolerance=10000 }}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
                        {-18\p@ \@plus -4\p@ \@minus -4\p@}%
                        {8\p@ \@plus 4\p@ \@minus 4\p@}%
                        {\normalfont\normalsize\bfseries\boldmath
-                        \rightskip=\z@ \@plus 8em\pretolerance=10000 }}
+                        \rightskip=\z@ \@plus 9em\pretolerance=10000 }}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
                        {-18\p@ \@plus -4\p@ \@minus -4\p@}%
                        {-0.5em \@plus -0.22em \@minus -0.1em}%
@@ -373,12 +373,6 @@ You should not use \verb|\subparagraph| with this class.\vskip0.5cm}
 
 \let\footnotesize\small
 
-\if@custvec
-\def\vec#1{\mathchoice{\mbox{\boldmath$\displaystyle#1$}}
-{\mbox{\boldmath$\textstyle#1$}}
-{\mbox{\boldmath$\scriptstyle#1$}}
-{\mbox{\boldmath$\scriptscriptstyle#1$}}}
-\fi
 
 \def\squareforqed{\hbox{\rlap{$\sqcap$}$\sqcup$}}
 \def\qed{\ifmmode\squareforqed\else{\unskip\nobreak\hfil

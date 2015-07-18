@@ -98,10 +98,12 @@ the document collection.
 The Vector Space Model can be adjusted to represent documents by identifers 
 they contain instead of words. To do that we replace the vocabulary $\mathcal V$ 
 with  a set of identifiers $\mathcal I = \{ i_1, i_2, \ ... \ , i_m \}$, 
-but documents are still represented as $m$-vectors $\mathbf d_j = (w_1, w_2, \ ... \ w_m)$, 
+but documents are still represented as $m$-vectors $\mathbf d_j = (w_1, w_2, \ ... \ , w_m)$, 
 where $w_k$ is a weight of identifier $i_k$ in the document $\mathbf d_j$. 
 Likewise, we can define an identifier-document matrix $D$ as a matrix where
 columns are document vectors and rows are indexed by the identifiers. 
+
+\ \\
 
 Identifiers, as terms, suffer from the problems of synonymy and polysemy, 
 and we solve this problem by extracting definitions for all the identifiers. 
@@ -166,7 +168,7 @@ or using a distance function, sometimes called ``dissimilarity function'',
 which is the opposite of similarity (the higher the values, the less similar
 the objects).
 
-We will consider Euclidean distance, inner product, cosine similarity and 
+We consider Euclidean distance, inner product, cosine similarity and 
 Jaccard coefficient.
 
 
@@ -179,7 +181,7 @@ For example, if we have two points $\mathbf x$ and
 $\mathbf z$, then the Euclidean distance is the
 length of the line that connects these two points.
 The square of the Euclidean distance is defined as
-$$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z)  =\sum_i (x_i - z_i)^2$$
+$$\| \mathbf x - \mathbf z \|^2 = (\mathbf x - \mathbf z)^T (\mathbf x - \mathbf z)  =\sum_i (x_i - z_i)^2.$$
 
 This distance is useful for low-dimensional data, but it does not always work 
 well in high dimensions, especially with sparse vector such as 
@@ -221,7 +223,7 @@ The angle between two vectors can be calculated from the geometric
 definition of inner product:
 $\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$.
 By rearranging the terms we get
-$\cos \theta = \mathbf x^T \mathbf z / (\|\mathbf x \| \, \| \mathbf z \|)$.
+$\cos \theta = \mathbf x^T \mathbf z \, / \, (\|\mathbf x \| \, \| \mathbf z \|)$.
 
 We do not need the angle itself and can use the cosine directly
 \cite{manning2008introduction}.
@@ -260,9 +262,9 @@ be defined as $J(\mathbf d_1, \mathbf d_2) =
 
 Cluster analysis is a set of techniques for organizing collection 
 of items into coherent groups. In Text Mining clustering is often 
-used for finding topics in a collection of document.
+used for finding topics in a collection of document \cite{aggarwal2012survey}.
 In Information Retrieval clustering is used to assist the users and group
-retrieved results into clusters.
+retrieved results into clusters \cite{cutting1992scatter}.
 
 There are several types of clustering algorithms:
 hierarchical (agglomerative and divisive), partitioning, 
@@ -364,26 +366,25 @@ in the listing~\ref{algo:k-means}.
 \end{algorithm}
 
 Usually, $K$-Means shows very good results for document clustering, and in
-several studies it (or its variations) shows the best performance \cite{hall2012evaluating} \cite{steinbach2000comparison}.
+several studies it (or its variations) shows the best performance 
+\cite{steinbach2000comparison} \cite{hall2012evaluating} .
 
 However for large document collections Lloyd's classical $K$-Means takes a lot
 of time to converge. The problem is caused by the fact that it goes through
 the entire collection many times. Mini-Batch $K$-Means \cite{sculley2010web}
 uses Mini-Batch Gradient Descent method, which is a different optimization technique
-that converges faster. The pseudocode for Mini-Batch $K$-Means is presented
-in listing~\ref{algo:minibatch-k-means}.
+that converges faster. 
 
-$K$-Means uses Euclidean distance, and it does not always behave 
+$K$-Means uses Euclidean distance, which does not always behave 
 well in high-dimensional sparse vector spaces like document vector 
-spaces (see section~\ref{sec:similarity-distance}). However,
-as discussed in section~\ref{sec:similarity-distance}, if document vectors 
-are normalized, the Euclidean distance and Cosine distance are related, 
-and therefore Euclidean $K$-means is the same as ``Cosine Distance'' $K$-Means.
+spaces. However, as discussed in section~\ref{sec:similarity-distance}, if 
+document vectors are normalized, the Euclidean distance and cosine distance 
+are related, and therefore Euclidean $K$-means is the same as 
+``Cosine Distance'' $K$-Means.
 
 $K$-Means is the most popular clustering algorithms and there are
-many extensions to this algorithm. 
-
-For example, Bisecting K-Means \cite{steinbach2000comparison} is a combination
+many extensions. For example, Bisecting K-Means 
+\cite{steinbach2000comparison} is a combination
 of partitioning and hierarchical (divisive) algorithms. It's a 
 variant of $K$-Means that gradually splits the document space in halves 
 until the desired number of clusters is obtained. Bisecting $K$-Means can 
@@ -391,12 +392,10 @@ achieve good performance while giving the user additional insight into
 the clustering process. Additionally, in the results it produces 
 clusters of comparable sizes. 
 
-The algorithm is simple: (1) item start with a single cluster;
+The algorithm is simple: (1) start with a single cluster;
 (2) choose a cluster to split (for example, the largest one);
 (3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
 (4) repeat until have desired number of clusters.
-
-\ \\
 
 Scatter/Gather is another popular variation of $K$-means, initially used for 
 clustering documents for Information Retrieval systems \cite{cutting1992scatter}. 
@@ -406,8 +405,7 @@ cluster centroids are concatenations of all terms in the cluster documents,
 not a mean value; finally, the cosine similarity is used instead of Euclidean
 distance.
 
-There are two cluster refinement operations: split and join.
-
+There are two cluster refinement operations: split and join. 
 The split operation selects the clusters that are not coherent
 enough and clusters them again using $K$-Means. The coherence is 
 measured via \emph{self-similarity} of a cluster,
@@ -440,7 +438,7 @@ The \emph{density} associated with a data point is obtained by
 counting the number of points in a region of radius $\varepsilon$
 around the point, where $\varepsilon$  is defined by the user.
 If a point has a density of at least some user defined
-threshold $\text{MinPts}$, then it is considered a \emph{core point}.
+threshold \verb|MinPts|, then it is considered a \emph{core point}.
 The clusters are formed around these core points, and if two core points
 are within the radius $\varepsilon$, then they belong to the same cluster.
 If a point is not a core point itself, but it belong to the neighborhood of some
@@ -450,13 +448,13 @@ belong to any cluster and it is considered \emph{noise}.
 
 DBSCAN works as follows: it selects an arbitrary data point $p$, and then
 finds all other points in $\varepsilon$-neighborhood of $p$. If
-there are more than $\text{MinPts}$ points around $p$, then it is a core point,
+there are more than  \verb|MinPts| points around $p$, then it is a core point,
 and it is considered a cluster. Then the process is repeated for all points in
 the neighborhood, and they all are assigned to the same cluster, as $p$.
 If $p$ is not a core point, but it has a core point in its neighborhood, then
 it's a border point and it is assigned to the same cluster and the core point.
 But if it is a noise point, then it is marked as noise or discarded 
-(see listing~\ref{algo:dbscan}.
+(see listing~\ref{algo:dbscan}).
 
 
 \begin{algorithm}
@@ -522,7 +520,8 @@ But if it is a noise point, then it is marked as noise or discarded
 
 The details of implementation of \textsc{Region-Query} are not specified, 
 and it can be implemented differently. For example, it can use 
-Inverse Index to make the similarity search faster \cite{ertoz2003finding} \cite{manning2008introduction}.
+Inverse Index to make the similarity search faster
+\cite{manning2008introduction} \cite{ertoz2003finding}.
 
 
 The DBSCAN algorithm uses the Euclidean distance, but can be adapted to 
@@ -540,7 +539,7 @@ SNN Similarity is specified in terms of the $K$ nearest neighbors.
 Let $\text{NN}_{K, \, \text{sim}}(p)$ be a function that returns
 top $K$ closest points of $p$ according to some similarity function
 \texttt{sim}. Then the SNN similarity function is  defined as
-$$\text{snn}(p, q) = \big| \text{NN}_{K, \, \text{sim}}(p) \cup \text{NN}_{K, \, \text{sim}}(q) \big|$$
+$$\text{snn}(p, q) = \big| \text{NN}_{K, \, \text{sim}}(p) \cup \text{NN}_{K, \, \text{sim}}(q) \big|.$$
 
 
 The extension of DBSCAN that uses the SNN Similarity is called
@@ -549,7 +548,7 @@ function by setting parameter $K$ and choosing the base similarity
 function $\text{\texttt{sim}}(\cdot, \cdot)$ (typically Cosine, Jaccard
 or Euclidean). The algorithm itself has the same
 parameters as DBSCAN: radius $\varepsilon$ (such that $\varepsilon < K$)
-and the core points density threshold MinPts. The
+and the core points density threshold \verb|MinPts|. The
 $\textsc{Region-Query}$ function is modified to return
 $\{ q \ : \ \text{snn}(p, q) \geqslant \varepsilon \}$. For pseudocode,
 see the listing~\ref{algo:snn-clustering}.
@@ -580,13 +579,12 @@ but it can be sped up by using the Inverted Index \cite{ertoz2003finding}.
 
 \subsection{Latent Semantic Analysis} \label{sec:lsa}
 
-In chapter~\ref{sec:namespaces-top} we have discussed the
+In section~\ref{sec:clusters-namespaces} we have discussed the
 lexical variability and ambiguity problems in natural language: synonymy
 and polysemy. We can treat these problems as ``statistical noise'' and
 apply dimensionality reduction techniques to find the optimal dimensionality
 for the data and thus reduce the amount of noise there.
-
-This technique is called Latent Semantic Analysis \cite{landauer1998introduction}
+This technique is called Latent Semantic Analysis (LSA) \cite{landauer1998introduction}
 or Latent Semantic Indexing \cite{deerwester1990indexing}, and 
 it is often used for document clustering \cite{aggarwal2012survey} \cite{osinski2004lingo}.
 
@@ -597,10 +595,10 @@ There are three major steps in Latent Semantic Analysis  \cite{evangelopoulos201
 
 The first two steps are the same as for traditional Vector Space Models 
 and in the result we obtain a term-document matrix $D$. 
-If $D$ has rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where:
-$U$ is an $m \times r$ orthogonal matrix, i.e. $U U^T = I$;
+If $D$ has rank $r$, then the SVD of $D$ is $D = U  \Sigma V^T$, where
+$U$ is an $m \times r$ orthogonal matrix;
 $\Sigma$ is a diagonal $r \times r$ matrix with singular values ordered by their magnitude;
-$V$ is an $n \times r$ orthogonal matrix, $V V^T = I$.
+and $V$ is an $n \times r$ orthogonal matrix.
 
 The dimensionality reduction is done by finding the best $k$-rank approximation
 of $D$, which is obtained by keeping only the first $k$ singular values of $\Sigma$
@@ -621,73 +619,42 @@ LSA can be used for clustering as well, and this is usually done
 by first transforming the document space to the LSA space
 and then doing applying transitional cluster analysis techniques
 there \cite{schutze1997projections}.
+Once $D$ is decomposed as $D \approx U_k \Sigma_k V_k^T$ 
+it is enough to keep only the low dimensional representation $\hat D = V_k \Sigma_k$:
+the calculation of inner product between two documents $i$ and $j$ in 
+the reduced semantic  space corresponds to computing the inner product 
+between $i$th and $j$th rows of $\hat D$ \cite{deerwester1990indexing}. Since the 
+Euclidean distance is defined in terms of inner product, it can also be used 
+directly on the rows of $\hat D$. 
 
-However these is not need to reconstruct the rank-reduced matrix
-to apply clustering, and in many cases it is not possible:
-the original input space is very sparse, but the rank-reduced
-reconstructed matrix becomes very dense. Therefore we do not
-reconstruct the entire matrix, but instead keep only the low
-dimensional representation $V_k \Sigma_k$, which is enough
-for many clustering algorithms.
+Therefore, a generic LSA-based clustering algorithm consists of the following steps:
 
-For example, consider the inner product. Document-document similarity
-in the original space is calculated as $D D^T$ (the columns of $D$
-are the document $\mathbf d_1, \ ... \ , \mathbf d_n$), and by applying
-SVD we have $D^T D = V \Sigma^T U^T U \Sigma V^T = V \Sigma^T \Sigma V^T =
-(V \Sigma) (V \Sigma)^T$. Thus, to compute the similarity between
-document $\mathbf d_i$ and $\mathbf d_j$ we compute the inner product
-between $i$th and $j$th rows of $V \Sigma$. Likewise, to compute
-the similarity between documents $i$ and $j$ in the reduced representation,
-we compute the inner product between the respective rows of $V_k \Sigma_k$.
-
-Additionally, the Euclidean distance in the reduced space can also be computed
-directly on the rows of $V_k \Sigma_k$. Recall that the Euclidean distance can
-be expressed as an inner product
-$\| \mathbf d_i - \mathbf d_j \|^2 = \mathbf d_i^T \mathbf d_i - 2 \, \mathbf d_i^T \mathbf d_j + \mathbf d_j^T \mathbf d_j$, and since we know how to compute the inner product
-in the semantic space, we can compute the distance in this space as well
-by using the rows of $V_k \Sigma_k$.
-
-This means that we can apply any clustering algorithm,
-including $K$-means, on the rows of $V_k \Sigma_k$ and without having
-to reconstruct the entire term-document matrix.
-
-A generic LSA-based clustering algorithm therefore consists of the following steps:
-
-\begin{itemize}
+\begin{enumerate}
 \itemsep1pt\parskip0pt\parsep0pt
-  \item Build a term-document matrix $D$ from the document collection
-  \item Select number of latent concepts $k$ and apply rank-reduced SVD on $D$ to get $V_k \Sigma_k$
-  \item Apply the cluster algorithm on the rows of $V_k \Sigma_k$
-\end{itemize}
+  \item Build a term-document matrix $D$ from the document collection;
+  \item Select number of latent concepts $k$ and apply rank-reduced SVD on $D$
+      to get $\hat D= V_k \Sigma_k$;
+  \item Apply the cluster algorithm on the rows of $V_k \Sigma_k$.
+\end{enumerate}
 
 
-LSA has some drawbacks. Because SVD looks for orthogonal basis
-for the new document space, there are negative values that are harder
-to interpret. Additionally, with negative values in the reconstructed
-space can cause the cosine to take negative values as well.
-However, it does not affect significantly the properties of the
-cosine distance: it still will always give the results larger than 0.
-This problem can be solved by using a different matrix decomposition
-technique instead of SVD, and we discuss one of them in the next
-section.
-
-
-\ \\
+LSA has some drawbacks. Because SVD looks for an orthogonal basis for the new
+reduced document space, there could be negative values that are harder 
+to interpret, and what is more, the cosine similarity can become negative as well.
+However, it does not significantly affect the cosine distance: it still 
+will always give non-negative results. 
 
 Apart from SVD there are many other different matrix decomposition
 techniques that can be applied for document clustering and for discovering
 the latent structure of the term-document matrix \cite{osinski2006improving},
 and one of them in Non-Negative Matrix Factorization (NMF) \cite{lee1999nnmf}.
+Using NMF solves the problem of negative coefficients: 
+when it is applied to non-negative data such as term-document matrices, 
+NMF produces non-negative rank-reduced approximations.
 
-
-NMF is a matrix decomposition technique. When it is applied to non-negative
-data, NMF produces non-negative rank-reduced approximations.
-Since term-document matrices do not have negative values, it makes
-NMF a good candidate to replace SVD in LSA. The main conceptual difference
-between SVD and NMF is that SVD looks for orthogonal directions to
-represent document space, while NMF does not require orthogonality.
-As the result, SVD often produces semantic spaces with negative values,
-but NMF does not \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
+The main conceptual difference between SVD and NMF is that SVD looks for 
+orthogonal directions to represent document space, while NMF does not 
+require orthogonality \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
 
 
 \begin{figure}[h]
@@ -704,32 +671,22 @@ Non-negativity of elements in $D_k$ is very good for interpretability: it
 ensures that documents can be seen as a non-negative combination of
 the key concepts.
 
-
 Additionally, NMF is useful for clustering: the results of NMF can
 be directly interpreted as cluster assignment and there is no need
-to use separate clustering algorithms \cite{xu2003document}.
+to use separate clustering algorithms \cite{xu2003document}. When $D$ is a 
+term-document matrix and $D \approx U V^T$, then elements $(V)_{ij}$ 
+represent the degree to which document $i$ belongs to cluster $j$.
 
-What is more, NMF is a co-clustering algorithms: it clusters both
-rows of $D$ and columns of $D$ at the same time. For a term-document
-matrix $D \approx U V^T$, where $U$ defines the reduced vector space for terms
-and $V$ defines the reduced vector space for documents. Since all elements
-are non-negative, it can have the following interpretation:
-elements $(U)_{ij}$ of $U$ represent the degree to which terms $i$ belongs to cluster $j$,
-and elements $(V)_{ij}$ represent the degree to which document $i$ belongs to cluster $j$.
+The document clustering using NMF consists of the following steps \cite{xu2003document}:
 
-\ \\
+\begin{enumerate}
+  \item Construct the term-document matrix $D$ and perform NMF on $D$ to get $U$ and $V$
+  \item Normalize rows $\mathbf v_i$ of $V$ by using $\mathbf v_i \leftarrow \mathbf v_i \, \| \mathbf u_i \|$;
+  \item Assign document $\mathbf d_i$ to cluster $x$ if $x = \operatorname{arg \, max}_j (V)_{ij}$.
+\end{enumerate}
 
-The document clustering using NMF consists of the following
-steps \cite{xu2003document}:
-
-\begin{itemize}
-  \item Construct the term-document matrix $D$;
-  \item Perform NMF on $D$ to get $U$ and $V$;
-  \item Normalize rows $\mathbf v_i$ of $V$ by using $\mathbf v_i' = \mathbf v_i \cdot \| \mathbf u_i \|$ and rows $\mathbf u_i$ of $U$ with $\mathbf u_i' = \mathbf u_i / \| \mathbf u_i \|$;
-  \item To determine the cluster assignment for document $\mathbf d_i$, examine $\mathbf v_i'$ (the $i$th row of $V$) and find the largest component of this vector. That is,
-      $i$th document belongs to cluster $x$ if $x = \operatorname{arg \, max}_j v_{ij}$ where $v_{ij}$ are components of $\mathbf v_i$;
-  \item If the desired number of clusters $K$ is larger than the rank $k$ of the reduced matrix $D_k$, the clustering can be performed directly on the rows of $V$, for example,
-      by using $K$-Means.
-\end{itemize}
-
+If the desired number of clusters $K$ is larger than the rank $k$ of the 
+reduced matrix $D_k$, the clustering can be performed directly on the rows 
+of $V$, for example, by using $K$-Means.
+      
 % The computational complexity on NMF is $O(kn)$

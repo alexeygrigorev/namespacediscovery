@@ -594,7 +594,8 @@ will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
 
 \begin{figure}[h]
 \centering\includegraphics[width=0.9\textwidth]{purity.pdf}
-\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases linearly with $K$ ($R^2 = 0.99$)}
+\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases 
+linearly with $K$ ($R^2 = 0.99$).}
 \label{fig:k-vs-purity}
 \end{figure}
 
@@ -622,26 +623,74 @@ The following things can be changed:
   \item Dimensionality of $D$ can be reduced via SVD or NMF, parameter $k$ controls the rank of output.
 \end{itemize}
 
-The approach for finding 
-
-Distance and similarity measures used
-Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
-
-The approach for finding the best parameter set is a grid search: different combination
-are tries and the best result is kept.
-
-Agglomerative: Wald linkage: takes forever never finished
+% The approach for finding 
+% Distance and similarity measures used
+% Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
 
 
+To find the best parameters set we use the grid search approach: we try 
+different combinations of parameters and keep track on the number of 
+pure clusters and the purity. 
 
-\textbf{Only identifiers }
 
-\underline{Usual K-Means}
+\subsubsection{Only identifiers}
 
-some clusters are useful, but most of them aren't
+The first way of building the identifier space is to use only identifiers 
+and do not use definitions at all. 
 
-For example
+If we do this, the identifier-document matrix is 6075x22512 (we keep only 
+identifiers that occur at least twice), and it contains  302\, 541
+records, so the density of this matrix is just 0.002. 
 
+
+Agglomerative clustering 
+too long, we exclude them from further analysis
+
+
+DBSCAN on SSN Similarity
+
+using Jaccard and using Cosine 
+
+
+$K$-means:
+The algorithm we run first is $K$-Means on non-reduced data. 
+
+
+For $K=600$ the algorithm found only 16 pure clusters. (also add 
+$K$ vs no. pure clusters) 
+
+However increasing $K$ leads to linear increase in time (see fig.~\ref{fig:k-vs-time}),
+which means that for bigger values of $K$, it takes longer, so it is not 
+feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be 
+about 4.5 hours. 
+
+
+\begin{figure}[h]
+\centering\includegraphics[width=0.9\textwidth]{k-vs-time.pdf}
+\caption{$K$ in $K$-Means vs time in minutes ($R^2 = 0.99$).}
+\label{fig:k-vs-time}
+\end{figure}
+
+Although the run time of MiniBatch $K$-Means also increases linearly with $K$
+(see fig.~\ref{fig:k-vs-time-minibatch}), it runs considerably faster.
+For example, MiniBatch $K$-Means takes 15 seconds with $K=700$ while 
+usual $K$-Means takes about 15 minutes (see fig.~\ref{fig:k-vs-time} 
+and fig.~\ref{fig:k-vs-time-minibatch}).
+
+
+
+\begin{figure}[h]
+\centering\includegraphics[width=0.9\textwidth]{k-vs-time-minibatch.pdf}
+\caption{$K$ in MiniBatch $K$-Means vs time in seconds ($R^2 = 0.97$).}
+\label{fig:k-vs-time-minibatch}
+\end{figure}
+
+
+
+(54 documents in total)
+
+\begin{table}[h!]
+\centering
 \begin{tabular}{|c|c|}
 \hline
 Article & Identifiers \\
@@ -660,20 +709,28 @@ Comb sort  & $\Omega, n, p, O$ \\
 Divide and conquer algorithm   & $O, n, \Omega$ \\
 Stack (abstract data type) & $O, n, t$ \\
 Skip list  & $n, p, O$ \\
-Graph minor& $O, n, h$ \\
-Flex lexical analyser  & $O, n$ \\
-Gift wrapping algorithm& $O, n, h$ \\
-Perlin noise   & $n, O$ \\
-Pseudo-polynomial time & $n, O, m$ \\
-Hirzebruch surface & $O, n, m, p$ \\
-Beap   & $n, O$ \\
-Pairing heap   & $O, n, \Omega$ \\
-Cost efficiency& $O, n, p$ \\  \hline
+... & ... \\
+\hline 
 \end{tabular}
+\caption{Computer Science cluster with $O$-notation, 55 documents in total} 
+\label{tab:kmeans-cs}
+\end{table}
 
 
-(54 documents in total)
-These articles appear to relate to
+
+
+
+$K$-Means takes a lot of time so we use Minibatch K means 
+with random initialization
+
+
+% Agglomerative: Wald linkage: takes forever never finished
+
+
+\textbf{Only identifiers }
+
+
+
 
 
 \underline{DBSCAN SNN}
@@ -685,6 +742,8 @@ $\varepsilon$=7 points
 MinPts=5 points
 
 
+\begin{table}[h!]
+\centering
 \begin{tabular}{|c|c|}
 \hline
 Article & Identifiers \\
@@ -709,43 +768,36 @@ Betelgeuse & $M_\odot$ \\
 Andromeda Galaxy & $M_\odot$ \\
 \hline
 \end{tabular}
+\caption{Galaxies cluster discovered by DBSCAN}
+\label{tab:ssn-galaxies}
+\end{table}
 
 
 In general doesn't give clusters
 
 TODO add some numbers and graphs
 
+\subsubsection{Weak Association} \ \\
 
-\textbf{WEAK ASSOCIATION}
 
 K-Means weak association
 
 \underline{DBSCAN}
 k=15, eps=8, min\_pts=5
 
+\begin{table}[h!]
+\centering
 \begin{tabular}{|c|c|}
 \hline
 Article & Identifiers \\
 \hline
-Papyrus 66 & $P \text{papyrus}$ \\
-Alexandrian text-type  & $P, \text{papyrus}$ \\
-Western text-type  & $P, \text{papyrus}$ \\
 Codex Ephraemi Rescriptus  & $P, \text{papyrus}$ \\
-Bodmer Papyri  & $P, \text{papyrus}$ \\
 Categories of New Testament manuscripts    & $P, \text{papyrus}$ \\
 Papyrus 4  & $P, \text{papyrus}$ \\
-Papyrus 75 & $P, \text{papyrus}$ \\
 Uncial 0308    & $P, M, \text{papyrus}, \text{47}$ \\
 Codex Athous Lavrensis & $P, \text{papyrus}$ \\
 Papyrus 92 & $P, \text{papyrus}$ \\
 Papyrus 90 & $P, \text{papyrus}$ \\
-Papyrus 9  & $P, \text{papyrus}$ \\
-Papyrus 15 & $P, \text{papyrus}$ \\
-Papyrus 16 & $P, \text{papyrus}$ \\
-Papyrus 20 & $P, \text{papyrus}$ \\
-Papyrus 39 & $P, \text{papyrus}$ \\
-Papyrus 49 & $P, \text{papyrus}$ \\
-Papyrus 65 & $P, \text{papyrus}$ \\
 Papyrus 111    & $P, \text{papyrus}$ \\
 Uncial 0243    & $P, \text{papyrus}$ \\
 Minuscule 1739 & $P, \text{papyrus}$ \\
@@ -754,45 +806,53 @@ Authorship of the Epistle to the Hebrews   & $P, \text{papyrus}$ \\
 Egerton Gospel & $P, \text{papyrus}$ \\
 Rylands Library Papyrus P52    & $P, \text{papyrus}$ \\
 Codex Vaticanus    & $P, \text{papyrus}$ \\
+... & ... \\
 \hline
 \end{tabular}
+\caption{Papyrus cluster by DBSCAN}
+\label{tab:ssn-papyrus}
+\end{table}
+
 
 \underline{K-Means}
 
 \textbf{TODO}: think of different ways to represent it - maybe truncate some definitions?
 
+Some articles are not from this namespace: e.g. Pi Josephson junction,
+or Almost integer
+
+\begin{table}[h!]
+\centering
 \begin{tabular}{|c|c|}
 \hline
 Article & Identifiers \\
 \hline
-Direct shear test & $angle, \varphi, friction$ \\
-Truncated dodecadodecahedron & $golden, ratio, \phi$ \\
-Golden triangle (mathematics) & $golden, section, \theta, \phi$ \\
-Petrophysics & $percentage \varphi, symbol, S_w$ \\
-Greedy algorithm for Egyptian fractions & $golden, terms, d, \phi, denominator, possible, expansion, y, x, ratio$ \\
-Pi Josephson junction & $\pi, junction, \varphi$ \\
-Snub dodecahedron & $golden, ratio, \tau, 2\xi, -, V, \xi$ \\
-Lucas number & $golden, terms, \phi, m, L, number, values, ratio, L_k, n, L_n, F_n, L_m$ \\
-54 (number) & $golden,\varphi,ratio$ \\
-Special right triangles & $\pi, c, b, ratio, c., \phi, m, golden, radians, n, line, integers, segment$ \\
-Universal code (data compression) & $golden, code, ratio, power, \phi, l, n, q, p, law$ \\
-Existential instantiation & $c symbol \varphi variable$ \\
-Perles configuration & $golden ratio \phi$ \\
-Wythoff array & $golden ratio \phi column m number n \varphi fibonacci$ \\
-Golomb sequence & $a_n, n, golden, ratio, \phi$\\
-Almost integer & $constant \pi, gelfonds,\varphi,example$ \\
-16:10 & $golden, ratio, \phi$ \\
-Leonardo number & $golden, ratio, \phi, computations, \psi, L, n, roots$ \\
-Rogers–Ramanujan continued fraction & $golden functions ratio G \phi H q modular$ \\
-Great rhombic triacontahedron & $golden ratio \phi$ \\
-108 (number) & $golden \varphi ratio$ \\
-Random Fibonacci sequence & $golden B ratio M_n probability \phi f_n sequence n random increases values f_1 f_2 M_3 F_n$ \\
-Rhombic triacontahedron & $golden ratio \phi r_i S edge r_m V$ \\
-Exact trigonometric constants & $function \pi ratio \phi image golden values x V \theta example$ \\
-Bilunabirotunda & $golden ratio \phi$ \\
-Feigenbaum constants & $map z ratio places f \phi golden c_n \alpha \delta variable x x_i$ \\
+Direct shear test & $\text{angle}, \varphi, \text{friction}$ \\
+Truncated dodecadodecahedron & $\text{golden}, \text{ratio}, \phi$ \\
+Golden triangle (mathematics) & $\text{golden}, \text{section}, \theta, \phi$ \\
+Petrophysics & $percentage, \varphi, symbol, S_w$ \\
+Greedy algorithm for Egyptian fractions & $\text{golden}, \text{terms}, d, \phi, \ ...$ \\
+Pi Josephson junction & $\pi, \text{junction}, \varphi$ \\
+Snub dodecahedron & $\text{golden}, \text{ratio}, \tau, V, \xi$ \\
+Lucas number & $\text{golden}, \phi, m, L, \text{ratio}, L_k, \ ...$ \\
+54 (number) & $\text{golden},\varphi,\text{ratio}$ \\
+Special right triangles & $\pi, c, b, \text{ratio}, \phi, m, \text{golden}, \ ...$ \\
+Universal code (data compression) & $\text{golden}, \text{code}, \text{ratio}, \phi, \ ...$ \\
+Existential instantiation & $c, \text{symbol}, \varphi, \text{variable}$ \\
+Perles configuration & $\text{golden}, \text{ratio}, \phi$ \\
+Wythoff array & $\text{golden}, \text{ratio}, \phi, \varphi, \text{fibonacci}, \ ...$ \\
+Golomb sequence & $a_n, n, \text{golden}, \text{ratio}, \phi$\\
+Almost integer & $\text{constant}, \pi, \text{gelfonds},\varphi,\ ...$ \\
+16:10 & $\text{golden}, \text{ratio}, \phi$ \\
+Leonardo number & $\text{golden}, \text{ratio}, \phi, \ ...$ \\
+Rogers–Ramanujan continued fraction & $\text{golden}, \text{functions}, \phi, \ ...$ \\
+Great rhombic triacontahedron & $\text{golden}, \text{ratio}, \phi$ \\
+... & ... \\
 \hline
 \end{tabular}
+\caption{Golden Ratio by DBSCAN}
+\label{tab:ssn-papyrus}
+\end{table}
 
 Found some interesting clusters but in general doesn't show good results.
 Need to use semantic menthols
@@ -806,6 +866,9 @@ HEre results
 
 
 
+\subsubsection{Strong Association}
+
+
 
 
 
@@ -813,7 +876,7 @@ HEre results
 
 
 After the namespaces are found, we need to organize them into a hierarchical 
-structure. It is hard to fully automatically, and we choose to use 
+structure. It is hard to do automatically, and we choose to use 
 existing hierarchies for mathematical knowledge, and then map the 
 found namespaces to these hierarchies.
 
@@ -839,10 +902,14 @@ they interfere with PACS, a hierarchy for Physics:
 \item Quantum theory $\to$ Applications to specific physical systems
 \item Quantum theory $\to$ Groups and algebras in quantum theory
 \item Partial differential equations $\to$ Equations of mathematical physics and other areas of application
-\item Statistics $\to$ Sufficiency and information
-\item Functional analysis $\to$ Other (nonclassical) types of functional analysis
-\item Functional analysis $\to$ Miscellaneous applications of functional analysis
 \end{itemize}
+
+
+% \begin{itemize}
+% \item Statistics $\to$ Sufficiency and information
+% \item Functional analysis $\to$ Other (nonclassical) types of functional analysis
+% \item Functional analysis $\to$ Miscellaneous applications of functional analysis
+%\end{itemize}
 
 The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS) 
 \cite{aps2010pacs}, which is a scheme for categorizing articles about Physics. 
@@ -851,40 +918,64 @@ Like in MSC, we remove the top-level category  ``GENERAL''.
 Finally, we also use the ACM Classification Scheme \cite{rous2012acm} 
 available as a SKOS \cite{miles2005skos} ontology at their website \cite{amc2012ccs}. 
 The SKOS ontology graph was processed with RDFLib \cite{rdflib}. 
-
 We use the following top level categories: 
 ``Hardware'', ``Computer systems organization'', ``Networks'',
 ``Software and its engineering'', ``Theory of computation'',
 ``Information systems'', ``Security and privacy'',
 ``Human-centered computing'', ``Computing methodologies''.
 
-
 After obtaining and processing the data, the three hierarchies 
-are merged into one. Then each found namespace is mapped to 
-the most suitable second-level category.
+are merged into one.
 
 
-However these categories are only good for the English wikipedia and 
+However these categories are only good for English articles and 
 a different hierarchy is needed for Russian. One of such hierarchies is 
-``Государственный рубрикатор научно-технической информации'' (ГРНТИ) -- 
-``State categorizator of scientific and technical information'', which 
+``Госу\-дар\-ствен\-ный руб\-ри\-ка\-тор научно-тех\-ни\-чес\-кой инфор\-ма\-ции'' 
+(ГРНТИ)~-- ``State categorizator of scientific and technical information'', which 
 is a state-recommended scheme for categorizing scientific articles published 
-in Russian  \cite{feodosimov2000grnti}. The dataset is retrieved from the 
-official website \url{http://grnti.ru/} \cite{grntiweb}.
+in Russian  \cite{feodosimov2000grnti}. The hierarchy  is extracted from the 
+official website\footnote{\url{http://grnti.ru/}} \cite{grntiweb}. It provides 
+a very general categorization and therefore we keep only the following math-related 
+categories: ``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''), 
+``Информатика'' (``Informatics''), ``Математика'' (``Mathematics''), 
+``Механика'' (``Mechanics''), ``Ста\-тис\-тика'' (``Statistics''), 
+``Физика'' (``Physics''), ``Химия'' (``Chemistry''), 
+``Экономика. Экономические Науки'' (``Economics'') and others.
 
 
-
-This is done by keywords matching: we extract all words from the
-category (this includes top level category name, subcategory name
-and all sub-sub categories concatenated). From the cluster
-we also extract the category information.
-Then we try to do keyword matching using cosine similarity
-between the cluster and each category. The cluster is assigned
-to the category with the best cosine.
+One we a hierarchy is established, each found namespace is mapped to
+the most suitable second-level category. This is done by keywords matching.
+First, we extract all key words from the category, which includes 
+top level category name, subcategory name and all third level categories. 
+Then we also extract the category information from the namespace, but 
+we also use the names of the articles that form the namespace. 
+Finally, the keyword matching is done by using the cosine similarity 
+between the cluster and each category. The namespace is assigned to the 
+category with the best (largest) cosine score. 
 
 If the cosine score is low (below $0.2$) or there is only one
 keyword matched, then the cluster is assigned to the ``OTHERS''
 category.
+
+For example, consider a namespace  derived from the cluster consisting of 
+``Tautology (logic)'', ``List of logic systems'', ``Regular modal logic''
+``Combinational logic'' documents. Among others, these articles belong to categories 
+``Mathematical logic'' and ``Logic''. Then the following is the list of keywords 
+extracted from the cluster:
+``tautology'', ``logic'', ``list'', ``systems'', ``regular'', ``modal'', ``combinational'',
+``logical'', ``expressions'', ``formal'', ``propositional'', ``calculus'' and so on.
+Apparently, this namespace is about mathematical logic. 
+
+Then consider a list of keywords for ``'General logic'', a subcategory of 
+``Mathematical logic and foundations'' from MSC: 
+``mathematical'', ``logic'', ``foundations'', ``general'', ``classical'', ``propositional'', ``type'', ``subsystems'' and others. 
+
+These keywords are represented as vectors in some Vector Space and the cosine score 
+between these vectors is calculated. For this example, the cosine is 
+approximately 0.75, and this is the largest similarity, and therefore this namepsace 
+is mapped to the ``General logic'' subcategory.
+
+Unfortunately the mapping is not always correct (TODO: add examples)
 
 
 \subsection{Java Language Processing} \label{sec:jlp}
@@ -940,7 +1031,7 @@ two local variables \texttt{word} and \texttt{posTag}. The following
 relations will be extracted from this class: (``threshold'', \verb|double|),
 (``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|),
 (``posTag'', \verb|java.lang.String|).
-Since all primitives and classes from packages that star with
+Since all primitives and classes from packages that start with
 \verb|java| are discarded, at the end the class \verb|WordProcesser|
 is represented with only one relation (``in'', \verb|domain.Word|).
 

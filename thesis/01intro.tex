@@ -54,7 +54,7 @@ are unique, and this often results in long names like
 Other programming languages have the notion of namespaces built in
 from the very first versions. For example, the Java programming
 language~\cite{gosling2014java} uses packages to organize identifiers into
-namespaces. In Java, packages solve the problem of ambiguity. For example,
+namespaces, and packages solve the problem of ambiguity. For example,
 in the standard Java API there are two classes with the name \texttt{Date}:
 one in the package \texttt{java.util} and another in the package \texttt{java.sql}.
 To be able to distinguish between them, the classes are referred by their
@@ -91,8 +91,8 @@ should all be put together in the same namespace.
 
 \subsection{Namespaces in Mathematical Notation}
 
-Can namespaces be extended for identifiers in mathematical
-formulae?
+The idea of namespaces can be extended to identifiers in mathematical 
+formulae. 
 
 Informally, a mathematical formula is a rule that shows the relationship
 between different variables. For example,
@@ -102,17 +102,17 @@ a quadratic equation $a x^2 + b x + c = 0$.
 
 To give a more formal definition of formula, we first need to define
 a first-order language that contains primitive symbols such as
-(1) parentheses, brackets and other boundary symbols
-(2) \emph{constants} ($1$, $2$, $3$, ...) and variables ($x$, $y$, ...)
+(1) parentheses, brackets and other boundary symbols,
+(2) \emph{constants} ($1$, $2$, $3$, ...) and variables ($x$, $y$, ...),
 (3) \emph{functions} ($+$, $\times$, ...) and
 (4) \emph{predicates}, e.g. binary relation symbols (``$=$'', ``$<$'', ``$\geqslant$'', ...)
 \cite{barwise2000language}.
 
 In this language, \emph{constants} are symbols with pre-defined meaning
-from some alphabet and variables are symbols that can be assigned
+from some alphabet and \emph{variables} are symbols that can be assigned
 a value from this alphabet.
-Any symbol can be a variable, for example, $x$, $y$, $\mathbf w$, or it can
-be a symbol with subscripts, for example, $x_1, x_2, \ ...$ or even $w_\text{slope}$.
+Any symbol can be a variable, including symbols with subscripts. For example,
+$x$, $y$, $\mathbf w$ are variables, but so are $x_1, x_2, \ ...$ or even $w_\text{slope}$.
 
 A \emph{well-formed term} $t$ (or just \emph{term}) in this language is defined as
 $$t \equiv c \mid x \mid f(t_1, t_2, \ ... \ , t_n) \ ,$$ which means that the term
@@ -133,7 +133,7 @@ the relationship between variables $x_1, x_2$ and variables $a, b, c$.
 
 In logic we can use any symbol for variables without changing the meaning of the formula.
 For example, the energy-mass equivalence relation $E = mc^2$ can be written
-as $x = y z^2$ and it still will still hold true and remain a valid formula.
+as $x = y z^2$ and it will still hold true and remain a valid formula.
 Nevertheless, there are research communities in mathematics that have developed
 a special system of naming these variables, and this naming system is
 called \emph{mathematical notation} \cite{wikinotation}. % couldn't find the better source
@@ -179,13 +179,13 @@ namespace ``Physics''.
 Analogously to namespaces in Computer Science, formally a mathematical namespace
 can contain any set of identifier-definition pairs that satisfies the definition of
 the namespace, but typically namespaces of mathematical notation
-exhibit the same properties as well-designed Java packages: they
+exhibit the same properties as well-designed software packages: they
 have low coupling and high cohesion, meaning that all definitions
 in a namespace
 come from the same area of mathematical knowledge and the definitions
 from different namespace do not intersect heavily.
 
-However, mathematical notation does not exist in isolation and it is usually
+However, mathematical notation does not exist in isolation, and it is usually
 observed indirectly by its usage in documents.
 Therefore we need to introduce a document-centric view on mathematical
 namespaces: suppose we have a collection of $n$ documents
@@ -198,23 +198,20 @@ For example, a document ``Energy-mass equivalence'' would import
 ``Physics.$E$'', ``Physics.$m$'', and ``Physics.$c$'', and then
 these identifiers can be used in formulae of this document unambiguously.
 
+Then a namespace exhibits low coupling if it is used only in a small 
+subset of documents, and high cohesion if all the documents in this subset 
+are related to the same domain. 
 
-\textbf{TODO}: Continue, re-introduce low coupling and high cohesion in terms of
-document collection.
-Then a namespace exhibits low coupling if it used in a small subset
-of documents $\mathcal C \subset \mathcal D$.
-
-However, in real-life scientific document there are no import statements
+But in real-life scientific document there are no import statements
 in the document preamble, and they contain only natural language
 texts along with some mathematical formulae. Yet we may still assume
 that these import exists, but they are implicit, i.e. they are latent
 and cannot be observed directly. Additionally, the namespaces themselves are
 also not observed.
 
-How the identifier namespaces can be discovered? Typically in mathematical
-texts, when an identifier is first introduced, its definition is given
-in the natural language description that surrounds the formula.
-This description can be extracted and used to assign the meaning to
+Typically in mathematical texts, when an identifier is first introduced, 
+its definition is given in the natural language description that surrounds 
+the formula. This description can be extracted and used to assign the meaning to
 the identifiers. Once identifier definitions are extracted, a document
 can be represented as a set of identifier-definition pairs,
 and these pairs can be used to discover the namespaces.
@@ -231,13 +228,12 @@ In the next section we discuss how this problem can be addressed.
 
 
 How we can construct a set of namespaces given a collection of documents?
-It can be done by manually assigning each identifier/definition pair
-to some namespace. But this is expensive and very time consuming. Therefore
-in this work we suggest a different approach: use Machine Learning
-techniques for discovering namespaces automatically.
+It is possible to do manually by assigning each identifier/definition pair
+to some namespace, but it is expensive and very time consuming. Therefore
+in this work we suggest a different approach: use Machine Learning techniques 
+for discovering namespaces automatically.
 
-
-We illustrate this idea by first drawing an analogy between identifier
+We illustrate our idea by first drawing an analogy between identifier
 namespaces and namepsaces in programming languages.
 In a well-designed application, we can distinguish between two types of
 application packages \cite{evans2004domain}:
@@ -256,7 +252,7 @@ with classes related to user accounts, and a system-related package
 \verb|org.company.app.tools.auth| that deals with authentication and
 authorization. Then we also have a package \verb|org.company.app.web.manage|,
 which belongs to the type 2: it handles web requests
-while relying on classes from \verb|user| and \verb|account| to
+while relying on classes from packages \verb|user| and \verb|account| to
 implement the business logic and on \verb|auth| for making sure the
 requests are authorized.
 
@@ -301,11 +297,12 @@ identifers they contain.
 
 First, let us consider the characteristics of text data.
 A natural language typically contains many different words.
-If $\mathcal V$ is a set of all possible words, then usually $|\mathcal V| \approx 10^5$,
-but each individual document may contain only a small portion of these
-words \cite{manning2008introduction}. Numbers of words across different
-documents may wary a lot, and the word distribution usually
-follows some power law distribution, e.g. Zipf's law \cite{manning2008introduction}.
+If $\mathcal V$ is a set of all possible words in a document collection,
+then usually $|\mathcal V| \approx 10^5$, but each individual document 
+may contain only a small portion of these words \cite{manning2008introduction}. 
+Numbers of words across different documents may wary a lot, and the 
+word distribution usually follows some power law distribution, 
+e.g. Zipf's law \cite{manning2008introduction}.
 Power laws are commonplace \cite{newman2005power}, so it is safe to assume
 that number of identifiers across documents are also distributed according
 to some power law. Intuitively, it is true because there are many identifiers
@@ -338,7 +335,7 @@ These problems have been studied in Information Retrieval and
 Natural Language Processing literature.
 One possible solution for the polysemy problem is \emph{Word Sense Disambiguation}
 \cite{jurafsky2000speech}: either replace a word with its sense
-\cite{stokoe2003word} or append the sense to the word, for example
+\cite{stokoe2003word} or append the sense to the word. For example,
 if the polysemous word is ``bank'' with meaning ``financial institution'',
 then we replace it with ``bank\_finance''. The same idea can be used
 for identifiers, for example if we have an identifier ``$E$'' which is
@@ -352,19 +349,21 @@ on identifiers.
 For document clustering, documents are usually represented using
 Vector Space Models \cite{oikonomakou2005review} \cite{aggarwal2012survey}.
 Likewise, we can introduce ``Identifier Space Model'' analogously to
-Vector Space Models.
-
+Vector Space Models, and then we can apply clustering algorithm 
+to documents represented in this space. 
 
 
 \subsection{Thesis Outline}
 
+As discussed, it is important to disambiguate identifiers in mathematical 
+formulae. One way of doing it is extracting definitions of these identifiers 
+from the document, and we discuss the methods for doing it in chapter~\ref{sec:definitionextraction-top}.
 
-This work is organized as follows:
-In chapter~\ref{sec:definitionextraction-top} we discuss how extract
-definitions for identifiers in texts with mathematical formulae;
-in chapter~\ref{sec:namespaces-top} we review the vector space model,
-cluster analysis methods and how matrix factorization techniques can be used 
-to extract semantic information from the corpus. 
-Finally, we describe how the techniques are implemented 
-(chapter~\ref{sec:implementation}) and evaluated (chapter~\ref{sec:evaluation}).
+In chapter~\ref{sec:namespaces-top} we review the vector space model of 
+representing documents and cluster analysis methods used for finding 
+groups in documents; and we also study how matrix decomposition 
+techniques  can be used to extract semantic information from the corpus. 
+
+Finally, we describe how these techniques are implemented in 
+chapter~\ref{sec:implementation} and evaluated in chapter~\ref{sec:evaluation}.
 

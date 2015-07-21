@@ -633,7 +633,7 @@ different combinations of parameters and keep track on the number of
 pure clusters and the purity. 
 
 
-\subsubsection{Only identifiers}
+\subsubsection{Only Identifiers}
 
 The first way of building the identifier space is to use only identifiers 
 and do not use definitions at all. 
@@ -645,6 +645,8 @@ records, so the density of this matrix is just 0.002.
 
 Agglomerative clustering 
 too long, we exclude them from further analysis
+% Agglomerative: Wald linkage: takes forever never finished
+
 
 
 DBSCAN on SSN Similarity
@@ -665,8 +667,8 @@ feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be
 about 4.5 hours. 
 
 
-\begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{k-vs-time.pdf}
+\begin{figure}[h!]
+\centering\includegraphics[width=0.75\textwidth]{k-vs-time.pdf}
 \caption{$K$ in $K$-Means vs time in minutes ($R^2 = 0.99$).}
 \label{fig:k-vs-time}
 \end{figure}
@@ -678,16 +680,65 @@ usual $K$-Means takes about 15 minutes (see fig.~\ref{fig:k-vs-time}
 and fig.~\ref{fig:k-vs-time-minibatch}).
 
 
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{k-vs-time-minibatch.pdf}
+\begin{figure}[h!]
+\centering\includegraphics[width=0.75\textwidth]{k-vs-time-minibatch.pdf}
 \caption{$K$ in MiniBatch $K$-Means vs time in seconds ($R^2 = 0.97$).}
 \label{fig:k-vs-time-minibatch}
 \end{figure}
 
 
+Usual $K$-Means with small $K$ does not find many good and pure clusters,
+and MiniBatch $K$-Means does even worse: no matter what $K$ is selected, 
+the number of pure clusters and purity does not change much (see fig.~\ref{fig:k-vs-purity2}
+and fig.~\ref{fig:k-vs-len2}). This is also true for larger values of $K$
+(see fig.~\ref{fig:k-vs-len-mb}).
 
-(54 documents in total)
+
+% to the end of subsubsection?
+%We can conclude that although MiniBatch $K$-Means is 
+%very fast, it does not perform well on the untransformed data when we don't use 
+%definitions.
+
+
+
+\begin{figure}[h!]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{k-vs-purity2.pdf}
+  \caption{Purity vs number of clusters $K$ in \mbox{$K$-Means} and MiniBatch $K$-Means}
+  \label{fig:k-vs-purity2}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{k-vs-len2.pdf}
+  \caption{Number of pure clusters vs $K$ in $K$-Means and MiniBatch $K$-Means}
+  \label{fig:k-vs-len2}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{\textwidth}
+  \centering
+  \includegraphics[width=0.85\textwidth]{k-vs-len-mb.pdf}
+  \caption{Number of pure clusters vs $K$ in MiniBatch $K$-Means for larger $K$}
+  \label{fig:k-vs-len-mb}
+\end{subfigure}
+\hfill
+\caption{Effect of $K$ on performance in $K$-Means}
+\label{fig:kmeans-vs-minibatch}
+\end{figure}
+
+
+The best result was found by usual $K$-Means with $K=600$: it was able 
+to discover 19 clusters with purity at least 0.8. Although it is not many, 
+the found clusters are very tight and quite big. 
+Among others, it discovered the following clusters: ``Astronomical catalogues'' (53 documents)
+``Stochastic processes'' (39 documents), ``Theory of computation'' (17 documents),
+``Thermodynamics'' (16 documents), ``Statistics'' (13 documents). 
+For example, the cluster ``Astronomical catalogues'' (see table~\ref{tab:kmeans-stars})
+primarily constants documents about stars, and all these documents share 
+the same set of identifers $(p, R_*, m, R_\odot)$.
 
 \begin{table}[h!]
 \centering
@@ -695,41 +746,92 @@ and fig.~\ref{fig:k-vs-time-minibatch}).
 \hline
 Article & Identifiers \\
 \hline
-APL (programming language) & $n, O, R$ \\
-Binary search tree & $O, n$ \\
-Boolean satisfiability problem & $O, n$ \\
-Complexity & $O, n$ \\
-Earley parser  & $O, n$ \\
-Heapsort   & $O, n, \Omega$ \\
-Lisp (programming language)& $O, n$ \\
-Priority queue & $O, n$ \\
-Sieve of Eratosthenes  & $O, n$ \\
-Smoothsort & $O, n$ \\
-Comb sort  & $\Omega, n, p, O$ \\
-Divide and conquer algorithm   & $O, n, \Omega$ \\
-Stack (abstract data type) & $O, n, t$ \\
-Skip list  & $n, p, O$ \\
+Beta Columbae & $p, R_*, m, R_\odot$ \\
+Eta Pegasi & $p, R_*, m, R_\odot$ \\
+Sigma Puppis & $p, R_*, m, R_\odot$ \\
+Gamma Ceti & $p, R_*, m, R_\odot$ \\
+Epsilon Corvi & $p, R_*, m, R_\odot$ \\
+Beta Corvi & $p, R_*, m, R_\odot$ \\
+Gamma Herculis & $p, R_*, m, R_\odot$ \\
+Psi2 Aurigae & $p, R_*, m, R_\odot$ \\
+Psi7 Aurigae & $p, R_*, m, R_\odot$ \\
+Epsilon Sagittarii & $p, R_*, m, R_\odot$ \\
+Alpha Gruis & $p, R_*, m, R_\odot$ \\
+Theta Centauri & $p, R_*, m, R_\odot$ \\
 ... & ... \\
-\hline 
+\hline
 \end{tabular}
-\caption{Computer Science cluster with $O$-notation, 55 documents in total} 
-\label{tab:kmeans-cs}
+\caption{Stars cluster discovered by $K$-Means}
+\label{tab:kmeans-stars}
 \end{table}
 
+Next, we apply SVD to reduce the dimensionality of the identifier-document 
+matrix $D$. And, as discussed in LSA chapter, it should reveal the latent 
+structure of data. We expect that it should improve the results achieved by usual
+$K$-Means. 
+
+Randomized SVD is very fast, but the runtime does not grow linearly with $k$, 
+it looks quadratic (see fig.~\ref{fig:k-svd-vs-time}). 
+However, the typical values of $k$ for SVD used in latent semantic analysis is 
+150-250 \cite{aggarwal2012survey} \cite{evangelopoulos2012latent}, 
+therefore the run time is not prohibitive, and we do not need to rut it 
+with very large $k$.
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.75\textwidth]{k-svd-vs-time.pdf}
+\caption{$k$ in $k$-rank-reduced randomized SVD vs time in seconds.}
+\label{fig:k-svd-vs-time}
+\end{figure}
+
+
+When the dimensionality is reduced, the performance of $K$-Means and 
+MiniBatch $K$-Means is similar (see fig.~\ref{fig:k-vs-mb-svd-purity}), 
+but with MiniBatch $K$-Means we were able to discover more interesting pure 
+clusters (see fig.~\ref{fig:k-vs-mb-svd-len}). The reason for this may be the fact that in the reduced
+space there is less noise and both methods find equally good clusters, 
+but because MiniBatch $K$-Means works faster, we are able to run it multiple 
+times thus increasing its chances to find a good local optimum where there 
+are many pure documents.
+
+
+\begin{figure}[h!]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{k-vs-mb-svd-purity.pdf}
+  \caption{Purity vs number of clusters $K$ in \mbox{$K$-Means} and MiniBatch $K$-Means}
+  \label{fig:k-vs-mb-svd-purity}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{k-vs-mb-svd-len.pdf}
+  \caption{Number of pure clusters vs $K$ in $K$-Means and MiniBatch $K$-Means}
+  \label{fig:k-vs-mb-svd-len}
+\end{subfigure}
+\caption{The performance of $K$-Means and MiniBatch $K$-Means on the reduced document space with $k=150$}
+\label{fig:kmeans-vs-minibatch-svd}
+\end{figure}
 
 
 
-
-$K$-Means takes a lot of time so we use Minibatch K means 
-with random initialization
-
-
-% Agglomerative: Wald linkage: takes forever never finished
+We can note that as $K$ increases, the number of interesting clusters increases. 
+try a wide range of $K$ and $k$.
 
 
-\textbf{Only identifiers }
+NMF:
 
 
+
+We see that generally clustering works better on reduced spaces.
+
+
+\subsubsection{Soft Association}
+
+The identifier-document matrix has the dimensionality 
+$10419 \times 22512$, and there are 485\,337 elements
+in the matrix, so the density is about 0.002.
 
 
 
@@ -741,36 +843,6 @@ dist = jaccard
 $\varepsilon$=7 points
 MinPts=5 points
 
-
-\begin{table}[h!]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-Article & Identifiers \\
-\hline
-Epsilon Eridani in fiction & $M_\odot$ \\
-Solar mass & $M_\odot$ \\
-Orders of magnitude (mass) & $M_\odot$ \\
-Carbon-burning process & $M_\odot$ \\
-Baryonic dark matter & $M_\odot$ \\
-PSR J1614–2230 & $M_\odot$ \\
-Kennicutt–Schmidt law & $M_\odot$ \\
-Portal:Star/Selected article/19 & $M_\odot$ \\
-NGC 6166 & $M_\odot$ \\
-Celestial Snow Angel & $M_\odot$ \\
-Huge-LQG & $M_\odot$ \\
-High-velocity cloud & $M_\odot$ \\
-NGC 4845 & $M_\odot$ \\
-Pulsating white dwarf & $M_\odot$ \\
-Robust associations of massive baryonic objects & $M_\odot$ \\
-Black Widow Pulsar & $M_\odot$ \\
-Betelgeuse & $M_\odot$ \\
-Andromeda Galaxy & $M_\odot$ \\
-\hline
-\end{tabular}
-\caption{Galaxies cluster discovered by DBSCAN}
-\label{tab:ssn-galaxies}
-\end{table}
 
 
 In general doesn't give clusters
@@ -830,7 +902,7 @@ Article & Identifiers \\
 Direct shear test & $\text{angle}, \varphi, \text{friction}$ \\
 Truncated dodecadodecahedron & $\text{golden}, \text{ratio}, \phi$ \\
 Golden triangle (mathematics) & $\text{golden}, \text{section}, \theta, \phi$ \\
-Petrophysics & $percentage, \varphi, symbol, S_w$ \\
+Petrophysics & $\text{percentage}, \varphi, \text{symbol}, S_w$ \\
 Greedy algorithm for Egyptian fractions & $\text{golden}, \text{terms}, d, \phi, \ ...$ \\
 Pi Josephson junction & $\pi, \text{junction}, \varphi$ \\
 Snub dodecahedron & $\text{golden}, \text{ratio}, \tau, V, \xi$ \\

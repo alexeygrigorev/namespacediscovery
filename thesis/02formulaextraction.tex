@@ -1,19 +1,19 @@
 \section{Mathematical Definition Extraction} \label{sec:definitionextraction-top}
 
-Mathematical expressions are hard to understand without the natural language description,
-therefore we want to extract identifiers from mathematical expressions
-and then find their definitions from the surrounding text.
+In Natural Language Processing, Word Sense Disambiguation is a problem of 
+identifying in which sense a polysemous word is used \cite{jurafsky2000speech}.
+Analogously, the Identifier Disambiguation problem is a problem of 
+determining the meaning of an identifier in a mathematical formula. This 
+problem is typically solved by extracting definitions from the natural 
+language description that surrounds the formula. 
 
 For example, given the sentence ``The relation between energy and mass is
 described by  the mass-energy equivalence formula $E = mc^2$,
 where $E$ is energy, $m$ is mass and $c$ is the speed of light''
 the goal is to extract the following identifier-definition relations:
-($E$, ``energy''),
-($m$, ``mass'') and
+($E$, ``energy''), ($m$, ``mass'') and
 ($c$, ``the speed of light'').
 
-Consider another example: ``Let $e$ be the base of natural logarithm''.
-We would like to extract ($e$, ``the base of natural logarithm'').
 
 Formally, a phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
 
@@ -25,20 +25,17 @@ Formally, a phrase that defines a mathematical expression consists of three part
   \item \emph{definitor} is a relator verb that links definiendum and definiens.
 \end{itemize}
 
-
 In this work we are interested in the first two parts: \emph{definiendum} and
 \emph{definiens}. Thus we define a \emph{relation} as a pair
 (definiendum, definiens). For example, ($E$, ``energy'') is a relation where
-$E$ is a definiendum, and ``energy'' is a definiens.
+$E$ is a definiendum, and ``energy'' is a definiens. We refer to definiendum as 
+identifier, and to definiens as definition, so relations are identifier-definition
+pairs. 
 
 In this chapter we will discuss how the relations can be discovered automatically.
-It is organized as follows:
-then discuss
-the Math-Aware POS Tagging procedure in section~\ref{sec:postagging} and
-finally review the extraction methods in section~\ref{sec:definition-extraction-methods}
-and briefly discuss how the quality of extracted identifiers is evaluated
-in section~\ref{sec:definition-evaluation}.
-
+It is organized as follows: first, we discuss Part-of-Speech Tagging and its application
+to mathematical texts in section~\ref{sec:postagging} and then 
+review the extraction methods in section~\ref{sec:definition-extraction-methods}.
 
 
 \subsection{Math-aware POS tagging} \label{sec:postagging}
@@ -120,7 +117,7 @@ and determiners (\texttt{DET}), then we say that this sequence is
 the definition for the identifer.
 
 For example, given the sentence ``In other words, the bijection $\sigma$ normalizes
-$G$ in ...'' we will extract relation ($\sigma$, "bijection").
+$G$ in ...'' we will extract a relation ($\sigma$, "bijection").
 
 
 
@@ -157,12 +154,10 @@ Nearest Noun method we assume that \texttt{IDE} is some token annotated with
 nouns (\texttt{NN}) and  determiners (\texttt{DET}). Note that the first patten corresponds
 to the Nearest Noun pattern.
 
-The patterns above are combined from two sources: one
-is extracted from a guide to writing mathematical papers in English
-(\cite{trzeciak1995writing}) by \textbf{TODO}, and another
-is extracted from Graphs and Combinatorics papers from Springer
-by \textbf{TODO}.
-
+The patterns above are combined from two lists: one is extracted from a 
+guide to writing mathematical papers in English (\cite{trzeciak1995writing}), 
+and another is extracted from ``Graphs and Combinatorics'' papers from Springer
+\cite{kristianto2012extracting}. 
 
 The pattern matching method is often used as the baseline method
 for identifier-definition extraction methods \cite{kristianto2012extracting}
@@ -175,13 +170,14 @@ for identifier-definition extraction methods \cite{kristianto2012extracting}
 
 The definition extraction problem can be formulated as a binary classification
 problem: given a pair (identifier, candidate-definition), does this pair
-correspond to real identifier-definition relation?
+correspond to a real identifier-definition relation?
 
 To do this we find all candidate pairs: identifiers are tokens
 annotated with \texttt{ID}, and candidate defections are nouns and
 noun phrases from the same sentence as the definition.
 
-Once the candidate pairs are found, we extract the following features \cite{kristianto2014extracting} \cite{yokoi2011contextual}:
+Once the candidate pairs are found, we extract the following features 
+\cite{yokoi2011contextual} \cite{kristianto2014extracting}:
 
 
 \begin{itemize}
@@ -219,10 +215,14 @@ to identifiers in sentences, and the closeness can be used to
 model the probability distribution over candidate definitions.
 
 The candidates are ranked by the following formula:
-$$R(n, \Delta, t, d) = \cfrac{\alpha \, R_{\sigma_d}(\Delta) + \beta \, R_{\sigma_s}(n) + \gamma \, \text{tf}(t, s)}{\alpha + \beta + \gamma}$$
-where $\alpha, \beta, \gamma$ are weighting parameters.
+$$R(n, \Delta, t, d) = \cfrac{\alpha \, R_{\sigma_d}(\Delta) + \beta \, R_{\sigma_s}(n) + \gamma \, \text{tf}(t)}{\alpha + \beta + \gamma}$$
+where $\Delta$ is the number of tokens between the identifier and the definition
+candidate, and $R_{\sigma_d}(\Delta)$ is a Gaussian that models this distance, parametrized
+with $\sigma_d$; $n$ is the number of sentences between the definition candidate 
+and the sentence where the identifier occurs for the first time, and is a Gaussian
+parameterized with $\sigma_s$; finally $\text{tf}(t)$ is a frequency of term $t$ 
+in a sentence. All these quantities are combined together and $\alpha, \beta, \gamma$ are weighting parameters. 
 
-
-Finally, for weights $\alpha, \beta, \gamma$ the following parameters were chosen in
+The following weighting parameters $\alpha, \beta, \gamma$ are proposed in 
 \cite{pagael2014mlp}: $\alpha = \beta = 1$ and $\gamma = 0.1$.
 

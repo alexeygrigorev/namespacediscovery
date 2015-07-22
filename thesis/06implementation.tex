@@ -20,10 +20,9 @@ are written and edited by the community. It contains a large
 amount of articles on a variety of topics, including articles about
 Mathematics and Mathematics-related fields such as Physics. It
 is multilingual and available in several languages, including
-English, German, French, Russian and others.
-The content of wikipedia pages are authored in a special
-markup language and the content of the entire encyclopedia
-is freely available for download.
+English, German, French, Russian and others. The content of wikipedia pages 
+are authored in a special markup language and the content of the entire 
+encyclopedia is freely available for download.
 
 
 % why wiki?
@@ -214,28 +213,28 @@ Unfortunately there is no common notation established across all fields of
 mathematics and there is a lot of variance. For example,
 a vector can be denoted by ``$\vec x\, $'', ``$\boldsymbol x$'' or ``$\mathbf x$'',
 and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''.
-In natural languages there are related problems of lexical ambiguity such as 
+In natural languages there are related problems of lexical ambiguity such as
 synonymy, when different words refer to the same concept, and it can be solved
-by replacing the ambiguous words with some token, representative of the concept. 
-Therefore this problem with identifiers can be solved similarly 
-by reducing identifiers to their ``root'' form. This can be done 
-by discarding all additional visual information, such that 
+by replacing the ambiguous words with some token, representative of the concept.
+Therefore this problem with identifiers can be solved similarly
+by reducing identifiers to their ``root'' form. This can be done
+by discarding all additional visual information, such that
 ``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$''
-becomes ``$R$''. The disadvantage of this approach is that we lose 
-the additional semantic information about the identifier that overwise 
-could be useful. 
+becomes ``$R$''. The disadvantage of this approach is that we lose
+the additional semantic information about the identifier that overwise
+could be useful.
 
 
 The diacritic marks can easily be discarded because they are represented
-by special MathML instructions that can be ignored when 
+by special MathML instructions that can be ignored when
 the identifiers are retrieved. But, on the other hand,
 the visual features are encoded directly on the character level:
 the identifiers use special unicode symbols to convey font features such
 as boldness or Fraktur, so it needs to be normalized by converting characters
 from special ``Mathematical Alphanumeric Symbols'' unicode block \cite{allen2007unicode}
 back to the standard ASCII positions (``Basic Latin'' block).
-Some identifiers (such as ``$\hbar$'' or ``$\ell$'') are expressed using the  
-characters from a special ``Letterlike Symbols'' table, and these characters 
+Some identifiers (such as ``$\hbar$'' or ``$\ell$'') are expressed using
+characters from a special ``Letterlike Symbols'' table, and these characters
 are normalized as well.
 
 Additionally, the is a lot of noise on the annotation level in MathML formulas:
@@ -255,52 +254,53 @@ Some symbols (like ``='', ``+'', ``\verb|~|'', ``\%'', ``?'', ``!'')
 belong to commonly used unicode blocks which we cannot exclude altogether.
 For these symbols we manually prepare a stop list for filtering them.
 
-It also captures multiple-symbol false positives: operators and functions
+It also captures multiple-symbol false positives: operator and function names
 like ``\texttt{sin}'', ``\texttt{cos}'', ``\texttt{exp}'', ``\texttt{max}'', ``\texttt{trace}'';
 words commonly used in formulas like ``\texttt{const}'', ``\texttt{true}'', ``\texttt{false}'',
-``\texttt{vs}'', ``\texttt{iff}''; auxiliary words like ``\texttt{where}'', 
+``\texttt{vs}'', ``\texttt{iff}''; auxiliary words like ``\texttt{where}'',
 ``\texttt{else}'', ``\texttt{on}'', ``\texttt{of}'', ``\texttt{as}'', ``\texttt{is}'';
 units like ``\texttt{mol}'', ``\texttt{dB}'', ``\texttt{mm}''.
 These false identifiers are excluded by a stop list as well: if a
-candidate identifier is in the list, it is filtered out. 
-The stop list of false positives is quite similar for 
-both English and Russian: for the Russian wikipedia we only need 
-to handle the auxiliary words such as ``\texttt{где}'' (``\texttt{where}''), 
-``\texttt{иначе}'' (``\texttt{else}'') and so on. The names for operators and functions 
-are more or less consistent across both data sources. 
+candidate identifier is in the list, it is filtered out.
+The stop list of false positives is quite similar for
+both English and Russian: for the Russian wikipedia we only need
+to handle the auxiliary words such as ``\texttt{где}'' (``\texttt{where}''),
+``\texttt{иначе}'' (``\texttt{else}'') and so on. The names for operators and functions
+are more or less consistent across both data sources.
 
 
 Then, at the next stage, the definitions are extracted. However many
 shortlisted definitions are either not valid definitions or too general.
 For example, some identifiers become associated with ``\texttt{if and only if}'',
 ``\texttt{alpha}'', ``\texttt{beta}'', ``\texttt{gamma}'', which are not valid definitions.
-Other definitions like ``\texttt{element}'' (``\texttt{элемент}''), 
-``\texttt{number}'' (``\texttt{число}'') or ``\texttt{variable}'' (``\texttt{переменная}'' ) 
+
+Other definitions like ``\texttt{element}'' (``\texttt{элемент}''),
+``\texttt{number}'' (``\texttt{число}'') or ``\texttt{variable}'' (``\texttt{переменная}'' )
 are valid, but they are too general and not descriptive. We maintain a stop list of such
-false definitions and filter them out from the result. The elements 
-of the stop list are also consistent across both data data sets, 
-in the sense that the false definition candidates are same but expressed 
+false definitions and filter them out from the result. The elements
+of the stop list are also consistent across both data data sets,
+in the sense that the false definition candidates are same but expressed
 in different languages.
 
-The Russian language is highly inflected, and because of this extracted 
-definitions have many different forms, depending on grammatical gender, 
-form (singular or plural) and declensions. This highly increases the 
-variability of the definitions, and to reduce it lemmatize the definitions: 
-they are reduced to the same common form (nominative, singular and masculinum). 
-This is done using Pymorphy2: a python library for Russian and 
+The Russian language is highly inflected, and because of this extracted
+definitions have many different forms, depending on grammatical gender,
+form (singular or plural) and declensions. This highly increases the
+variability of the definitions, and to reduce it lemmatize the definitions:
+they are reduced to the same common form (nominative, singular and masculinum).
+This is done using Pymorphy2: a python library for Russian and
 Ukrainian morphology \cite{korobov2015morphological}.
 
-At the next stage the retrieved identifier/definition pairs 
-are used for document clustering. Some definitions are used only 
-once and we can note that they are not very useful because 
-they do not have any discriminative power. Therefore all such 
+At the next stage the retrieved identifier/definition pairs
+are used for document clustering. Some definitions are used only
+once and we can note that they are not very useful because
+they do not have any discriminative power. Therefore all such
 definitions are excluded.
 
 
 \subsubsection{Dataset Statistics}  \ \\
 
 
-During the data cleaning at the identifier extraction step 
+During the data cleaning at the identifier extraction step
 some false identifiers are discarded, and after that some documents
 become empty: they contain no identifiers
 at all, and these documents are no longer considered for the analysis.
@@ -386,7 +386,7 @@ number of found definitions follows a long tail distribution as well
 definitions per page being 4.
 
 The following is the list of the most common identifier-definition pairs
-extracted from the English Wikipedia:
+extracted from English Wikipedia:
 
 \begin{itemize}
 \item $t$: ``time'' (1086)
@@ -416,22 +416,22 @@ extracted from the English Wikipedia:
 In Russian Wikipedia only 5\,300 articles contain enough identifiers,
 and the remaining 9\,500 are discarded.
 
-The identifiers and definitions extracted from the Russain Wikipedia
-exhibit the similar properties. The most frequently
-occurring identifier is $x$ with 13\,248 occurrences, 
-but the median frequency of an identifer is only 3 times. 
+The identifiers and definitions extracted from the Russain version of 
+Wikipedia exhibit the similar properties. The most frequently
+occurring identifier is $x$ with 13\,248 occurrences,
+but the median frequency of an identifer is only 3 times.
 The article with the largest number of identifiers is ``Уравнения Максвелла''
 (``Maxwell's equations'') which contains 1\,831 identifiers, while
 the median number of identifiers is just 3;
-the article with the largest number of distinct identifiers 
-is also  ``Уравнения Максвелла'' with 112 unique identifiers, and 
-the median number of distinct identifiers in the data set is 5. 
-Finally, the largest number of extracted definitions is 44 
-(again, for ``Уравнения Максвелла'') with 2 being the median number of 
+the article with the largest number of distinct identifiers
+is also  ``Уравнения Максвелла'' with 112 unique identifiers, and
+the median number of distinct identifiers in the data set is 5.
+Finally, the largest number of extracted definitions is 44
+(again, for ``Уравнения Максвелла'') with 2 being the median number of
 definitions per page.
 
-The following is the list most frequent relations extracted 
-from the Russian wikipedia:
+The following is the list most frequent relations extracted
+from Russian wikipedia:
 
 \begin{itemize}
 \item $t$: ``функция'' (``function'') (215)
@@ -497,10 +497,10 @@ Additionally, the effect of variability can be decreased further
 by applying a stemming technique for each definition token.
 In this work we use Snowball stemmer for English \cite{porter2001snowball}
 implemented in NLTK \cite{bird2006nltk}: a python library for
-Natural Language Processing.
+Natural Language Processing. For Russian we use Pymorphy2 \cite{korobov2015morphological}.
 
-Using \verb|TfidfVectorizer|  from  scikit-learn \cite{scikit-learn} we vectorize 
-each document. 
+Using \verb|TfidfVectorizer|  from  scikit-learn \cite{scikit-learn} we vectorize
+each document.
 
 We use the following settings:
 
@@ -527,11 +527,10 @@ all rows has unit length.
 
 
 Once we the documents are vectorized, we can apply clustering techniques
-to them. We use $K$-Means (class \verb|KMeans| in scikit-learn) and
-Mini-Batch $K$-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}.
-Note that if rows are unit-normalized, then running $K$-Means with
+to them. We use $K$-Means (see section~\ref{sec:kmeans}) implemented as a 
+class \verb|KMeans| in scikit-learn and Mini-Batch $K$-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}. Note that if rows are unit-normalized, then running $K$-Means with
 Euclidean distance is equivalent to cosine distance
-(see section~\ref{sec:kmeans}).
+(see section~\ref{sec:cosine}).
 
 Bisecting $K$-Means (see section~\ref{sec:kmeans}) was implemented on top of
 scikit-learn: at each step we take a subset of the dataset and apply
@@ -543,9 +542,9 @@ Scatter/Gather, an extension to $K$-means (see section~\ref{sec:kmeans}), was
 implemented manually  using scipy \cite{scipy} and numpy \cite{walt2011numpy} because
 scikit-learn's implementation of $K$-Means does not allow using user-defined distances.
 
-DBScan (section~\ref{sec:dbscan}) and SNN Clustering (also section~\ref{sec:dbscan})
+DBSCAN (section~\ref{sec:dbscan}) and SNN Clustering (also section~\ref{sec:dbscan})
 algorithms were also implemented manually:
-available DBScan implementations usually take distance measure rather than
+available DBSCAN implementations usually take distance measure rather than
 a similarity measure. The similarity matrix cleated by similarity measures
 are typically very sparse, because usually only a small fraction of the documents
 are similar to some given document. Similarity measures
@@ -562,7 +561,7 @@ not only reduce the dimensionality, but also help reveal the latent
 structure of data. In this work we use Latent Semantic Analysis (LSA) (section~\ref{sec:lsa})
 which is implemented using randomized Singular Value Decomposition (SVD)
 \cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn
-\cite{scikit-learn} - method \verb|randomized_svd|. Non-negative Matrix Factorization
+\cite{scikit-learn} -- method \verb|randomized_svd|. Non-negative Matrix Factorization
 is an alternative technique for dimensionality reduction (section~\ref{sec:lsa}).
 Its implementation is also taken from scikit-learn \cite{scikit-learn},
 class \verb|NMF|.
@@ -574,45 +573,18 @@ machine-readable information about categories for each wikipedia article.
 Additionally, categories in wikipedia form a hierarchy, and this hierarchy
 is available as a SKOS ontology.
 
-A cluster is said to be ``pure'' if all documents have the same category.
-Using categories information we can find the most frequent category of the
-cluster, and then we can define purity as
-$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
-where $C$ is a cluster, and $c_i$ is some category.
-
-Then we can calculate the overall purity of a cluster assignment and use
-this to compare results of different clustering algorithms. However it is not
-enough just to find the most pure cluster assignment: because as the number
-of clusters increases the overall purity also grows.
-Thus we can also optimize for the number of clusters with purity $p$ of
-size at least $n$.
-
-When the number of clusters increase, the purity always grows
-(see fig.~\ref{fig:k-vs-purity}), but at some point the number of pure clusters
-will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
-
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{purity.pdf}
-\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases 
-linearly with $K$ ($R^2 = 0.99$).}
-\label{fig:k-vs-purity}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{pure-clusters.pdf}
-\caption{$K$ in $K$-Means vs the number of pure clusters: it grows initially, but after $K\approx 8\,000$ starts to decrease}
-\label{fig:k-vs-pureclusters}
-\end{figure}
+Unfortunately, there is no information about articles from Russian Wikipedia on 
+DBPedia. However the number of documents is not very large, and therefore 
+this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wikipedia.org/w/api.php}} individually for each 
+document.
 
 
 
-\subsection{Parameter Tuning} \label{sec:param-tuning} \ \\
+\subsection{Experiments} \label{sec:param-tuning} 
 
 There are many different clustering algorithms, each with its own set
 of parameter. In this section we describe how we find the settings that
-find the best namespaces. 
+find the best namespaces.
 
 The following things can be changed:
 
@@ -623,48 +595,106 @@ The following things can be changed:
   \item Dimensionality of $D$ can be reduced via SVD or NMF, parameter $k$ controls the rank of output.
 \end{itemize}
 
-% The approach for finding 
+% The approach for finding
 % Distance and similarity measures used
 % Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
 
+To find the best parameters set we use the grid search approach: we try
+different combinations of parameters and keep track on the number of
+pure clusters and the purity.
 
-To find the best parameters set we use the grid search approach: we try 
-different combinations of parameters and keep track on the number of 
-pure clusters and the purity. 
+A cluster is said to be ``pure'' if all documents have the same category.
+Using categories information we can find the most frequent category of the
+cluster, and then we can define purity as
+$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
+where $C$ is a cluster, and $c_i$ is some category. The overall 
+purity of cluster assignment is calculated as a weighed sum of individual 
+cluster purities, where the weight is chosen proportionally to the size of a
+cluster.
+
+However it is not
+enough just to find the most pure cluster assignment: because as the number
+of clusters increases the overall purity also grows.
+Thus we can also optimize for the number of clusters with purity $p$ of
+size at least $n$.
+
+When the number of clusters increase, the purity always grows
+(see fig.~\ref{fig:k-vs-purity}), but at some point the number of pure clusters
+will start decreasing (see fig.~\ref{fig:k-vs-pureclusters}).
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.8\textwidth]{purity.pdf}
+\caption{$K$ in $K$-Means vs overall purity of clustering: the purity increases
+linearly with $K$ ($R^2 = 0.99$).}
+\label{fig:k-vs-purity}
+\end{figure}
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.8\textwidth]{pure-clusters.pdf}
+\caption{$K$ in $K$-Means vs the number of pure clusters: it grows initially, but after $K\approx 8\,000$ starts to decrease.}
+\label{fig:k-vs-pureclusters}
+\end{figure}
 
 
-\subsubsection{Only Identifiers}
+\subsubsection{Baseline} \ \\
 
-The first way of building the identifier space is to use only identifiers 
-and do not use definitions at all. 
+We compare the performance of clustering algorithms against a random
+categorizer. The simplest version of such a categorizer is the random 
+cluster assignment categorizer, which assigns each document to some random
+cluster. 
+In this case, we constrain the categorizer to include 3 documents in each 
+cluster, and once a document belongs to some cluster, it cannot be re-assigned. 
+It is done by first creating a vector of assignments and shuffling it.
 
-If we do this, the identifier-document matrix is 6075x22512 (we keep only 
-identifiers that occur at least twice), and it contains  302\, 541
-records, so the density of this matrix is just 0.002. 
+Then we record how many pure clusters (at least 80\% pure) are in the cluster
+assignment.
+
+We repeated this experiment for 200 times (see fig.~\ref{fig:baseline}): the maximal 
+achieved value is 39, while the mean value is 23.85.
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.7\textwidth]{baseline.pdf}
+\caption{Distribution of the number of pure clusters across 200 trials.}
+\label{fig:baseline}
+\end{figure}
 
 
-Agglomerative clustering 
+% \textbf{TODO }Also: experiment with not just three, but with some 
+% probability distribution say clusters can vary from 3 to 10 or whatever.
+
+
+
+\subsubsection{Only Identifiers} \ \\
+
+The first way of building the identifier space is to use only identifiers
+and do not use definitions at all.
+
+If we do this, the identifier-document matrix is $6075 \times 22512$ 
+(we keep only identifiers that occur at least twice), and it contains  302\, 541
+records, so the density of this matrix is just 0.002.
+
+
+Agglomerative clustering
 too long, we exclude them from further analysis
 % Agglomerative: Wald linkage: takes forever never finished
 
 
-
 DBSCAN on SSN Similarity
 
-using Jaccard and using Cosine 
+using Jaccard and using Cosine
 
 
-$K$-means:
-The algorithm we run first is $K$-Means on non-reduced data. 
+$K$-Means:
+The algorithm we run first is $K$-Means on non-reduced data.
 
 
-For $K=600$ the algorithm found only 16 pure clusters. (also add 
-$K$ vs no. pure clusters) 
+For $K=600$ the algorithm found only 16 pure clusters. (also add
+$K$ vs no. pure clusters)
 
 However increasing $K$ leads to linear increase in time (see fig.~\ref{fig:k-vs-time}),
-which means that for bigger values of $K$, it takes longer, so it is not 
-feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be 
-about 4.5 hours. 
+which means that for bigger values of $K$, it takes longer, so it is not
+feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be
+about 4.5 hours.
 
 
 \begin{figure}[h!]
@@ -675,8 +705,8 @@ about 4.5 hours.
 
 Although the run time of MiniBatch $K$-Means also increases linearly with $K$
 (see fig.~\ref{fig:k-vs-time-minibatch}), it runs considerably faster.
-For example, MiniBatch $K$-Means takes 15 seconds with $K=700$ while 
-usual $K$-Means takes about 15 minutes (see fig.~\ref{fig:k-vs-time} 
+For example, MiniBatch $K$-Means takes 15 seconds with $K=700$ while
+usual $K$-Means takes about 15 minutes (see fig.~\ref{fig:k-vs-time}
 and fig.~\ref{fig:k-vs-time-minibatch}).
 
 
@@ -688,15 +718,15 @@ and fig.~\ref{fig:k-vs-time-minibatch}).
 
 
 Usual $K$-Means with small $K$ does not find many good and pure clusters,
-and MiniBatch $K$-Means does even worse: no matter what $K$ is selected, 
+and MiniBatch $K$-Means does even worse: no matter what $K$ is selected,
 the number of pure clusters and purity does not change much (see fig.~\ref{fig:k-vs-purity2}
 and fig.~\ref{fig:k-vs-len2}). This is also true for larger values of $K$
 (see fig.~\ref{fig:k-vs-len-mb}).
 
 
 % to the end of subsubsection?
-%We can conclude that although MiniBatch $K$-Means is 
-%very fast, it does not perform well on the untransformed data when we don't use 
+%We can conclude that although MiniBatch $K$-Means is
+%very fast, it does not perform well on the untransformed data when we don't use
 %definitions.
 
 
@@ -730,14 +760,14 @@ and fig.~\ref{fig:k-vs-len2}). This is also true for larger values of $K$
 \end{figure}
 
 
-The best result was found by usual $K$-Means with $K=600$: it was able 
-to discover 19 clusters with purity at least 0.8. Although it is not many, 
-the found clusters are very tight and quite big. 
+The best result was found by usual $K$-Means with $K=600$: it was able
+to discover 19 clusters with purity at least 0.8. Although it is not many,
+the found clusters are very tight and quite big.
 Among others, it discovered the following clusters: ``Astronomical catalogues'' (53 documents)
 ``Stochastic processes'' (39 documents), ``Theory of computation'' (17 documents),
-``Thermodynamics'' (16 documents), ``Statistics'' (13 documents). 
+``Thermodynamics'' (16 documents), ``Statistics'' (13 documents).
 For example, the cluster ``Astronomical catalogues'' (see table~\ref{tab:kmeans-stars})
-primarily constants documents about stars, and all these documents share 
+primarily constants documents about stars, and all these documents share
 the same set of identifers $(p, R_*, m, R_\odot)$.
 
 \begin{table}[h!]
@@ -765,16 +795,16 @@ Theta Centauri & $p, R_*, m, R_\odot$ \\
 \label{tab:kmeans-stars}
 \end{table}
 
-Next, we apply SVD to reduce the dimensionality of the identifier-document 
-matrix $D$. And, as discussed in LSA chapter, it should reveal the latent 
+Next, we apply SVD to reduce the dimensionality of the identifier-document
+matrix $D$. And, as discussed in LSA chapter, it should reveal the latent
 structure of data. We expect that it should improve the results achieved by usual
-$K$-Means. 
+$K$-Means.
 
-Randomized SVD is very fast, but the runtime does not grow linearly with $k$, 
-it looks quadratic (see fig.~\ref{fig:k-svd-vs-time}). 
-However, the typical values of $k$ for SVD used in latent semantic analysis is 
-150-250 \cite{aggarwal2012survey} \cite{evangelopoulos2012latent}, 
-therefore the run time is not prohibitive, and we do not need to rut it 
+Randomized SVD is very fast, but the runtime does not grow linearly with $k$,
+it looks quadratic (see fig.~\ref{fig:k-svd-vs-time}).
+However, the typical values of $k$ for SVD used in latent semantic analysis is
+150-250 \cite{aggarwal2012survey} \cite{evangelopoulos2012latent},
+therefore the run time is not prohibitive, and we do not need to rut it
 with very large $k$.
 
 \begin{figure}[h!]
@@ -784,14 +814,14 @@ with very large $k$.
 \end{figure}
 
 
-When the dimensionality is reduced, the performance of $K$-Means and 
-MiniBatch $K$-Means is similar (see fig.~\ref{fig:k-vs-mb-svd-purity}), 
-but with MiniBatch $K$-Means we were able to discover more interesting pure 
+When the dimensionality is reduced, the performance of $K$-Means and
+MiniBatch $K$-Means is similar (see fig.~\ref{fig:k-vs-mb-svd-purity}),
+but with MiniBatch $K$-Means we were able to discover more interesting pure
 clusters (see fig.~\ref{fig:k-vs-mb-svd-len}). The reason for this may be the fact that in the reduced
-space there is less noise and both methods find equally good clusters, 
-but because MiniBatch $K$-Means works faster, we are able to run it multiple 
-times thus increasing its chances to find a good local optimum where there 
-are many pure documents.
+space there is less noise and both methods find equally good clusters,
+but because MiniBatch $K$-Means works faster, we are able to run it multiple
+times thus increasing its chances to find a good local optimum where there
+are many pure document clusters.
 
 
 \begin{figure}[h!]
@@ -815,9 +845,165 @@ are many pure documents.
 \end{figure}
 
 
+We can note that as $K$ increases, the number of interesting clusters increases
+(see fig.~\ref{fig:k-vs-mb-svd-len}).
+Therefore, we try a wide range of larger $K$ for different $k \in \{150, 250, 350, 500\}$.
+The performance in terms of discovered pure clusters does not depend much on the 
+rank $k$ of the reduced space (see fig.~\ref{fig:k-vs-kmeans-len-nodef}). In fact, 
+it is very hard to distinguish different lines because they are quite perplexed. 
+The maximum for is achieved at $K \approx 10000$ for all $k$.
 
-We can note that as $K$ increases, the number of interesting clusters increases. 
-try a wide range of $K$ and $k$.
+\begin{figure}[h!]
+\centering\includegraphics[width=0.9\textwidth]{k-vs-kmeans-len-nodef.pdf}
+\caption{Number of discovered pure clusters in $K$-Means for different number of clusters $K$ and rank $k$.}
+\label{fig:k-vs-kmeans-len-nodef}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Name & Size & Purity \\
+  \hline
+Astronomical catalogues & 53 & 0.9811 \\
+Quantum mechanics & 14 & 0.9286 \\
+Electrochemistry & 12 & 0.8333 \\
+Particle physics  & 10 & 0.8000 \\
+Partial differential equations  & 10 & 0.8000 \\
+Electromagnetism  & 10 & 1.0000 \\
+Topology  & 10 & 0.9000 \\
+Measure theory  & 8 & 0.8750 \\
+Propositional calculus  & 8 & 0.8750 \\
+Baseball statistics  & 7 & 0.8571 \\
+Group theory  & 7 & 0.8571 \\
+Abstract algebra & 6 & 0.8333 \\
+\hline
+\end{tabular}
+\caption{Top namespace-defining clusters discovered by $K$-Means with $K=9500$ on LSA-space with $k=250$}
+\label{tab:nodef-kmeans-lsa}
+\end{table}
+
+A clustering obtained with $K=9500$ and $k=250$ discovered 213 namespace-defining
+clusters (see table~\ref{tab:nodef-kmeans-lsa}). Let us consider a namespace
+defined by the Measure Theory cluster with 8 documents, where 7 articles in
+this cluster are from ``Measure theory'' category, and all the documents share
+the $\mu$ identifier (see table~\ref{tab:nodef-kmeans-lsa-measuretheory}).
+
+\begin{table}[h!]
+
+\centering
+\begin{subtable}{0.65\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Article Name & Identifiers \\
+\hline
+Signed measure & $\Sigma, E, d, f, l, n, P, R, t, x, N, \nu, \mu$ \\
+Ergodicity & $\Sigma,E,g,H,n,T,X,\mu, t$ \\
+Support (measure theory) & $\Sigma,D,g,f,C,T,L,R,U,t,\lambda,\mu,d$ \\
+Convergence of measures & $d,g,f,\mu_n,l,n,P,S,R,\eta,t,\nu,\mu$ \\
+\begin{tabular}[x]{@{}c@{}} Riesz–Markov–Kakutani \\ representation theorem \end{tabular}
+   & $E,d,f,\psi,K,\alpha,U,X,x,\mu$ \\
+Invariant measure & $\Sigma, B,\phi,f,\mu,S,R,t,x,b,T$ \\
+Fernique's theorem & $E,l_*,G,k,l,\alpha,t,x,\mu,d$ \\
+Gauge symmetry & $E,d_\nu,J,L,U,W,\nu,\mu$ \\
+\hline
+\end{tabular}
+\label{tab:nodef-kmeans-lsa-measuretheory-docs}
+\caption{Identifiers and articles of the ``Measure Theory'' cluster (some identifiers are removed)}
+\end{subtable}% mask EOL
+\begin{subtable}{0.3\textwidth}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ID & Definition & Score\\
+\hline
+$C$ & closed set & 0.95 \\
+$f$ & measurable function & 3.50 \\
+$t$ & measurable & 1.64 \\
+$\Sigma$ & sigma algebra & 1.86 \\
+$\alpha$ & form & 0.87 \\
+$\lambda$ & measure & 0.96 \\
+$\mu$ & measure & 11.16 \\
+$\mu_n$ & measure & 0.97 \\
+$\nu$ & nonnegative measure & 0.96 \\
+$\phi$ & monoid & 0.91 \\
+$\psi$ & positive linear functional & 1.89 \\
+\hline
+\end{tabular}
+\label{tab:nodef-kmeans-lsa-measuretheory-ids}
+\caption{Definitions in ``Measure Theory'' (some definitions are removed)}
+\end{subtable}
+\caption{A namespace-defining cluster about Measure Theory discovered by $K$-Means 
+with $K=9500$ and $k=250$}
+\label{tab:nodef-kmeans-lsa-measuretheory}
+\end{table}
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  \multicolumn{4}{|c|}{$\mu$}\\
+  \hline
+  Size & Namespace Name & Definition & Score \\
+  \hline
+7 & Baseball statistics & dissociation constant & 0.89 \\
+5 & Bletchley Park & motor wheels & 4.51 \\
+3 & Continuous distributions & mean & 4.52 \\
+5 & Fluid dynamics & dynamic viscosity & 0.99 \\
+3 & Force & entropy & 0.93 \\
+3 & Force & permeability & 3.63 \\
+5 & General relativity & vierbein field & 0.95, \\
+3 & General relativity & reduced mass & 1.79 \\
+3 & Machine learning & hyperparameter & 0.86 \\
+5 & Mathematical analysis & measure & 3.69 \\
+5 & Mathematical finance & brownian motion & 0.84 \\
+8 & Measure theory & measure & 11.16 \\
+6 & Measure theory & assumptions & 0.93 \\
+3 & Mechanics & modulus & 0.89 \\
+3 & Molecular physics & absorption coefficient & 0.95 \\
+5 & Orbits & semi-major axis & 0.89 \\
+4 & Physics & numerator & 0.95 \\
+4 & Probability distributions & ratio & 0.96 \\
+4 & Probability theory & mean & 0.95 \\
+6 & Quantum field theory & gamma matrices & 1.73 \\
+14 & Quantum mechanics & molecular dipole operator & 0.96 \\
+4 & Quantum mechanics & magnetic moment & 0.97 \\
+3 & Quantum mechanics & magnetic dipole moment & 0.9 \\
+5 & Quantum mechanics & chemical potential & 0.96 \\
+3 & Quantum mechanics & formal limit & 0.95 \\
+4 & Set theory & order type & 0.97 \\
+3 & Special functions & partitions & 0.99 \\
+3 & Stars & angular rate & 0.96 \\
+6 & Statistical theory & true mean & 1.79 \\
+3 & Statistical theory & standard deviation & 1.90 \\
+4 & Stochastic processes & expectation & 0.96 \\
+3 & Stochastic processes & time t & 0.99 \\
+4 & Structural engineering & kinetic energy & 0.93 \\
+6 & Theoretical physics & covariant derivative & 0.89 \\
+4 & Theory of relativity & expression a\_$\mu$b & 0.93 \\
+3 & Theory of relativity & four-velocity & 0.87 \\
+3 & Thermodynamics & chemical potential & 1.88 \\
+\hline
+\end{tabular}
+\caption{Definitions of $\mu$ in the namespaces discovered by $K$-Means with $K=9500$
+and $k=250$ (some identifier/definition pairs are removed).}
+\label{tab:nodef-kmeans-mu}
+\end{table}
+
+
+Let us consider all occurrences of identifier $\mu$ and how it is defined 
+across different namespace-defining cluster (see table~\ref{tab:nodef-kmeans-mu}).  
+We can note several problems. First, sometimes there are namespaces with the same 
+name, but $\mu$ stands for different things there, for example, for namespaces
+``Force'' probably either ``entropy'' or ``permeability'' is not assigned correctly. 
+Second, there are clearly incorrect definitions such as ``assumptions'' 
+for the ``Measure theory'' namespace. Also, there are non-definitions such 
+as ``expression a\_$\mu$b'' or ``time t'' assigned to $\mu$. And finally, 
+some namespaces are questionable, e.g. ``Bletchley Park''. But overall
+it does discover many definitions correctly, for example, ``measure'',
+``mean'', ``expectation'' and others.
 
 
 NMF:
@@ -827,12 +1013,13 @@ NMF:
 We see that generally clustering works better on reduced spaces.
 
 
-\subsubsection{Soft Association}
 
-The identifier-document matrix has the dimensionality 
-$10419 \times 22512$, and there are 485\,337 elements
-in the matrix, so the density is about 0.002.
+\subsubsection{Weak Association} \ \\
 
+The identifier-document matrix has the dimensionality $10419 \times 22512$, 
+and there are 485\,337 elements in the matrix, so the density is about 0.002.
+
+We do not attempt to use hierarchical methods and start with DBSCAN. 
 
 
 \underline{DBSCAN SNN}
@@ -847,9 +1034,13 @@ MinPts=5 points
 
 In general doesn't give clusters
 
+
+
+
+
 TODO add some numbers and graphs
 
-\subsubsection{Weak Association} \ \\
+
 
 
 K-Means weak association
@@ -887,8 +1078,6 @@ Codex Vaticanus    & $P, \text{papyrus}$ \\
 
 
 \underline{K-Means}
-
-\textbf{TODO}: think of different ways to represent it - maybe truncate some definitions?
 
 Some articles are not from this namespace: e.g. Pi Josephson junction,
 or Almost integer
@@ -929,8 +1118,101 @@ Great rhombic triacontahedron & $\text{golden}, \text{ratio}, \phi$ \\
 Found some interesting clusters but in general doesn't show good results.
 Need to use semantic menthols
 
-Batch, k = 2500 .. 10000 with step 50
-SVD with n=600
+Batch, K= 2500 .. 15000 with step 250
+K=9000, SVD with 239. 
+
+For example, here is the top namespace defining clusters discovered (table~\ref{tab:soft-kmeans-lsa})
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Name & Size & Purity \\
+  \hline
+Astronomical catalogues & 53 & 0.9811 \\
+Quantum mechanics & 16 & 0.8750 \\
+Measure theory & 13 & 0.9231 \\
+Complex analysis & 11 & 0.9091 \\
+Cartography & 10 & 0.9000 \\
+Differential geometry & 10 & 0.9000 \\
+Measure theory & 10 & 0.9000 \\
+Thermodynamics & 10 & 1.0000 \\
+Thermodynamics & 9 & 1.0000 \\
+Set theory & 9 & 1.0000 \\
+Continuum mechanics & 9 & 0.8889 \\
+Numerical analysis & 9 & 0.888 \\  \hline
+\end{tabular}
+\caption{Top namespace-defining clusters discovered by $K$-Means with $K=9000$ on LSA-space with $k=250$}
+\label{tab:soft-kmeans-lsa}
+\end{table}
+
+
+\begin{table}[h!]
+\centering
+
+\begin{subtable}{0.7\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+  \hline
+  Article & Identifiers \\
+  \hline
+Friendly number & function, $\sigma$, divisor, $\sigma_k$, ...\\
+Fermi problem & $\sigma$, scale, sum, standard, ...\\
+Superabundant number & function, prime, $\sigma$, number, $p_l$, ...\\
+Highly abundant number & function, $\sigma$, $g$, $m$, number, $n$, $t$, ...\\
+Superperfect number & function, $\sigma$, divisor, $k$, $m$, $n$, ...\\
+Embree–Trefethen constant & $\sigma$, $x_n$, number, $n$, $\beta$, threshold...\\
+\hline
+\end{tabular}
+\caption{Wiki Articles in the cluster ``Integer Sequences''}
+\end{subtable}% mask EOL
+\begin{subtable}{0.3\textwidth}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ID & Definition & Score\\
+\hline
+$n$ & natural number & 2.80 \\
+$p_l$ & prime number & 0.83 \\
+$\beta$ & positive number & 0.93 \\
+$\sigma$ & sum-of-divisors function & 2.68 \\
+$\sigma_k$ & divisor function & 0.89 \\
+\hline
+\end{tabular}
+\caption{Definitions in ``Integer Sequences''}
+\end{subtable}
+
+\begin{subtable}{0.9\textwidth}
+\centering
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  \multicolumn{4}{|c|}{$\sigma$}\\
+  \hline
+  Size & Namespace Name & Definition & Score \\
+  \hline
+5 & Thermodynamic entropy & quantum state & 1.75 \\
+16 & Quantum mechanics & annihilation operators & 0.99 \\
+9 & Continuum mechanics & stress & 0.97 \\
+5 & Statistics & standard deviation & 0.99 \\
+7 & Partial differential equations & spread & 0.89 \\
+5 & Numerical analysis & variance & 1.90 \\
+5 & Probability distributions & standard deviation & 0.99 \\
+6 & Telecommunications engineering & variance & 1.83 \\
+5 & Combinatorics & permutation & 0.93 \\
+6 & Integer sequences & sum-of-divisors function & 2.68 \\
+5 & Mechanics & electromagnetic field & 0.89 \\
+5 & Quantum chemistry & notation & 0.87 \\
+6 & Gravitation & length & 0.88 \\
+5 & Probability & hermite distribution & 0.81 \\
+10 & Differential geometry & dimensional representation & 1.86 \\
+\hline
+\end{tabular}
+\caption{Definitions of $\sigma$ in the clustering}
+\end{subtable}
+
+\caption{A namespace-defining cluster about numbers}
+\label{tab:soft-kmeans-lsa}
+\end{table}
 
 
 
@@ -947,27 +1229,27 @@ HEre results
 \subsection{Building Hierarchy} \label{sec:hierarchy}
 
 
-After the namespaces are found, we need to organize them into a hierarchical 
-structure. It is hard to do automatically, and we choose to use 
-existing hierarchies for mathematical knowledge, and then map the 
+After the namespaces are found, we need to organize them into a hierarchical
+structure. It is hard to do automatically, and we choose to use
+existing hierarchies for mathematical knowledge, and then map the
 found namespaces to these hierarchies.
 
 The first hierarchy that we use is ``Mathematics Subject Classification'' (MSC)
-hierarchy \cite{ams2010msc} by the American Mathematical Society, and it 
-is used for categorizing mathematical articles. In this scheme there are 
+hierarchy \cite{ams2010msc} by the American Mathematical Society, and it
+is used for categorizing mathematical articles. In this scheme there are
 64 top-level categories such as ``Mathematical logic'', ``Number theory'',
-or ``Fourier analysis''. It also includes some physics categories such 
-as ``Fluid mechanics'' or ``Quantum Theory''. The following top level 
-categories are excluded: ``General'', ``History and biography'' and 
+or ``Fourier analysis''. It also includes some physics categories such
+as ``Fluid mechanics'' or ``Quantum Theory''. The following top level
+categories are excluded: ``General'', ``History and biography'' and
 ``Mathematics education''.
 
 Each top-level category contains second-level categories and third-level
-categories. In this work we exclude all subcategories those code 
-ends with 99: they are usually ``Miscellaneous topics'' or 
-``None of the above, but in this section''. 
+categories. In this work we exclude all subcategories those code
+ends with 99: they are usually ``Miscellaneous topics'' or
+``None of the above, but in this section''.
 
-Additionally, we excluded the following second level categories because 
-they interfere with PACS, a hierarchy for Physics: 
+Additionally, we excluded the following second level categories because
+they interfere with PACS, a hierarchy for Physics:
 
 \begin{itemize}
 \item Quantum theory $\to$ Axiomatics, foundations, philosophy
@@ -983,68 +1265,68 @@ they interfere with PACS, a hierarchy for Physics:
 % \item Functional analysis $\to$ Miscellaneous applications of functional analysis
 %\end{itemize}
 
-The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS) 
-\cite{aps2010pacs}, which is a scheme for categorizing articles about Physics. 
-Like in MSC, we remove the top-level category  ``GENERAL''. 
+The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS)
+\cite{aps2010pacs}, which is a scheme for categorizing articles about Physics.
+Like in MSC, we remove the top-level category  ``GENERAL''.
 
-Finally, we also use the ACM Classification Scheme \cite{rous2012acm} 
-available as a SKOS \cite{miles2005skos} ontology at their website \cite{amc2012ccs}. 
-The SKOS ontology graph was processed with RDFLib \cite{rdflib}. 
-We use the following top level categories: 
+Finally, we also use the ACM Classification Scheme \cite{rous2012acm}
+available as a SKOS \cite{miles2005skos} ontology at their website \cite{amc2012ccs}.
+The SKOS ontology graph was processed with RDFLib \cite{rdflib}.
+We use the following top level categories:
 ``Hardware'', ``Computer systems organization'', ``Networks'',
 ``Software and its engineering'', ``Theory of computation'',
 ``Information systems'', ``Security and privacy'',
 ``Human-centered computing'', ``Computing methodologies''.
 
-After obtaining and processing the data, the three hierarchies 
+After obtaining and processing the data, the three hierarchies
 are merged into one.
 
 
-However these categories are only good for English articles and 
-a different hierarchy is needed for Russian. One of such hierarchies is 
-``Госу\-дар\-ствен\-ный руб\-ри\-ка\-тор научно-тех\-ни\-чес\-кой инфор\-ма\-ции'' 
-(ГРНТИ)~-- ``State categorizator of scientific and technical information'', which 
-is a state-recommended scheme for categorizing scientific articles published 
-in Russian  \cite{feodosimov2000grnti}. The hierarchy  is extracted from the 
-official website\footnote{\url{http://grnti.ru/}} \cite{grntiweb}. It provides 
-a very general categorization and therefore we keep only the following math-related 
-categories: ``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''), 
-``Информатика'' (``Informatics''), ``Математика'' (``Mathematics''), 
-``Механика'' (``Mechanics''), ``Ста\-тис\-тика'' (``Statistics''), 
-``Физика'' (``Physics''), ``Химия'' (``Chemistry''), 
+However these categories are only good for English articles and
+a different hierarchy is needed for Russian. One of such hierarchies is
+``Госу\-дар\-ствен\-ный руб\-ри\-ка\-тор научно-тех\-ни\-чес\-кой инфор\-ма\-ции''
+(ГРНТИ)~-- ``State categorizator of scientific and technical information'', which
+is a state-recommended scheme for categorizing scientific articles published
+in Russian  \cite{feodosimov2000grnti}. The hierarchy  is extracted from the
+official website\footnote{\url{http://grnti.ru/}} \cite{grntiweb}. It provides
+a very general categorization and therefore we keep only the following math-related
+categories: ``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''),
+``Информатика'' (``Informatics''), ``Математика'' (``Mathematics''),
+``Механика'' (``Mechanics''), ``Ста\-тис\-тика'' (``Statistics''),
+``Физика'' (``Physics''), ``Химия'' (``Chemistry''),
 ``Экономика. Экономические Науки'' (``Economics'') and others.
 
 
 One we a hierarchy is established, each found namespace is mapped to
 the most suitable second-level category. This is done by keywords matching.
-First, we extract all key words from the category, which includes 
-top level category name, subcategory name and all third level categories. 
-Then we also extract the category information from the namespace, but 
-we also use the names of the articles that form the namespace. 
-Finally, the keyword matching is done by using the cosine similarity 
-between the cluster and each category. The namespace is assigned to the 
-category with the best (largest) cosine score. 
+First, we extract all key words from the category, which includes
+top level category name, subcategory name and all third level categories.
+Then we also extract the category information from the namespace, but
+we also use the names of the articles that form the namespace.
+Finally, the keyword matching is done by using the cosine similarity
+between the cluster and each category. The namespace is assigned to the
+category with the best (largest) cosine score.
 
 If the cosine score is low (below $0.2$) or there is only one
 keyword matched, then the cluster is assigned to the ``OTHERS''
 category.
 
-For example, consider a namespace  derived from the cluster consisting of 
+For example, consider a namespace  derived from the cluster consisting of
 ``Tautology (logic)'', ``List of logic systems'', ``Regular modal logic''
-``Combinational logic'' documents. Among others, these articles belong to categories 
-``Mathematical logic'' and ``Logic''. Then the following is the list of keywords 
+``Combinational logic'' documents. Among others, these articles belong to categories
+``Mathematical logic'' and ``Logic''. Then the following is the list of keywords
 extracted from the cluster:
 ``tautology'', ``logic'', ``list'', ``systems'', ``regular'', ``modal'', ``combinational'',
 ``logical'', ``expressions'', ``formal'', ``propositional'', ``calculus'' and so on.
-Apparently, this namespace is about mathematical logic. 
+Apparently, this namespace is about mathematical logic.
 
-Then consider a list of keywords for ``'General logic'', a subcategory of 
-``Mathematical logic and foundations'' from MSC: 
-``mathematical'', ``logic'', ``foundations'', ``general'', ``classical'', ``propositional'', ``type'', ``subsystems'' and others. 
+Then consider a list of keywords for ``'General logic'', a subcategory of
+``Mathematical logic and foundations'' from MSC:
+``mathematical'', ``logic'', ``foundations'', ``general'', ``classical'', ``propositional'', ``type'', ``subsystems'' and others.
 
-These keywords are represented as vectors in some Vector Space and the cosine score 
-between these vectors is calculated. For this example, the cosine is 
-approximately 0.75, and this is the largest similarity, and therefore this namepsace 
+These keywords are represented as vectors in some Vector Space and the cosine score
+between these vectors is calculated. For this example, the cosine is
+approximately 0.75, and this is the largest similarity, and therefore this namepsace
 is mapped to the ``General logic'' subcategory.
 
 Unfortunately the mapping is not always correct (TODO: add examples)
@@ -1052,14 +1334,14 @@ Unfortunately the mapping is not always correct (TODO: add examples)
 
 \subsection{Java Language Processing} \label{sec:jlp}
 
-\textbf{TODO:} also refer back to the introduction
-
- we have compared the identifier namespaces
-with namespaces in programming languages and with packages in the Java
-programming language in particular. We motivated the assumption that there
-exist ``namespace defining'' groups of documents by arguing that these
-groups also exist in programming languages. Thus, the same set of techniques
-for namespace discovery should be applicable to source code as well.
+Previously we have illustrated the idea of identifier namespaces by comparing
+it with namespaces in Computer Science, and it allowed us to develop an intuition
+behind the namespaces in mathematics and also propose a method to discover them:
+we motivated the assumption that there exist ``namespace defining'' 
+groups of documents by arguing that these groups also exist in 
+programming languages.
+In this section we will try to do the reserve: apply the methods 
+developed for identifier namespace discovery to the source code. 
 
 If a programming language is statically typed, like Java or Pascal,
 usually it is possible to know the type of a variable from the declaration
@@ -1094,7 +1376,6 @@ of the type from short to fully qualified using the information from the
 import statements. For example, \verb|String| is converted to
 \verb|java.lang.String| and \verb|List<Integer>| to \verb|java.util.List<Integer>|,
 but primitive types like \verb|byte| or \verb|int| are left unchanged.
-Secondly,
 
 
 Consider an example in the listing~\ref{code:javaclass}. There is a
@@ -1108,7 +1389,7 @@ Since all primitives and classes from packages that start with
 is represented with only one relation (``in'', \verb|domain.Word|).
 
 
-\begin{lstlisting}[language=Java,caption={A java class},label={code:javaclass}]
+\begin{lstlisting}[language=Java,caption={A Java class},label={code:javaclass}]
 package process;
 
 import domain.Word;
@@ -1132,28 +1413,105 @@ public class WordProcesser  {
 In the experiments we applied this source code analysis to
 the source code of Apache Mahout 0.10 \cite{mahout}, which is an open-source
 library for scalable Machine Learning and Data Mining.
-
-As on 2015-07-15, this dataset consists of 1560 java classes with 45878
+As on \today, this dataset consists of 1\,560 java classes with 45\,878
 variable declarations. After discarding declarations from the standard Java API,
-primitives and types with generic parameters, only 15869 declarations were
+primitives and types with generic parameters, only 15\,869 declarations were
 retained.
 
-The following is top-15 variable/type declarations:
+The following is top-15 variable/type declarations extracted from the Mahout 
+source code:
 
 \begin{itemize}
-\item (``conf'', \verb|org.apache.hadoop.conf.Configuration|), 491 times
-\item (``v'', \verb|org.apache.mahout.math.Vector|), 224 times
-\item (``dataModel'', \verb|org.apache.mahout.cf.taste.model.DataModel|), 207 times
-\item (``fs'', \verb|org.apache.hadoop.fs.FileSystem|), 207 times
-\item (``log'', \verb|org.slf4j.Logger|), 171 times
-\item (``output'', \verb|org.apache.hadoop.fs.Path|), 152 times
-\item (``vector'', \verb|org.apache.mahout.math.Vector|), 145 times
-\item (``x'', \verb|org.apache.mahout.math.Vector|), 120 times
-\item (``path'', \verb|org.apache.hadoop.fs.Path|), 113 times
-\item (``measure'', \verb|org.apache.mahout.common.distance.DistanceMeasure|), 102 times
-\item (``input'', \verb|org.apache.hadoop.fs.Path|), 101 times
-\item (``y'', \verb|org.apache.mahout.math.Vector|), 87 times
-\item (``comp'', \verb|org.apache.mahout.math.function.IntComparator|), 74 times
-\item (``job'', \verb|org.apache.hadoop.mapreduce.Job|), 71 times
-\item (``m'', \verb|org.apache.mahout.math.Matrix|), 70 times
+\item ``conf'', \verb|org.apache.hadoop.conf.Configuration| (491 times)
+\item ``v'', \verb|org.apache.mahout.math.Vector| (224 times)
+\item ``dataModel'', \verb|org.apache.mahout.cf.taste.model.DataModel| (207 times)
+\item ``fs'', \verb|org.apache.hadoop.fs.FileSystem| (207 times)
+\item ``log'', \verb|org.slf4j.Logger| (171 times)
+\item ``output'', \verb|org.apache.hadoop.fs.Path| (152 times)
+\item ``vector'', \verb|org.apache.mahout.math.Vector| (145 times)
+\item ``x'', \verb|org.apache.mahout.math.Vector| (120 times)
+\item ``path'', \verb|org.apache.hadoop.fs.Path| (113 times)
+\item ``measure'', \verb|org.apache.mahout.common.distance.DistanceMeasure| (102 times)
+\item ``input'', \verb|org.apache.hadoop.fs.Path| (101 times)
+\item ``y'', \verb|org.apache.mahout.math.Vector| (87 times)
+\item ``comp'', \verb|org.apache.mahout.math.function.IntComparator| (74 times)
+\item ``job'', \verb|org.apache.hadoop.mapreduce.Job| (71 times)
+\item ``m'', \verb|org.apache.mahout.math.Matrix| (70 times)
 \end{itemize}
+
+We used the ``soft'' association method to incorporate ``definition'' 
+(i.e. types), and considering each source code file as a document, 
+we build an identifier-document matrix of dimensionality 
+$1436 \times 1560$. Only identifiers that occur at least twice are used 
+to build the matrix. 
+
+Previously the best performance was achieved by using LSA and MiniBatch $K$-Means, 
+and therefore we apply the same algorithms here. However there are a lot of instances 
+of the types \texttt{Vector} and \texttt{Matrix}, and to mediate its influence, we use two variants of TF-IDF:
+with usual TF component and with sublinear TF. 
+The best performance is achieved with the rank $k=200$ of SVD and 
+number of clusters $K=200$ using sublinear weighting (see fig.~\ref{fig:jlp-perf}).
+% each experiment was repeated 10 times and we record the average
+
+
+\begin{figure}[h!]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{jlp-lens.pdf}
+  \caption{Usual TF weighting}
+  \label{fig:jlp-perf-tf}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{jlp-lens-sublin.pdf}
+  \caption{Sublinear TF weighting}
+  \label{fig:jlp-perf-subtf}
+\end{subfigure}
+\caption{The performance MiniBatch $K$-Means on the Mahout dataset.}
+\label{fig:jlp-perf}
+\end{figure}
+
+
+With these parameters the best result is 33 clusters. 
+One of such clusters is a cluster about SVD: there are 5 classes 
+from the \verb|recommender.svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd}} package
+(\texttt{Factorization}, \texttt{FilePersistenceStrategy}, \texttt{NoPersistenceStrategy}, \texttt{PersistenceStrategy}, \texttt{FilePersistenceStrategyTest})
+and one from \verb|kddcup.track1.svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.example.kddcup.track1.svd}} package
+(\texttt{Track1SVDRunner})
+Although this cluster is not 100\% pure, in the sense that not all of 
+these classes belong to the same package, these classes are 
+clearly related: they are all about SVD.
+The top dimensions with the most influence in this cluster are 
+\verb|svd.Factorization|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd.Factorization}} 
+and \texttt{factorization}.
+
+% One of these 
+% clusters is \verb|org.apache.mahout.math.neighborhood| cluster with  
+% BruteSearch, FastProjectionSearch, LocalitySensitiveHashSearch, ProjectionSearch, 
+% Searcher, LocalitySensitiveHashSearchTest, SearchSanityTest. All these classes are
+%related. Not all classes from this package are included. For example, 
+% HashedVector and LumpyData are not, and, judging by the name of these
+%classes, they appear a bit different from the rest. Therefore 
+%these classes are indeed semantically related. 
+% There are many identifiers in this namespace
+
+
+Note that there is a difference between mathematical namespaces and
+namespaces discovered in the source code. The found ``namespaces'' do not necessarily
+correspond to the real packages in the source code. The reason for this is 
+the document-centric view on the namespaces: for documents we assume that the 
+namespaces are not directly observed, and instead we can see only the documents where 
+these namespaces are used. It is not the case for real namespaces 
+in software: we do observe namespaces directly, and documents (that is, classes) 
+are also the elements of the namespaces. 
+
+
+
+
+
+
+
+

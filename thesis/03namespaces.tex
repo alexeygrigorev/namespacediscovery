@@ -42,9 +42,9 @@ and rows of $D$ are indexed by terms $t_1, t_2, \ ... \ , t_m$
 (see fig.~\ref{fig:document-vsm}).
 
 \begin{figure}[h]
-\centering\includegraphics[width=0.6\textwidth]{document-vsm.png}
-\caption{\textbf{TODO redraw in vector} Documents $\mathbf d_1, \mathbf d_2, \mathbf d_3$
-in a document space with dimensions $t_1, t_2, t_3$}
+\centering\includegraphics[width=0.5\textwidth]{document-vsm.pdf}
+\caption{Documents $\mathbf d_1, \mathbf d_2, \mathbf d_3$
+in a document space with dimensions $t_1, t_2, t_3$.}
 \label{fig:document-vsm}
 \end{figure}
 
@@ -390,33 +390,11 @@ The algorithm is simple: (1) start with a single cluster;
 (3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
 (4) repeat until have desired number of clusters.
 
-Scatter/Gather is another popular variation of $K$-means, initially used for
-clustering documents for Information Retrieval systems \cite{cutting1992scatter}.
-This variation includes: special smart seed selection procedure and
-several cluster refinement operations. Additionally, in Scatter/Gather
-cluster centroids are concatenations of all terms in the cluster documents,
-not a mean value; finally, the cosine similarity is used instead of Euclidean
-distance.
-
-There are two cluster refinement operations: split and join.
-The split operation selects the clusters that are not coherent
-enough and clusters them again using $K$-Means. The coherence is
-measured via \emph{self-similarity} of a cluster,
-which is the mean similarity of all documents in the cluster to
-its centroid, or the mean pair-wise similarity between all documents
-of the cluster.
-
-The join operation merges the clusters that are very similar
-to each other. The similarity is measured by computing ``typical''
-terms for each cluster (usually the most frequent terms of
-the centroid) and examining which clusters have significant
-overlaps between their typical terms.
-
 
 However, when there are many documents, the centroids tend
 to contain a lot of words, which leads to a significant slowdown.
 To solve this problem, some terms of the centroid can be truncated.
-There are several possible ways of trucating the terms: for example,
+There are several possible ways of truncating the terms: for example,
 we can keep only the top $c$ terms, or remove the least frequent words
 such that at least 90\% (or 95\%) of the original vector norm is
 retained \cite{schutze1997projections}.
@@ -651,8 +629,8 @@ require orthogonality \cite{xu2003document} (see fig.~\ref{fig:nmf-svd}).
 
 
 \begin{figure}[h]
-\centering\includegraphics[width=0.75\textwidth]{nmf-svd.png}
-\caption{\textbf{TODO redraw} Directions found by  SVD (on the left) vs directions by NMF (on the right)}
+\centering\includegraphics[width=0.8\textwidth]{nmf-svd.pdf}
+\caption{Directions found by  SVD (on the left) vs directions by NMF (on the right)}
 \label{fig:nmf-svd}
 \end{figure}
 

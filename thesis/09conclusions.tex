@@ -1,48 +1,79 @@
 \section{Conclusions}
 
-\subsection{Result analysis}
-
-Hierarcical methods are too slow, and SLINK is not good.
-Bisecting $K$-Means is good for explaining steps but not very practical
-
-MiniBatch K means is preferred to usual KMeans:
-fast but same results
-
-NMF takes a lot of time to decompose a matrix with large
-$k$
-
- $k=100$ 30 min, but with results inferior to SVD
- $k=250$ 2 hours, with results comparable to SVD
-
-The complexity of NMF is $O(kn)$
 
 
-The best definition embedding technique is soft association
-The best clsutering algorithm is $K$-Means with $K=10000$
-on the semantic space produced by rank-reduced SVD with $k = 200$
 
+The obtained results indicate that there are namespaces in mathematical notation
+and it is possible to discover them automatically from a collection of documents. 
+However, there are still ...
 
-\subsection{Experiment Conclusions}
-
-The results are super.
+Minimize the number of false definitions, and improve the results of clustering. 
+In the next section we discuss how this can be approached.
 
 
 
 \subsection{Future Work}
 
+Clustering ensembles - cluster results are quite different, so 
+need a way of combining several results.
+
+\subsubsection{Implementation and Other Algorithms}  \ \\
+
+% Implementation and % Other algorithms
+
+We observe that cluster algorithms that produce many clusters 
+tend to have good performance. However they also tend to create related 
+clusters from the same category and with same or similar identifiers and 
+definitions. Therefore such results can be refined further and merged. 
+This can be done, for example, by using the join operation from 
+the Scatter/Gather algorithm \cite{cutting1992scatter}.
+
+The hierarchical agglomerative clustering algorithms may produce good 
+clusters, but their time complexity is prohibitive. For these algorithms 
+we are usually interested in the nearest neighbors of a given data point,
+and therefore we can use approximation algorithms for computing nearest 
+neighbors such as Locality-Sensitive Hashing (LSH) \cite{leskovec2014mining}.
+The LSH algorithms can be used for text clustering \cite{ravichandran2005randomized},
+and therefore they should work well for identifiers. Additionally, 
+LSH is also a dimensionality reduction technique, and 
+we have observed that generally reducing dimensionality helps to obtain 
+better clusters. 
+
+In this work we use hard assignment clustering algorithms, which means, that a document 
+can import only from one namespace. This assumption does not necessarily always hold true 
+and we may model the fact that documents may import from several namespaces by 
+using Fuzzy Clustering (or Soft Clustering) algorithms \cite{baraldi1999survey}.
+
+In Latent Semantic Analysis other dimensionality reduction techniques
+can be used, for example, Local Non-Negative Matrix Factorization \cite{li2001learning}.
+There are also randomized Non-Negative Matrix Factorization that use
+random projections \cite{wang2010efficient} \cite{damle2014random}
+that potentially can give a speed up while not significantly losing
+in performance. Another dimensionality reduction technique useful for
+discovering semantics is Dynamic Auto-Encoders \cite{mirowski2010dynamic}.
+
+Topic modeling techniques such as Latent Dirichlet Allocation
+\cite{blei2003latent} can be quite useful for modeling namespaces. It can be 
+seen as a ``soft clustering'' technique and it can naturally model the fact that 
+a document may import from several namespaces.
+
+Finally, we can try different approaches to clustering such as 
+Spectral Clustering \cite{ng2002spectral} or Micro-Clustering \cite{uno2015micro}.
+
+
+\subsubsection{Other Concepts}  \ \\
+% Other concepts
+
 In this work we assume that document can import only from one namespace,
-but in reality is should be able to import from several namespaces. 
-We can allow that by dividing the document in parts (for example, by paragraphs) 
-and then treating each part as an independent document. 
+but in reality is should be able to import from several namespaces. As discussed,
+it can be modeled by Fuzzy Clustering. But it also can be achieved by 
+dividing the document in parts (for example, by paragraphs)
+and then treating each part as an independent document.
 
-Now to determine to which namespace a cluster belong, we use the category 
-information. In case when the analysis is applied to the parts of documents, 
-each part needs to be assigned to one or more category. 
-
-In this work we only use identifiers, extracted definitions and categories. 
-It is possible to take advantage of additional information from Wikipedia 
-articles. For example, extract some keywords from the articles 
-and use them to get a better cluster assignment. 
+In this work we only use identifiers, extracted definitions and categories.
+It is possible to take advantage of additional information from Wikipedia
+articles. For example, extract some keywords from the articles
+and use them to get a better cluster assignment.
 
 The Wikipedia data set can be seen as a graph, where two articles have 
 an edge if there is an interwiki link between them. Pages that describe 
@@ -52,47 +83,57 @@ described in \cite{botafogo1991identifying} and \cite{johnson1996adaptive}) to
 find namespace candidates. There are also hybrid approaches that
 can use both textual representation and links \cite{oikonomakou2005review}.
 
-In Latent Semantic Analysis other dimensionality reduction techniques 
-can be used, for example, Local Non-Negative Matrix Factorization \cite{li2001learning}. 
-There are also randomized Non-Negative Matrix Factorization that use 
-random projections \cite{wang2010efficient} \cite{damle2014random} 
-that potentially can give a speed up while not significantly losing 
-in performance. Another dimensionality reduction technique useful for 
-discovering semantics is Dynamic Auto-Encoders \cite{mirowski2010dynamic}.
+Vector Space Model is not the only possible model to represent textual 
+information as vectors. There are other ways to embed textual information
+into vector spaces like word2vec \cite{mikolov2013efficient} or 
+GloVe \cite{pennington2014glove}, and these methods may be useful 
+for representing identifers and definitions as well.
 
-Finally topic modeling techniques such as Latent Dirichlet Allocation 
-\cite{blei2003latent} can be quite useful for modeling namespaces. 
-It can naturally model the fact that a document can have several namespaces. 
-Also can use Fuzzy Clustering techniques \cite{baraldi1999survey}
-
-
-We can try different clustering techniques such as Spectral Clustering \cite{ng2002spectral}
-or Micro-Clustering \cite{uno2015micro}
-
-other ways to embed identifiers like word2vec \cite{mikolov2013efficient}
-or GloVe \cite{pennington2014glove}
+Additionally, tensors may be a better way of representing 
+identifier-definition pairs. For example, we can represent the data set 
+as a 3-dimensional tensor indexed by documents, identifiers and definition. 
+Tensor Factorization methods for revealing semantic information 
+are an active area of research in NLP and linguistics \cite{anisimov2014semantic},
+and we can also apply these methods to the namespace discovery problem. 
 
 
-The biggest question is how to extend this method to situations when 
-no additional information about document category is known. To solve 
-it, we need to replace the notion of purity with some other objective 
-for discovering namespace-defining clusters. 
-
-We depend on existing hierarchies, and they are not always complete and 
-there are mismatches. And when this technique is applied to some
-other language, a different hierarchy is needed for this language. When 
-we applied it to Russian, we needed to find a different hierarchy.
-There should be a way of building these hierarchies
-automatically, without the need of external dataset
 
 
-Also, a metric for evaluating the quality of a namespace is needed. 
-Now we assume that pure clusters are namespace-defining clusters. But the namespace
-candidates should adhere to the namespace definition as much as possible. 
+\subsubsection{Datasets}  \ \\
+% Other Datasets
 
 
 It can be interesting to apply these techniques to a larger dataset, for example, arXiv.
+ArXMLiv.
+
+There are Q\&A websites on the stack exchange network with formulae, such as 
+mathematics, mathoverflow, cross validated, data science, theoretical computer science, 
+physics, astronomy, economics and many others that have math, and there are data dumps available 
+from these sites with all the questions and answers. 
 
 
+% Unsolved Questions
 
+\subsubsection{Unsolved Questions} \ \\
 
+There are questions that are still not answered and we are not certain 
+how they can be approached. 
+
+The biggest question is how to extend this method to situations when
+no additional information about document category is known. To solve
+it, we need to replace the notion of purity with some other objective
+for discovering namespace-defining clusters.
+
+We depend on existing hierarchies, and they are not always complete and
+there are mismatches. And when this technique is applied to some
+other language, a different hierarchy is needed for this language. When
+we applied it to Russian, we needed to find a different hierarchy.
+There should be a way of building these hierarchies
+automatically, without the need of external dataset.
+Potentially it should be possible to use hierarchical clustering 
+algorithms, but it may result in very deep and unnatural hierarchies. 
+
+Also, a metric for evaluating the quality of a namespace is needed.
+Now we assume that pure clusters are namespace-defining clusters. But the namespace
+candidates should adhere to the namespace definition as much as possible,
+and therefore a good is needed.

@@ -578,6 +578,112 @@ DBPedia. However the number of documents is not very large, and therefore
 this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wikipedia.org/w/api.php}} individually for each 
 document.
 
+\subsubsection{Building Namespaces} \ \\
+
+Once a cluster analysis algorithms assigns documents in our collection to 
+some clusters, we need to find namespaces among these clusters. We assume that 
+some clusters are namespace-defining: they are not only homogenous in the cluster 
+analysis sense (for example, in case of $K$-Means it means that within-cluster sum 
+of squares is minimal), but also ``pure'': they are about the same topic. 
+
+A cluster is \emph{pure} if all documents have the same category.
+Using categories information we can find the most frequent category of the
+cluster, and then we can define purity as
+$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
+where $C$ is a cluster, and $c_i$ is some category. 
+Thus we can select all clusters with purity above some pre-defined threshold 
+and refer to them as namespace-defining clusters. 
+
+Then we convert these clusters into namespaces by collecting all the identifiers 
+and their definitions in the documents of each cluster. To do this, we first 
+collect all the identifier-definition pairs, and then group them by identifier. 
+When extracting, each definition candidate is scored, and this score is used 
+to determine, which definition an identifier will be assigned in the namespace. 
+
+For example, consider three documents with the following extracted relations:
+
+\begin{itemize}
+  \item Document A:
+  \begin{itemize}
+\item $n$: (predictions, 0.95), (size, 0.92), (random sample, 0.82), (population, 0.82)
+\item $\theta$: (estimator, 0.98), (unknown parameter, 0.98), (unknown parameter, 0.94)
+\item $\mu$: (true mean, 0.96), (population, 0.89)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (population variance, 0.86), (square error, 0.83), (estimators, 0.82)
+  \end{itemize}
+
+  \item Document B:
+    \begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95)
+\item $\theta$: (sufficient statistic, 0.93)
+\item $\mu$: (mean, 0.99), (variance, 0.95), (random variables, 0.89), (normal, 0.83)
+\item $\sigma$: (variance, 0.99), (mean, 0.83)
+  \end{itemize}
+
+  \item Document C:
+    \begin{itemize}
+\item $n$: (tickets, 0.96), (maximum-likelihood estimator, 0.89)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (statistic, 0.95), (estimator, 0.93), (estimator, 0.93), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (expectation, 0.96), (variance, 0.93), (population, 0.89)
+\item $\sigma$: (variance, 0.94), (population variance, 0.91), (estimator, 0.87)
+  \end{itemize}
+\end{itemize}
+
+We take all these relations, and combine together. If an identifer 
+have two or more definitions that are exactly the same, them we 
+merge them into one and its score is the sum of scores: 
+
+\begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95), (Poisson, 0.82)
+\item $n$: (tickets, 0.96), (predictions, 0.95), (size, 0.92), (maximum-likelihood estimator, 0.89), (random sample, 0.82), (population, 0.82)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (estimator, 0.98+0.93+0.93), (unknown parameter, 0.98+0.94), (statistic, 0.95), (sufficient statistic, 0.93), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (random variables, 0.89+0.89+0.89), (variance, 0.95+0.93), (mean, 0.99), (true mean, 0.96), (expectation, 0.96), (normal, 0.83)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (variance, 0.99+0.94), (population variance, 0.91+0.86), (estimator, 0.87), (square error, 0.83), (mean, 0.83), (estimators, 0.82)
+\end{itemize}
+
+There is some lexical variance in the definitions. For example, ``variance'' and ``population
+variance'' or ``mean'' and ``true mean'' are very related definitions, and 
+it makes sense to group them together to form one definition. 
+It can be done by fuzzy string matching (or approximate matching)
+\cite{navarro2001guided}. To implement it, we use a python library FuzzyWuzzy 
+\cite{fuzzywuzzy}, and using fuzzy matching we group related identifiers and then 
+sum over their scores. 
+
+Then we have the following: 
+
+\begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95), (Poisson, 0.82)
+\item $n$: (tickets, 0.96), (predictions, 0.95), (size, 0.92), (maximum-likelihood estimator, 0.89), (random sample, 0.82), (population, 0.82)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (estimator, 2.84), (unknown parameter, 1.92), (\{statistic, sufficient statistic\}, 1.88), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (random variables, 2.67), (\{mean, true mean\}, 1.95), (variance, 1.88),  (expectation, 0.96), (normal, 0.83)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (\{variance, population variance\}, 3.7), (\{estimator, estimators\}, 1.69), (square error, 0.83), (mean, 0.83)
+\end{itemize}
+
+In a namespace an identifier can have at most one definition, and therefore the next step 
+is selecting the definition with the highest score. This gives us the following namespace: 
+
+\begin{itemize}
+\item ($P_\theta$, family, 0.87)
+\item ($X$, measurable space, 0.95)
+\item ($n$, tickets, 0.96)
+\item ($x$, data, 0.99
+\item ($\theta$, estimator, 2.84)
+\item ($\mu$, random variables, 2.67)
+\item ($\mu_4$, central moment, 0.83)
+\item ($\sigma$: variance, 3.7)
+\end{itemize}
+
+
+The category of this namespace is selected as the category that the majority of the documents 
+in the namespace-defining cluster share.
 
 
 \subsection{Experiments} \label{sec:param-tuning} 
@@ -591,7 +697,7 @@ The following things can be changed:
 \begin{itemize}
   \item Ways to incorporate definition information (no definitions, soft association, hard association);
   \item Weighting schemes for the identifier-document matrix $D$: TF, sublinear TF, TF-IDF;
-  \item There are different clustering algorithms: agglomerative clustering, DBSCAN, SNN clustering, $K$-Means, Bisecting $K$-Means, Scatter/Gather, each algorithm has its own set of parameters;
+  \item There are different clustering algorithms: agglomerative clustering, DBSCAN, SNN clustering, $K$-Means, Bisecting $K$-Means, each algorithm has its own set of parameters;
   \item Dimensionality of $D$ can be reduced via SVD or NMF, parameter $k$ controls the rank of output.
 \end{itemize}
 
@@ -603,11 +709,7 @@ To find the best parameters set we use the grid search approach: we try
 different combinations of parameters and keep track on the number of
 pure clusters and the purity.
 
-A cluster is said to be ``pure'' if all documents have the same category.
-Using categories information we can find the most frequent category of the
-cluster, and then we can define purity as
-$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
-where $C$ is a cluster, and $c_i$ is some category. The overall 
+The overall 
 purity of cluster assignment is calculated as a weighed sum of individual 
 cluster purities, where the weight is chosen proportionally to the size of a
 cluster.
@@ -673,48 +775,271 @@ If we do this, the identifier-document matrix is $6075 \times 22512$
 (we keep only identifiers that occur at least twice), and it contains  302\, 541
 records, so the density of this matrix is just 0.002.
 
+First, we try to apply agglomerative clustering, then DBSCAN with SNN similarity 
+based on Jaccard coefficient and cosine similarity, then we 
+do $K$-Means and finally we apply LSA using SVD and NMF and apply 
+$K$-Means on the reduced space. 
 
-Agglomerative clustering
-too long, we exclude them from further analysis
+\textbf{Agglomerative clustering} take too long to compute, they were not able 
+to finish clustering in several hours, so we stopped the computation 
+(\textbf{add graphs}). Additionally, the implementation we use from scikit-learn 
+require a dense matrix, when densified, the identifeir-document matrix 
+occupies a lot of space. Therefore we exclude these clustering algorithms from
+further analysis.
 % Agglomerative: Wald linkage: takes forever never finished
 
 
-DBSCAN on SSN Similarity
+The second method is \textbf{DBSCAN} with \textbf{SNN Similarity}. 
+To compute SSN similarity we need to use some other base similarity measure. 
+We start with Jaccard coefficient, and use a binarized identifier-document 
+matrix: a matrix with only ones and zeros.  
+For example, the closest article to ``Linear Regression'' is 
+``Linear predictor function'' with Jaccard coefficient of 0.59
+and ``Low-rank approximation'' is the closest to ``Singular value decomposition''
+with coefficient of 0.25. With Jaccard, we were able to discover 87 
+clusters, which is two times better than the baseline (see fig.~\ref{fig:nodef-dbscan-jac})
+and the best parameters are 10 nearest neighbors, 
+$\varepsilon=3$ and \texttt{MinPts} $=4$ (see fig.~\ref{fig:nodef-dbscan-jac10-2}).
 
-using Jaccard and using Cosine
+For the best result with 87 namespace defining clusters, 
+in total 5\,580 clusters were found and 4\,219 documents are considered
+as ``noise''. Let us consider top largest found clusters (see table~\ref{tab:nodef-jaccard}). 
+One of them, ``Statistics'',  is quite homogenous with purity of 0.84 (see table~\ref{tab:nodef-jaccard-stat}).
+Although some of the articles in this cluster are not related to statistics, 
+all of them articles share the same identifier ``$\beta$''. 
+We can also check how $\beta$ is defined across all namespace-defining clusters 
+(see table~\ref{tab:nodef-jaccard-beta}). There are not many instance of 
+$\beta$, and not all of them correct or meaningful: for example  ``i/ab'' in 
+the ``Physics'' cluster is a non-definition that was not successfully filtered 
+out during the data cleaning phase.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Name & Size & Purity \\
+  \hline
+Continuum mechanics & 40 & 0.8000 \\
+Constellations listed by Ptolemy & 17 & 1.0000 \\
+Statistics & 13 & 0.8462 \\
+Knot theory & 13 & 0.8462 \\
+Electromagnetism & 12 & 0.8333 \\
+Bayer objects & 11 & 1.0000 \\
+Analytic number theory & 10 & 0.9000 \\
+Acoustics & 9 & 0.8889 \\
+Chemical properties & 9 & 0.8889 \\
+Set theory & 9 & 0.8889 \\
+Combinatorics & 8 & 0.8750 \\
+Theory of computation & 8 & 1.0000 \\
+Partial differential equations & 8 & 0.8750 \\
+Mathematical logic & 8 & 0.8750 \\
+\hline
+\end{tabular}
+\caption{Top namespace-defining clusters discovered by SNN DBSCAN with Jaccard coefficient.}
+\label{tab:nodef-jaccard}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{subtable}{0.65\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Article Name & Identifiers \\
+\hline
+Partition of sums of squares & $y, \beta_0, \beta_1, \varepsilon_i, \beta_p, S, \varepsilon, y_i, \beta, ...$ \\
+Deming regression & $\sigma, \eta, \eta_i, \beta, \beta_0, \varepsilon_i, \varepsilon, \delta, y_i, x, ...$ \\
+Instrumental variable & $\beta, \varepsilon, \delta, x_1, Y, X,g, f, \varepsilon_i, \beta_k, ...$ \\
+Ordinary least squares &w_i, \alpha, \beta, \varepsilon, \sigma, E, \eta, \chi, \varepsilon_i,  \beta_j, ...$ \\
+Endogeneity & $\gamma, \varepsilon_i, \beta_1, x_i, \alpha, \beta, \varepsilon, ...$ \\
+Linear predictor function & $x_i, \varepsilon_2, \beta_0,  \varepsilon_1, \beta, \varepsilon, \phi_p, \varepsilon_n, ...$ \\
+Stochastic frontier analysis & $\beta_n, f, \beta_0, u_i, x_i, \beta, T, y_i, ...$ \\
+\begin{tabular}[x]{@{}c@{}} Proofs involving \\ ordinary least squares \end{tabular} &
+  $x_i, \beta_0, \beta_1, \beta, \varepsilon, \pi, \sigma, \chi, \varepsilon_i, ...$ \\
+Projection pursuit regression & $\beta, \beta_0, j, S, \varepsilon, y_i, X, Y, x, x_i, ...$ \\
+De Casteljau's algorithm & $w_i, \beta_0, \beta_1,  \beta, \beta_i, t, \beta_n, t_0, P_0, ...$ \\
+Regression analysis & $x_i, \beta_0, \beta, \varepsilon, y_i, \sigma, f, \beta_p, \varepsilon_i, ...$ \\
+Linear regression & $x_i, \varepsilon_2, \Omega, \beta_1, \beta_2, y_n, \varepsilon_1, \beta, \varepsilon, ...$ \\
+Least squares & $\nabla, \beta_j, \beta, \varepsilon, w_{ii}, Wy, \sigma, \varepsilon_i, ...$ \\
+\hline
+\end{tabular}
+\label{tab:nodef-jaccard-docs}
+\caption{Identifiers and articles of the ``Statistics'' cluster (some identifiers are removed)}
+\end{subtable}% mask EOL
+\begin{subtable}{0.3\textwidth}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ID & Definition & Score\\
+\hline
+$X_1$ & regressors & 0.92 \\
+$Y$ & regression model & 0.95 \\
+$f$ & linear predictor function & 0.99 \\
+$p$ & regressors & 1.77 \\
+$w_i$ & control points & 1.66 \\
+$y_0$ & mean response & 0.99 \\
+$y_i$ & dependent variable & 3.71 \\
+$z$ & causal relationship & 0.90 \\
+$\alpha$ & confidence level & 1.94 \\
+$\beta$ & estimator & 2.82 \\
+$\beta_1$ & slope & 1.82 \\
+$\varepsilon$ & errors & 2.90 \\
+$\varepsilon_i$ & error term & 2.71 \\
+$\sigma$ & residual variance & 2.68 \\
+\hline
+\end{tabular}
+\label{tab:nodef-jaccard-ids}
+\caption{Definitions in ``Statistics'' (some definitions are removed)}
+\end{subtable}
+\caption{A namespace-defining cluster about Statistics dicovered by SNN DBSCAN 
+with Jaccard coefficient.}
+\label{tab:nodef-jaccard-stat}
+\end{table}
 
 
-$K$-Means:
-The algorithm we run first is $K$-Means on non-reduced data.
 
-
-For $K=600$ the algorithm found only 16 pure clusters. (also add
-$K$ vs no. pure clusters)
-
-However increasing $K$ leads to linear increase in time (see fig.~\ref{fig:k-vs-time}),
-which means that for bigger values of $K$, it takes longer, so it is not
-feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be
-about 4.5 hours.
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  \multicolumn{4}{|c|}{$\beta$}\\
+  \hline
+  Size & Namespace Name & Definition & Score \\
+  \hline
+3 & Complex analysis & absolute value & 0.95 \\
+40 & Continuum mechanics & bias & 1.75 \\
+5 & Fluid dynamics & momentum factor & 0.95 \\
+5 & Physics & i/ab & 0.84 \\
+3 & Quantum mechanics & voltage-to-barrier-field conversion factor & 1.87 \\
+5 & Radio frequency propagation & clutter factor & 0.95 \\
+9 & Set theory & successor ordinal & 0.89 \\
+13 & Statistics & estimator & 2.82 \\
+6 & Theoretical physics & quantity & 0.96 \\
+\hline
+\end{tabular}
+\caption{Definitions of $\beta$ in the namespaces discovered by SNN DBSCAN with Jaccard coefficient.}
+\label{tab:nodef-jaccard-beta}
+\end{table}
 
 
 \begin{figure}[h!]
-\centering\includegraphics[width=0.75\textwidth]{k-vs-time.pdf}
-\caption{$K$ in $K$-Means vs time in minutes ($R^2 = 0.99$).}
-\label{fig:k-vs-time}
+\centering
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-jac10.pdf}
+  \caption{Number of clusters when 10 nearest neighbors are considered}
+  \label{fig:nodef-dbscan-jac10}
+\end{subfigure}%
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-jac10-2.pdf}
+  \caption{Performance of selected $\varepsilon$ with 10 nearest neighbors}
+  \label{fig:nodef-dbscan-jac10-2}
+\end{subfigure}
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-jac13.pdf}
+  \caption{Number of clusters when 15 nearest neighbors are considered}
+  \label{fig:nodef-dbscan-jac15}
+\end{subfigure}%
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-jac13-2.pdf}
+  \caption{Performance of selected $\varepsilon$ with 15 nearest neighbors}
+  \label{fig:nodef-dbscan-jac15-2}
+\end{subfigure}
+\caption{Effect of parameters $\varepsilon$, \texttt{MinPts} and number of nearest
+ neighbors on performance of SNN DBSCAN when Jaccard coefficient is used.}
+\label{fig:nodef-dbscan-jac}
 \end{figure}
 
-Although the run time of MiniBatch $K$-Means also increases linearly with $K$
-(see fig.~\ref{fig:k-vs-time-minibatch}), it runs considerably faster.
+
+Then we run the same algorithm, but with cosine similarity, using an 
+identifier-document matrix with $\log \text{TF} \times \text{IDF}$ 
+weights, and calculate pair-wise similarity between each document. 
+For example, let us take an article ``Linear regression''
+%it contains $h_i, m, n, p, T, t, t_i, X, x, x_{11},$ $x_{21}, x_i, y, y_1,$ 
+%$y_2, y_i, y_n, Z,  \beta, \beta_1, \beta_2, \beta_p, \varepsilon, \varepsilon_1, 
+%\varepsilon_2,$ $\varepsilon_i, \varepsilon_n, \Omega$
+and calculate the cosine with the rest of the corpus. The closest document 
+is ``Linear predictor function''.
+% with identifiers
+%$b, c, c_1, f, m, p1, T, x, X,$ $x_{11}, x_i, x_K, y, y_2, y_i, y_n, \beta_0, 
+%\beta_1, \beta_2, \beta_p, \beta 2, \varepsilon,$ $\varepsilon_1, \varepsilon_2, \varepsilon_i,$
+%$\phi, \phi_1, \phi_2$.
+They have 23 identifiers in common, and they indeed look related. 
+However cosine is not always giving the best closets neighbors. For example,
+the nearest neighbor of ``Singular value decomposition'' is ``Rule of Sarrus'', 
+and although their cosine score is 0.92, they have only 3 identifiers in common.  
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-cos10.pdf}
+  \caption{Number of clusters when 10 nearest neighbors are considered}
+  \label{fig:nodef-dbscan-cos10}
+\end{subfigure}%
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-cos10-2.pdf}
+  \caption{Performance of selected $\varepsilon$ with 10 nearest neighbors}
+  \label{fig:nodef-dbscan-cos10-2}
+\end{subfigure}
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-cos15.pdf}
+  \caption{Number of clusters when 15 nearest neighbors are considered}
+  \label{fig:nodef-dbscan-cos15}
+\end{subfigure}%
+\begin{subfigure}[b]{0.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{nodef-dbscan-cos15-2.pdf}
+  \caption{Performance of selected $\varepsilon$ with 15 nearest neighbors}
+  \label{fig:nodef-dbscan-cos15-2}
+\end{subfigure}
+\caption{Effect of parameters $\varepsilon$, \texttt{MinPts} and number of nearest
+ neighbors on performance of SNN DBSCAN when cosine is used.}
+\label{fig:nodef-dbscan-cos}
+\end{figure}
+
+
+With cosine as the base similarity function for SNN DBSCAN we 
+were able to discover 124 namespace-defining clusters (see fig.~\ref{fig:nodef-dbscan-cos}),
+which is significantly better than the baseline. The best parameters 
+are 10 nearest neighbors and $\varepsilon=4$, \texttt{MinPts} $=3$
+(see fig.~\ref{fig:nodef-dbscan-cos10-2}).
+
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[b]{0.75\textwidth}
+  \centering\includegraphics[width=\textwidth]{k-vs-time.pdf}
+  \caption{$K$ in $K$-Means vs time in minutes ($R^2 = 0.99$).}
+  \label{fig:k-vs-time}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.75\textwidth}
+  \centering\includegraphics[width=\textwidth]{k-vs-time-minibatch.pdf}
+  \caption{$K$ in MiniBatch $K$-Means vs time in seconds ($R^2 = 0.97$).}
+  \label{fig:k-vs-time-minibatch}
+\end{subfigure}
+\caption{Runtime of $K$-Means and MiniBatch $K$-Means}
+\label{fig:kmeans-vs-minibatch1}
+\end{figure}
+
+Next, we apply \textbf{$K$-Means}. We observe that increasing~$K$ 
+leads to linear increase in time (see fig.~\ref{fig:k-vs-time}),
+which means that for bigger values of~$K$, it takes longer, so it is not
+feasible to run: for example, $K = 10\, 000$ we estimate the runtime to be
+about 4.5 hours. As \textbf{MiniBatch $K$-Means} is expected to be significantly 
+faster than usual $K$-Means, we use it as well. Although we observe that the run 
+time of  MiniBatch $K$-Means also increases linearly with~$K$
+(see fig.~\ref{fig:k-vs-time-minibatch}), it indeed runs considerably faster.
 For example, MiniBatch $K$-Means takes 15 seconds with $K=700$ while
 usual $K$-Means takes about 15 minutes (see fig.~\ref{fig:k-vs-time}
 and fig.~\ref{fig:k-vs-time-minibatch}).
 
-
-\begin{figure}[h!]
-\centering\includegraphics[width=0.75\textwidth]{k-vs-time-minibatch.pdf}
-\caption{$K$ in MiniBatch $K$-Means vs time in seconds ($R^2 = 0.97$).}
-\label{fig:k-vs-time-minibatch}
-\end{figure}
 
 
 Usual $K$-Means with small $K$ does not find many good and pure clusters,
@@ -734,14 +1059,13 @@ and fig.~\ref{fig:k-vs-len2}). This is also true for larger values of $K$
 \begin{figure}[h!]
 \centering
 \hfill
-\begin{subfigure}[b]{0.47\textwidth}
+\begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{k-vs-purity2.pdf}
   \caption{Purity vs number of clusters $K$ in \mbox{$K$-Means} and MiniBatch $K$-Means}
   \label{fig:k-vs-purity2}
-\end{subfigure}
-~
-\begin{subfigure}[b]{0.47\textwidth}
+\end{subfigure}%
+\begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{k-vs-len2.pdf}
   \caption{Number of pure clusters vs $K$ in $K$-Means and MiniBatch $K$-Means}
@@ -761,7 +1085,8 @@ and fig.~\ref{fig:k-vs-len2}). This is also true for larger values of $K$
 
 
 The best result was found by usual $K$-Means with $K=600$: it was able
-to discover 19 clusters with purity at least 0.8. Although it is not many,
+to discover 19 clusters with purity at least 0.8 (note that this is worse 
+than the baseline of 39 pure clusters). Although it is not many,
 the found clusters are very tight and quite big.
 Among others, it discovered the following clusters: ``Astronomical catalogues'' (53 documents)
 ``Stochastic processes'' (39 documents), ``Theory of computation'' (17 documents),
@@ -795,10 +1120,11 @@ Theta Centauri & $p, R_*, m, R_\odot$ \\
 \label{tab:kmeans-stars}
 \end{table}
 
-Next, we apply SVD to reduce the dimensionality of the identifier-document
-matrix $D$. And, as discussed in LSA chapter, it should reveal the latent
-structure of data. We expect that it should improve the results achieved by usual
-$K$-Means.
+Next, we use \textbf{Latent Semantic Analysis} with \textbf{SVD}
+to reduce the dimensionality of the identifier-document
+matrix $D$, and then apply $K$-Means on the reduced space. As discussed in the 
+LSA section (see section~ref), it should reveal the latent structure of data. 
+We expect that it should improve the results achieved by usual $K$-Means.
 
 Randomized SVD is very fast, but the runtime does not grow linearly with $k$,
 it looks quadratic (see fig.~\ref{fig:k-svd-vs-time}).
@@ -817,11 +1143,11 @@ with very large $k$.
 When the dimensionality is reduced, the performance of $K$-Means and
 MiniBatch $K$-Means is similar (see fig.~\ref{fig:k-vs-mb-svd-purity}),
 but with MiniBatch $K$-Means we were able to discover more interesting pure
-clusters (see fig.~\ref{fig:k-vs-mb-svd-len}). The reason for this may be the fact that in the reduced
-space there is less noise and both methods find equally good clusters,
+clusters (see fig.~\ref{fig:k-vs-mb-svd-len}). The reason for this may be the fact that in the reduced space there is less noise and both methods find equally good clusters,
 but because MiniBatch $K$-Means works faster, we are able to run it multiple
 times thus increasing its chances to find a good local optimum where there
-are many pure document clusters.
+are many pure document clusters. Note that the obtained result is below 
+the baseline.
 
 
 \begin{figure}[h!]
@@ -845,7 +1171,7 @@ are many pure document clusters.
 \end{figure}
 
 
-We can note that as $K$ increases, the number of interesting clusters increases
+We can observe that as $K$ increases, the number of interesting clusters increases
 (see fig.~\ref{fig:k-vs-mb-svd-len}).
 Therefore, we try a wide range of larger $K$ for different $k \in \{150, 250, 350, 500\}$.
 The performance in terms of discovered pure clusters does not depend much on the 
@@ -884,13 +1210,13 @@ Abstract algebra & 6 & 0.8333 \\
 \end{table}
 
 A clustering obtained with $K=9500$ and $k=250$ discovered 213 namespace-defining
-clusters (see table~\ref{tab:nodef-kmeans-lsa}). Let us consider a namespace
+clusters (see table~\ref{tab:nodef-kmeans-lsa}), which is significantly better 
+than the baseline. Let us consider a namespace
 defined by the Measure Theory cluster with 8 documents, where 7 articles in
 this cluster are from ``Measure theory'' category, and all the documents share
 the $\mu$ identifier (see table~\ref{tab:nodef-kmeans-lsa-measuretheory}).
 
 \begin{table}[h!]
-
 \centering
 \begin{subtable}{0.65\textwidth}
 \centering
@@ -988,12 +1314,13 @@ with $K=9500$ and $k=250$}
 \hline
 \end{tabular}
 \caption{Definitions of $\mu$ in the namespaces discovered by $K$-Means with $K=9500$
-and $k=250$ (some identifier/definition pairs are removed).}
+and SVD with $k=250$ (some identifier/definition pairs are removed).}
 \label{tab:nodef-kmeans-mu}
 \end{table}
 
 
-Let us consider all occurrences of identifier $\mu$ and how it is defined 
+It is also interesting to look at all the occurrences of identifier $\mu$ in 
+the results, and see how it is defined
 across different namespace-defining cluster (see table~\ref{tab:nodef-kmeans-mu}).  
 We can note several problems. First, sometimes there are namespaces with the same 
 name, but $\mu$ stands for different things there, for example, for namespaces
@@ -1006,11 +1333,175 @@ it does discover many definitions correctly, for example, ``measure'',
 ``mean'', ``expectation'' and others.
 
 
-NMF:
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{k-vs-kmeans-len-nmf-nodef.pdf}
+\caption{Number of discovered pure clusters in $K$-Means and NMF for different number of clusters $K$ and rank $k$.}
+\label{fig:k-vs-kmeans-len-nmf-nodef}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Name & Size & Purity \\
+  \hline
+Astronomical catalogues  & 53 & 0.9811 \\
+Complex analysis  & 18 & 0.8333 \\
+Quantum mechanics  & 12 & 0.8333 \\
+Mathematical analysis  & 10 & 0.8000 \\
+Physics  & 9 & 0.8889 \\
+Thermodynamics  & 6 & 0.8333 \\
+Astronomical catalogues of stars  & 6 & 1.0000 \\
+Knot theory  & 6 & 1.0000 \\
+Stochastic processes  & 6 & 1.0000 \\
+Physics  & 6 & 0.8333 \\
+Stochastic processes  & 6 & 1.0000 \\
+Statistics  & 6 & 0.8333 \\
+\hline
+\end{tabular}
+\caption{Top namespace-defining clusters discovered by $K$-Means with $K=9500$ on NMF-space with $k=250$}
+\label{tab:nodef-nmf}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{subtable}{0.65\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Article Name & Identifiers \\
+\hline
+Pivotal quantity & $\zeta,\theta,\nu,\mu,\rho,\sigma,N,X_2,X_1,x,z,...$ \\
+Errors and residuals & $\sigma,\chi,X_n,\epsilon_i,X_i,n,X_1,X,N,\mu,S_n,...$ \\
+Prediction interval & $\epsilon_i,X_i,\alpha,\gamma,\beta,\mu,s_n,\sigma,E,\Phi,...$ \\
+Cochran's theorem & $\mu,\sigma,B,\chi,R,U,T,Y,X,k,j,Q_2,Q_1,...$ \\
+Skewness & $\gamma,m_3,\kappa,\nu,\mu,\sigma,E,F,s,u,t,...$ \\
+Variance & $\Sigma, \text{SS}_\text{within},\theta,\lambda,\mu,\rho,\sigma,E,f,...$ \\
+\hline
+\end{tabular}
+\caption{Identifiers and articles of the ``Measure Theory'' cluster (some identifiers are removed)}
+\label{tab:nodef-nmf}
+\end{subtable}% mask EOL
+\begin{subtable}{0.3\textwidth}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ID & Definition & Score\\
+\hline
+$E$ & non-central moment & 0.92 \\
+$F$ & cumulative distribution function & 0.89 \\
+$f$ & probability density function & 0.99 \\
+$s$ & sample variance & 3.66 \\
+$\lambda$ & exponential distribution & 1.79 \\
+$\mu$ & variance & 3.52 \\ 
+$\rho$ & correlation & 0.99 \\
+$\sigma$ & standard deviation & 4.61 \\
+\hline
+\end{tabular}
+\caption{Definitions in ``Measure Theory'' (some definitions are removed)}
+\label{tab:nodef-nmf-def}
+\end{subtable}
+\caption{A namespace-defining cluster about Measure Theory discovered by $K$-Means
+with $K=9500$ and $k=250$}
+\label{tab:nodef-nmf-stat}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  \multicolumn{4}{|c|}{$\mu$}\\
+  \hline
+  Size & Namespace Name & Definition & Score \\
+  \hline
+4 & Abstract algebra & lebesgue measure & 0.83 \\
+4 & Algebraic curves & first & 0.93 \\
+3 & Condensed matter physics & magnetic permeability & 0.99 \\
+3 & Coordinate systems & form & 1.81 \\
+3 & Differential equations & invariant measure & 2.73 \\
+3 & Doppler effects & spatial resolution & 0.95 \\
+6 & Dynamical systems & tent map & 1.71 \\
+5 & Dynamical systems & entropy & 0.93 \\
+6 & Electromagnetism & permeability & 1.90 \\
+4 & Electromagnetism & gauge condition & 0.99 \\
+4 & Financial markets & drift rate & 0.89 \\
+3 & Force & th-component & 0.95 \\
+3 & Functions and mappings & lebesgue measure & 0.91 \\
+3 & Gravitation & semi-major axis & 0.89 \\
+3 & Group theory & tate module & 1.76 \\
+3 & Magnetism & magnetic moment & 1.90 \\
+5 & Measure theory & measure & 8.15 \\
+6 & Multivariable calculus & measure & 1.82 \\
+5 & Numerical analysis & step size & 0.93 \\
+6 & Physical chemistry & chemical potential & 2.57 \\
+3 & Probability distributions & confidence interval & 2.77 \\
+3 & Probability distributions & laplace & 3.42 \\
+3 & Probability distributions & scale factor & 1.84 \\
+4 & Probability theory & mean & 0.95 \\
+5 & Quantum field theory & field & 0.81 \\
+12 & Quantum mechanics & gamma matrices & 1.78 \\
+6 & Quantum mechanics & magnetic moment & 0.87 \\
+3 & Quantum mechanics & mass & 0.89 \\
+3 & Solid state engineering & charge & 0.93 \\
+6 & Statistical theory & known mean & 0.99 \\
+6 & Statistics & variance & 3.52 \\
+3 & Statistics & mean & 1.85 \\
+6 & Stochastic processes & time t & 0.99 \\
+6 & Stochastic processes & free rate & 0.95 \\
+3 & Stochastic processes & expectation & 0.96 \\
+5 & Systems theory & earths gravity & 0.93 \\
+3 & Telecommunications engineering & yield & 0.93 \\
+4 & Theories of gravitation & indices & 1.94 \\
+3 & Theory of relativity & velocity component & 0.93 \\
+\hline
+\end{tabular}
+\caption{Definitions of $\mu$ in the namespaces discovered by $K$-Means with $K=9500$
+and NMF with $k=250$ (some identifier/definition pairs are removed).}
+\label{tab:nodef-nmf-mu}
+\end{table}
+
+
+When \textbf{Non-Negative Matrix Factorization} is used for LSA, the results are
+similar to the results, obtained by SVD (see fig.~\ref{fig:k-vs-kmeans-len-nmf-nodef}),
+however for NMF the results obtained by different $k$-rank approximations
+are not as perplexed as for SVD and $k=250$ does better on $K=[8000; 12000]$
+than $k=150$ and $k=350$. For example, $K$-Means with $K=9500$ and $k=250$
+discovered a clustering with 200 namespace-defining clusters.
+The found clusters are slightly different. For example, there is no ``Measure Theory''
+cluster of size 8 as in the results, found by SVD (see table~\ref{tab:nodef-kmeans-lsa}).
+Let us instead consider a namespace defined by the cluster ``Statistics''
+(see table~\ref{tab:nodef-nmf-stat}): there are 6 documents in the cluster
+(see table~\ref{tab:nodef-nmf})
+and about 43 identifier-definition in the namespace defined by the cluster
+(see table~\ref{tab:nodef-nmf-def}). Note that in this cluster $\mu$ is not
+assigned correctly: it is defined as ``variance'' instead of ``mean''.
+If we look at all definitions of $\mu$ in this clustering (see 
+table~\ref{tab:nodef-nmf-mu}) we see that, although the problems are the 
+same as with decomposition by SVD, the found definitions are different. However
+the difference is likely to be because of non-convexity of $K$-Means 
+rather than some crucial difference in the way the matrix are factorized.
+
 
 
 
 We see that generally clustering works better on reduced spaces.
+
+
+
+
+In the experiments above we used $\log \text{TF} \times \text{IDF}$. Let us compare
+the effect of different weighting on the resulting clusters. We will use SVD 
+with $k=150$ and smaller $K$ because it is computationally faster to compute. 
+We can observe that performance of $K$-Means does not depend significantly on
+the weighting system when no definitions are used (see fig.~\ref{fig:nodef-weighing}).
+
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.9\textwidth]{nodef-weighing.pdf}
+\caption{The effect of using different weighting systems on $K$-Means with SVD.}
+\label{fig:nodef-weighing}
+\end{figure}
 
 
 
@@ -1021,7 +1512,6 @@ and there are 485\,337 elements in the matrix, so the density is about 0.002.
 
 We do not attempt to use hierarchical methods and start with DBSCAN. 
 
-
 \underline{DBSCAN SNN}
 
 $k = 10$
@@ -1030,20 +1520,10 @@ dist = jaccard
 $\varepsilon$=7 points
 MinPts=5 points
 
-
-
 In general doesn't give clusters
 
 
-
-
-
 TODO add some numbers and graphs
-
-
-
-
-K-Means weak association
 
 \underline{DBSCAN}
 k=15, eps=8, min\_pts=5
@@ -1077,51 +1557,22 @@ Codex Vaticanus    & $P, \text{papyrus}$ \\
 \end{table}
 
 
-\underline{K-Means}
+With  \textbf{MiniBatch $K$-Means} applied on the plain untransformed document 
+space we are able to find some interesting clusters, but it general, similarity to the no-definition case, the does not show good results overall. Therefore we 
+apply it to the LSA space reduced by \textbf{SVD}, when identifier-document matrix 
+is reduced to rank $k$. We search for
+the best combination trying $K = [500; 15000]$ and $k \in \{150, 250, 350\}$. 
+Unlike the case where no definitions are used, the space produced by the 
+soft definition association is affected by $k$ (see fig.~\ref{fig:k-vs-kmeans-len-svd-soft})
+and the results produced by $k = 350$ are almost always better.
+The weighing scheme used for this experiment is $(\log \text{TF}) \times \text{IDF}$.
 
-Some articles are not from this namespace: e.g. Pi Josephson junction,
-or Almost integer
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-Article & Identifiers \\
-\hline
-Direct shear test & $\text{angle}, \varphi, \text{friction}$ \\
-Truncated dodecadodecahedron & $\text{golden}, \text{ratio}, \phi$ \\
-Golden triangle (mathematics) & $\text{golden}, \text{section}, \theta, \phi$ \\
-Petrophysics & $\text{percentage}, \varphi, \text{symbol}, S_w$ \\
-Greedy algorithm for Egyptian fractions & $\text{golden}, \text{terms}, d, \phi, \ ...$ \\
-Pi Josephson junction & $\pi, \text{junction}, \varphi$ \\
-Snub dodecahedron & $\text{golden}, \text{ratio}, \tau, V, \xi$ \\
-Lucas number & $\text{golden}, \phi, m, L, \text{ratio}, L_k, \ ...$ \\
-54 (number) & $\text{golden},\varphi,\text{ratio}$ \\
-Special right triangles & $\pi, c, b, \text{ratio}, \phi, m, \text{golden}, \ ...$ \\
-Universal code (data compression) & $\text{golden}, \text{code}, \text{ratio}, \phi, \ ...$ \\
-Existential instantiation & $c, \text{symbol}, \varphi, \text{variable}$ \\
-Perles configuration & $\text{golden}, \text{ratio}, \phi$ \\
-Wythoff array & $\text{golden}, \text{ratio}, \phi, \varphi, \text{fibonacci}, \ ...$ \\
-Golomb sequence & $a_n, n, \text{golden}, \text{ratio}, \phi$\\
-Almost integer & $\text{constant}, \pi, \text{gelfonds},\varphi,\ ...$ \\
-16:10 & $\text{golden}, \text{ratio}, \phi$ \\
-Leonardo number & $\text{golden}, \text{ratio}, \phi, \ ...$ \\
-RogersñRamanujan continued fraction & $\text{golden}, \text{functions}, \phi, \ ...$ \\
-Great rhombic triacontahedron & $\text{golden}, \text{ratio}, \phi$ \\
-... & ... \\
-\hline
-\end{tabular}
-\caption{Golden Ratio by DBSCAN}
-\label{tab:ssn-papyrus}
-\end{table}
-
-Found some interesting clusters but in general doesn't show good results.
-Need to use semantic menthols
-
-Batch, K= 2500 .. 15000 with step 250
-K=9000, SVD with 239. 
-
-For example, here is the top namespace defining clusters discovered (table~\ref{tab:soft-kmeans-lsa})
+\begin{figure}[h!]
+\centering\includegraphics[width=0.9\textwidth]{k-vs-kmeans-len-svd-soft.pdf}
+\caption{Number of discovered pure clusters in $K$-Means and SVD for different number of clusters $K$ and rank $k$.}
+\label{fig:k-vs-kmeans-len-svd-soft}
+\end{figure}
 
 \begin{table}[h!]
 \centering
@@ -1130,41 +1581,43 @@ For example, here is the top namespace defining clusters discovered (table~\ref{
   Name & Size & Purity \\
   \hline
 Astronomical catalogues & 53 & 0.9811 \\
-Quantum mechanics & 16 & 0.8750 \\
-Measure theory & 13 & 0.9231 \\
-Complex analysis & 11 & 0.9091 \\
-Cartography & 10 & 0.9000 \\
-Differential geometry & 10 & 0.9000 \\
-Measure theory & 10 & 0.9000 \\
-Thermodynamics & 10 & 1.0000 \\
-Thermodynamics & 9 & 1.0000 \\
-Set theory & 9 & 1.0000 \\
-Continuum mechanics & 9 & 0.8889 \\
-Numerical analysis & 9 & 0.888 \\  \hline
+Statistics & 20 & 0.8500 \\
+Category theory & 16 & 0.8125 \\
+Electromagnetism & 12 & 0.8333 \\
+Thermodynamics & 11 & 0.8182 \\
+Mathematical analysis & 11 & 0.8182 \\
+Graph theory & 10 & 0.9000 \\
+Graph algorithms & 10 & 0.8000 \\
+Fluid dynamics & 10 & 1.0000 \\
+Numerical analysis & 9 & 0.8889 \\
+Group theory & 9 & 1.0000 \\
+Stochastic processes & 9 & 1.0000 \\
+Measure theory & 8 & 1.0000 \\
+\hline
 \end{tabular}
-\caption{Top namespace-defining clusters discovered by $K$-Means with $K=9000$ on LSA-space with $k=250$}
-\label{tab:soft-kmeans-lsa}
+\caption{Top namespace-defining clusters discovered by $K$-Means with $K=9750$ on LSA-space with $k=350$}
+\label{tab:soft-kmeans-svd}
 \end{table}
-
 
 \begin{table}[h!]
 \centering
-
 \begin{subtable}{0.7\textwidth}
 \centering
 \begin{tabular}{|c|c|}
   \hline
   Article & Identifiers \\
   \hline
-Friendly number & function, $\sigma$, divisor, $\sigma_k$, ...\\
-Fermi problem & $\sigma$, scale, sum, standard, ...\\
-Superabundant number & function, prime, $\sigma$, number, $p_l$, ...\\
-Highly abundant number & function, $\sigma$, $g$, $m$, number, $n$, $t$, ...\\
-Superperfect number & function, $\sigma$, divisor, $k$, $m$, $n$, ...\\
-EmbreeñTrefethen constant & $\sigma$, $x_n$, number, $n$, $\beta$, threshold...\\
+Diagonalizable matrix & $v_1,\lambda_1,v_k,\lambda_3,\lambda_2,\lambda_i,\lambda_k,\lambda_j,\lambda_n,...$\\
+Eigenvalues and eigenvectors & $v_i,\mu_A,\lambda_i,d,\lambda_n,...$ \\
+Principal axis theorem & $v_1,u_1,\lambda_1,\lambda_2,D,S,u,...$ \\
+Eigendecomposition of a matrix & $\lambda,\lambda_1,\lambda,\lambda_2,\lambda_k,R,U,T,...$ \\
+Min-max theorem & $\sigma,u_n,u_k,u_i,u_1,\alpha,\lambda_1,\lambda,\lambda_i,...$ \\
+Linear independence & $\Lambda,v_j,u_2,v_3,u_n,\lambda_1,\lambda_3,\lambda_2,...$ \\
+Symmetric matrix & $\Lambda,\lambda_1,\lambda_2,D,Q,P,\lambda_i,...$ \\
 \hline
 \end{tabular}
-\caption{Wiki Articles in the cluster ``Integer Sequences''}
+\caption{Wiki Articles in the cluster ``Linear Algebra''}
+\label{tab:soft-kmeans-la}
 \end{subtable}% mask EOL
 \begin{subtable}{0.3\textwidth}
 \centering
@@ -1172,17 +1625,27 @@ EmbreeñTrefethen constant & $\sigma$, $x_n$, number, $n$, $\beta$, threshold...\
 \hline
 ID & Definition & Score\\
 \hline
-$n$ & natural number & 2.80 \\
-$p_l$ & prime number & 0.83 \\
-$\beta$ & positive number & 0.93 \\
-$\sigma$ & sum-of-divisors function & 2.68 \\
-$\sigma_k$ & divisor function & 0.89 \\
+$D$ & diagonal matrix & 1.81 \\
+$t$ & real argument & 0.99 \\
+$u$ & eigenvalues & 0.89  \\
+$u_i$ & eigenvector & 0.89  \\
+$v_1$ & eigenvectors & 1.86  \\
+$\Lambda$ & diagonal matrix & 2.65  \\
+$\lambda$ & eigenvalue & 0.85 \\
+$\lambda_1$ & eigenvalues & 3.66 \\
+$\lambda_2$ & eigenvalues & 1.76 \\
+$\lambda_3$ & eigenvalues & 0.83 \\
+$\lambda_i$ & eigenvalue & 4.40 \\
 \hline
 \end{tabular}
-\caption{Definitions in ``Integer Sequences''}
+\caption{Definitions in ``Linear Algebra''}
+\label{tab:soft-kmeans-la-def}
 \end{subtable}
+\caption{A ``Linear Algebra'' cluster found by $K$-Means with $K=9000$ and $k=250$.}
+\label{tab:soft-kmeans-lsa}
+\end{table}
 
-\begin{subtable}{0.9\textwidth}
+\begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|}
   \hline
@@ -1190,38 +1653,95 @@ $\sigma_k$ & divisor function & 0.89 \\
   \hline
   Size & Namespace Name & Definition & Score \\
   \hline
-5 & Thermodynamic entropy & quantum state & 1.75 \\
-16 & Quantum mechanics & annihilation operators & 0.99 \\
-9 & Continuum mechanics & stress & 0.97 \\
-5 & Statistics & standard deviation & 0.99 \\
-7 & Partial differential equations & spread & 0.89 \\
-5 & Numerical analysis & variance & 1.90 \\
-5 & Probability distributions & standard deviation & 0.99 \\
-6 & Telecommunications engineering & variance & 1.83 \\
-5 & Combinatorics & permutation & 0.93 \\
-6 & Integer sequences & sum-of-divisors function & 2.68 \\
-5 & Mechanics & electromagnetic field & 0.89 \\
-5 & Quantum chemistry & notation & 0.87 \\
-6 & Gravitation & length & 0.88 \\
-5 & Probability & hermite distribution & 0.81 \\
-10 & Differential geometry & dimensional representation & 1.86 \\
+3 & Algebra & multiplicity & 0.93 \\
+4 & Analysis of variance & marquardt & 1.71 \\
+3 & Applied and interdisciplinary physics & wavelength & 4.52 \\
+6 & Cartographic projections & longitude & 10.02 \\
+3 & Cartography & longitude & 7.24 \\
+3 & Category theory & natural isomorphisms & 0.84 \\
+4 & Condensed matter physics & penetration depth & 0.95 \\
+5 & Continuous distributions & affine parameter & 0.99 \\
+3 & Coordinate systems & longitude & 2.74 \\
+3 & Differential equations & differential operator & 0.89 \\
+8 & Differential geometry & vector fields & 1.82 \\
+7 & Electronic amplifiers & typical value & 0.93 \\
+3 & Electrostatics & unit length & 0.93 \\
+10 & Fluid dynamics & wavelength & 6.44 \\
+6 & Fluid dynamics & free path & 0.93 \\
+3 & Infinity & limit ordinals & 2.68 \\
+7 & Linear algebra & eigenvalue & 0.85 \\
+5 & Linear algebra & matrix & 0.87 \\
+3 & Linear algebra & eigenvalue & 2.53 \\
+3 & Liquids & relaxation time & 0.88 \\
+3 & Materials science & rate & 0.95 \\
+3 & Mathematical analysis & eigenvalue & 0.86 \\
+3 & Mathematical theorems & poisson distribution & 0.87 \\
+4 & Measure theory & lebesgue measure & 0.95 \\
+3 & Measurement & order & 0.89 \\
+8 & Mechanics & previous expression & 0.95 \\
+4 & Mechanics & power series & 0.88 \\
+3 & Metalogic & empty word & 0.96 \\
+7 & Number theory & partition & 1.90 \\
+4 & Number theory & modular lambda function & 0.99 \\
+3 & Operator theory & algebraic multiplicity & 0.95 \\
+5 & Optics & wavelength & 1.76 \\
+5 & Partial differential equations & constants & 0.87 \\
+4 & Physical optics & wavelength & 3.59 \\
+5 & Physics & exciton state & 2.76 \\
+6 & Probability distributions & references & 0.89 \\
+4 & Quantum field theory & coupling constant & 1.94 \\
+5 & Quantum mechanics & wavelength & 6.47 \\
+5 & Quantum mechanics & state & 2.66 \\
+3 & Radioactivity & decay & 1.82 \\
+4 & Representation theory of Lie groups & weight & 7.11 \\
+3 & Riemannian geometry & contravariant vector field & 0.96 \\
+4 & Rubber properties & engineering strain & 8.96 \\
+3 & Statistical data types & regularization parameter & 0.96 \\
+20 & Statistics & words & 0.93 \\
+3 & Statistics & expectation & 0.99 \\
+3 & Stellar astronomy & mean free path & 0.92 \\
+3 & Surface chemistry & ideal gas & 0.83 \\
+3 & Theoretical physics & eigenvalue & 2.71 \\
+5 & Theories of gravitation & dicke & 0.95 \\
+3 & Wave mechanics & wavelength & 2.65 \\
 \hline
 \end{tabular}
-\caption{Definitions of $\sigma$ in the clustering}
-\end{subtable}
-
-\caption{A namespace-defining cluster about numbers}
-\label{tab:soft-kmeans-lsa}
+\caption{Some of definitions of $\sigma$ in the clustering obtained with $K$-Means.}
+\label{tab:soft-kmeans-lambda}
 \end{table}
 
-
-
-HEre results
-
+The best result in this scheme is 414 namespace-defining clusters
+(ten times better than the baseline), and it is achieved by $K$-Means
+with $K=9750$ and $k=350$. The purity of this clustering is $0.63$.
+Let us consider a ``Linear Algebra'' cluster (table~\ref{tab:soft-kmeans-lsa})
+with 6 documents and some of extracted definitions in documents
+of this cluster, and all these articles share identifers $\lambda_1$, $m$ and $n$.
+Let us consider all definitions of identifier ``$\lambda$''. In total, there 
+are 93 clusters where $\lambda$ is used (see table~\ref{tab:soft-kmeans-lambda}), 
+and in many cases it is possible to determine that the assignment is correct 
+(e.g. ``eigenvalue'', ``wavelength'', ``regularization parameter''). 
+Some cases are not correct, for example, when we have clusters with the same name
+where $\lambda$ denotes different things (e.g. in two ``Quantum Mechanics'' clusters),
+or in the case of ``Linear Algebra'' cluster where it denotes a matrix. 
 
 
 \subsubsection{Strong Association}
 
+$37879 \times 22512$ sparse identifier-document matrix with 499070 entries, 
+so the density of this matrix is just 0.00058.
+
+
+
+Best result found with Mini-Batch $K$-Means is 350 - slightly worse than 
+in the Soft Association. 
+
+Add graphs
+
+
+
+\subsubsection{Russian Wikipedia} \ \\
+
+Apply the best method for Russian Wiki
 
 
 
@@ -1288,7 +1808,7 @@ a different hierarchy is needed for Russian. One of such hierarchies is
 (√–Õ“»)~-- ``State categorizator of scientific and technical information'', which
 is a state-recommended scheme for categorizing scientific articles published
 in Russian  \cite{feodosimov2000grnti}. The hierarchy  is extracted from the
-official website\footnote{\url{http://grnti.ru/}} \cite{grntiweb}. It provides
+official website\footnote{\url{http://grnti.ru/}}. It provides
 a very general categorization and therefore we keep only the following math-related
 categories: ``¿ÒÚÓÌÓÏËˇ'' (``Astronomy''), ``¡ËÓÎÓ„Ëˇ'' (``Biology''),
 ``»ÌÙÓÏ‡ÚËÍ‡'' (``Informatics''), ``Ã‡ÚÂÏ‡ÚËÍ‡'' (``Mathematics''),
@@ -1460,14 +1980,14 @@ number of clusters $K=200$ using sublinear weighting (see fig.~\ref{fig:jlp-perf
 \begin{subfigure}[b]{0.47\textwidth}
   \centering
   \includegraphics[width=\textwidth]{jlp-lens.pdf}
-  \caption{Usual TF weighting}
+  \caption{Usual TF $\times$ IDF weighting}
   \label{fig:jlp-perf-tf}
 \end{subfigure}
 ~
 \begin{subfigure}[b]{0.47\textwidth}
   \centering
   \includegraphics[width=\textwidth]{jlp-lens-sublin.pdf}
-  \caption{Sublinear TF weighting}
+  \caption{Sublinear TF $\times$ IDF weighting}
   \label{fig:jlp-perf-subtf}
 \end{subfigure}
 \caption{The performance MiniBatch $K$-Means on the Mahout dataset.}
@@ -1510,6 +2030,30 @@ are also the elements of the namespaces.
 
 
 
+\subsection{Result Analysis and Experiment Conclusions}
+
+
+Hierarcical methods are too slow, and SLINK is not good.
+Bisecting $K$-Means is good for explaining steps but not very practical
+
+MiniBatch K means is preferred to usual KMeans:
+fast but same results
+
+The baseline of random cluster assignment is beaten.
+
+NMF takes a lot of time to decompose a matrix with large
+$k$
+
+ $k=100$ 30 min, but with results inferior to SVD
+ $k=250$ 2 hours, with results comparable to SVD
+
+The complexity of NMF is $O(kn)$
+
+
+The best definition embedding technique is soft association.
+The best clsutering algorithm is $K$-Means with $K=9500$
+on the semantic space produced by rank-reduced SVD with $k = 250$
+with TF-IDF weight where TF is sublinear.
 
 
 

@@ -4,12 +4,12 @@
 In this chapter, we discuss how the process of namespace discovery
 can be automated.
 
-First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM): 
+First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM):
 the traditional way of representing a collection of documents as vectors,
 and also extend it to identifiers and discuss how definitions can
-be incorporated in this space. 
+be incorporated in this space.
 Then, we go over common similarity and distance functions that are useful
-for document clustering in section~\ref{sec:similarity-distance}. 
+for document clustering in section~\ref{sec:similarity-distance}.
 Next, we review common techniques for document clustering in section~\ref{sec:doc-clustering}
 and the Latent Semantic Analysis method in section~\ref{sec:lsa}.
 
@@ -373,21 +373,20 @@ document vectors are normalized, the Euclidean distance and cosine distance
 are related, and therefore Euclidean $K$-means is the same as
 ``Cosine Distance'' $K$-Means.
 
-$K$-Means is the most popular clustering algorithms and there are
-many extensions. For example, Bisecting K-Means
-\cite{steinbach2000comparison} is a combination
-of partitioning and hierarchical (divisive) algorithms. It's a
-variant of $K$-Means that gradually splits the document space in halves
-until the desired number of clusters is obtained. Bisecting $K$-Means can
-achieve good performance while giving the user additional insight into
-the clustering process. Additionally, in the results it produces
-clusters of comparable sizes.
+% $K$-Means is the most popular clustering algorithms and there are
+% many extensions. For example, Bisecting K-Means
+% \cite{steinbach2000comparison} is a combination
+% of partitioning and hierarchical (divisive) algorithms. It's a
+% variant of $K$-Means that gradually splits the document space in halves
+% until the desired number of clusters is obtained. Bisecting $K$-Means can
+% achieve good performance while giving the user additional insight into
+% the clustering process. Additionally, in the results it produces
+% clusters of comparable sizes.
 
-The algorithm is simple: (1) start with a single cluster;
-(2) choose a cluster to split (for example, the largest one);
-(3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
-(4) repeat until have desired number of clusters.
-
+% The algorithm is simple: (1) start with a single cluster;
+% (2) choose a cluster to split (for example, the largest one);
+% (3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
+% (4) repeat until have desired number of clusters.
 
 However, when there are many documents, the centroids tend
 to contain a lot of words, which leads to a significant slowdown.

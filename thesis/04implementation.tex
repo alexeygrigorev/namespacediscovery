@@ -1,0 +1,700 @@
+\section{Implementation}
+
+Give important implementation details
+
+
+\subsection{Data set} \label{sec:dataset}
+
+Wikipedia is a big online encyclopedia where the content
+are written and edited by the community. It contains a large
+amount of articles on a variety of topics, including articles about
+Mathematics and Mathematics-related fields such as Physics. It
+is multilingual and available in several languages, including
+English, German, French, Russian and others. The content of wikipedia pages
+are authored in a special markup language and the content of the entire
+encyclopedia is freely available for download.
+
+
+% why wiki?
+
+The techniques discussed in this work are mainly applied
+to the English version of Wikipedia. At the moment of writing
+(\today) English Wikipedia contains about 4.9 million
+articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}.
+However, just a small portion of these articles are math related:
+there are only 30.000 pages that contain at least one \verb|<math>| tag.
+
+Apart from the text data and formulas Wikipedia articles have information
+about categories, and we can exploit this information as well.
+The category information is encoded directly into each Wikipedia page
+with a special markup tag. For example, the article
+``Linear Regression''\footnote{\url{https://en.wikipedia.org/wiki/Linear_regression}}
+belongs to the category ``Regression analysis'' and \verb|[[Category:Regression analysis]]|
+tag encodes this information.
+
+%However there are other indirect ways to associate a page with some
+%category, for example, by using Wiki templates. A template is a user-defined macro
+%that is executed by the Wikipedia engine, and the content of a template
+%can include category association tags. It is hard
+%to extract the content information from the template tag and therefore
+%we use category information available in a structured
+%machine-processable form in DBPedia \cite{bizer2009dbpedia}.
+%Additionally, DBPedia provides extra information  such as parent
+%categories (categories of categories) that is very easy to process
+%and incorporate into analysis.
+
+Wikipedia is available in other languages, not only English.
+While the most of the analysis is performed on the English Wikipedia,
+we also apply some of the techniques to the Russian version \cite{ruwikidump}
+to compare it with the results obtained on English Wikipedia.
+Russian Wikipedia is smaller that English Wikipedia and contains
+1.9 million
+articles\footnote{\url{https://en.wikipedia.org/wiki/Russian_Wikipedia}},
+among which only 15\,000 pages are math-related (i.e. contain at
+least one \verb|<math>| tag).
+
+
+\subsection{Definition Extraction} \label{sec:defextraction-impl}
+
+Before we can proceed to discovering identifier namespaces, we
+need to extract identifier-definition relations. For this we use the probabilistic
+approach, discussed in the section~\ref{sec:mlp}.
+The extraction process is implemented using Apache Flink \cite{flink}
+and it is based on the open source implementation provided by Pagel and
+Schubotz in \cite{pagael2014mlp}\footnote{\url{https://github.com/rbzn/project-mlp}}.
+
+
+The first step is to keep only mathematical articles and discard the rest.
+This is done by retaining only those articles that contain
+at least one \verb|<math>| tag. Once the data set is filtered, then
+all the \LaTeX\ formulas form the \verb|<math>| tags are converted
+to MathML, an XML-based representation of mathematical
+formulae \cite{mathml}.
+
+The dataset is stored in a big XML file in the Wiki XML
+format. It makes it easy to extract the title and the content
+of each document, and then process the documents separately.
+The formulas are extracted by looking for the \verb|<math>| tags.
+However some formulas for some reasons are typed without the tags
+using the unicode symbols, and such formulas are very hard to
+detect and therefore we choose not to process them.
+Once all \verb|<math>| tags are found, they (along with the content)
+are replaced with a special placeholder \verb|FORMULA_%HASH%|, where
+\verb|%HASH%| is MD5 hash \cite{rivest1992md5} of the tag's content represented as
+a hexadecimal string. After that
+the content of the tags is kept separately from the document content.
+
+The next step is to find the definitions for identifiers in formulas.
+We are not interested in the semantics of a formula, only in the identifiers
+it contains. In MathML \verb|<mi>| corresponds to identifiers, and
+hence extracting identifiers from MathML formulas amounts to finding
+all \verb|<mi>| tags and retrieving their content. It is enough to
+extract simple identifiers such as ``$t$'', ``$C$'', ``$\mu$'', but
+there also are complex identifiers with subscripts, such as
+``$x_1$'', ``$\xi_i$'' or even ``$\beta_{\text{slope}}$''.
+To extract them we need to look for tags \verb|<msub>|. We do not
+process superscripts because they are usually powers (for example, ``$x^2$''),
+and therefore they are not interesting for this work.
+There are exceptions to this, for example, ``$\sigma^2$'' is an identifier,
+but these cases are rare and can be ignored.
+
+Since MathML is XML, the identifiers are extracted with XPath
+queries \cite{moller2006introduction}:
+
+\begin{itemize}
+  \item \verb|//m:mi[not(ancestor::m:msub)]/text()| for all \verb|<mi>| tags
+that are not subscript identifers;
+  \item \verb|//m:msub| for subscript identifiers.
+\end{itemize}
+
+Once the identifiers are extracted, the rest of the formula is discarded.
+As the result, we have a ``Bag of Formulae'': analogously to the Bag of Words
+approach (see section~\ref{sec:vsm}) we keep only the counts of occurrences
+of different identifiers and we do not preserve any other structure.
+
+
+The content of Wikipedia document is authored with Wiki markup --
+a special markup language for specifying document layout elements
+such as headers, lists, text formatting and tables.
+Thus the next step is to process the Wiki markup and extract the textual
+content of an article, and this is done using a Java library
+``Mylyn Wikitext'' \cite{mylynwikitext}.
+Almost all annotations are discarded at this stage,
+and only inner-wiki links are kept: they can be useful as candidate definitions.
+The implementation of this step is taken entirely from \cite{pagael2014mlp}
+with only a few minor changes.
+
+
+Once the markup annotations are removed and the text content of an article is
+extracted, we then apply Natural Language Processing (NLP) techniques.
+Thus, the next step is the NLP step, and for NLP we use the
+Stanford Core NLP library (StanfordNLP) \cite{manning2014stanford}.
+The first part of this stage is to tokenize the text and also split it by sentences.
+Once it is done, we then apply Math-aware POS tagging
+(see section~\ref{sec:postagging}). For English documents from the English Wikipedia
+we use StanfordNLP's Maximal Entropy POS Tagger \cite{toutanova2003feature}.
+Unfortunately, there are no trained models available for POS tagging the Russian
+language for the StanfordNLP library and we were not able to find a
+suitable implementation of any other POS taggers in Java. Therefore we
+implemented a simple rule-based POS tagger ourselves. The implementation is based on
+a PHP function from \cite{habr2012postag}: it is translated into Java
+and seamlessly integrated into the StanfordNLP pipeline.
+The English tagger uses the Penn Treebank POS Scheme \cite{santorini1990part},
+and hence we follow the same convention for the Russian tagger.
+
+
+For handling mathematics we introduce two new POS classes:
+``\verb|ID|'' for identifiers and ``\verb|MATH|'' for formulas.
+These classes are not a part of the Penn Treebank POS Scheme,
+and therefore we need to label all the instances of these tags ourselves
+during the additional post-processing step. If a token starts
+with ``\verb|FORMULA_|'', then we recognize that it is a placeholder
+for a math formula, and therefore we annotate it with the ``\verb|MATH|''
+tag. Additionally, if this formula contains only one identifier, this
+placeholder token is replaced by the identifier and it is tagged with
+``\verb|ID|''. We also keep track of all identifiers found in
+the document and then for each token we check if this token is in the list.
+If it is, then it is re-annotated with the ``\verb|ID|'' tag.
+
+At the Wikipedia markup processing step we discard almost all markup
+annotations, but we do keep inner Wikipedia links, because these links
+are good definition candidates. To use them, we introduce
+another POS Tag: ``\verb|LINK|''. To detect all inner-wiki links,
+we first find all token subsequences that start with \verb|[[|
+and end with \verb|]]|, and then these subsequences are
+concatenated and tagged as ``\verb|LINK|''.
+
+Successive nouns (both singular and plurals), possible modified
+by an adjective, are also candidates for definitions. Therefore
+we find all such sequences on the text and then concatenate each
+into one single token tagged with ``\verb|NOUN_PHRASE|''.
+
+The next stage is selecting the most probable identifier-definition
+pairs, and this is done by ranking definition candidates.
+The definition candidates are tokens annotated with ``\verb|NN|'' (noun singular),
+``\verb|NNS|'' (noun plural), ``\verb|LINK|'' and ``\verb|NOUN_PHRASE|''.
+We rank these tokens by a score that depends how far it is from the identifer
+of interest and how far is the closest formula that contains this
+identifier (see section~\ref{sec:mlp}).
+The output of this step is a list of identifier-definition pairs along
+with the score, and only the pairs with scores above
+the user specified threshold are retained. The implementation of
+this step is also taken entirely from \cite{pagael2014mlp} with very minor
+modifications.
+
+\subsubsection{Data Cleaning} \label{sec:datacleaning} \ \\
+
+The Natural Language data is famous for being noisy and hard to
+clean \cite{sonntag2004assessing}. The same is true for
+mathematical identifiers and  scientific texts with formulas.
+In this section we describe how the data was preprocessed and
+cleaned at different stages of Definition Extraction.
+
+Often identifiers contain additional semantic information visually conveyed
+by special diacritical marks or font features. For example, the diacritics can be
+hats to denote ``estimates'' (e.g. ``$\hat w$''), bars to denote the expected value
+(e.g. ``$\bar X$''), arrows to denote vectors (e.g. ``$\vec x\, $'') and others.
+As for the font features, boldness is often used to
+denote vectors (e.g. ``$\mathbf w$'') or matrices (e.g. ``$\mathbf X$''), calligraphic fonts are
+used for sets (e.g. ``$\mathcal H$''), double-struck fonts often denote spaces
+(e.g. ``$\mathbb R$''), and so on.
+
+Unfortunately there is no common notation established across all fields of
+mathematics and there is a lot of variance. For example,
+a vector can be denoted by ``$\vec x\, $'', ``$\boldsymbol x$'' or ``$\mathbf x$'',
+and a real line by ``$\mathbb R$'', ``$\mathbf R$'' or ``$\mathfrak R$''.
+In natural languages there are related problems of lexical ambiguity such as
+synonymy, when different words refer to the same concept, and it can be solved
+by replacing the ambiguous words with some token, representative of the concept.
+Therefore this problem with identifiers can be solved similarly
+by reducing identifiers to their ``root'' form. This can be done
+by discarding all additional visual information, such that
+``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$''
+becomes ``$R$''. The disadvantage of this approach is that we lose
+the additional semantic information about the identifier that overwise
+could be useful.
+
+
+The diacritic marks can easily be discarded because they are represented
+by special MathML instructions that can be ignored when
+the identifiers are retrieved. But, on the other hand,
+the visual features are encoded directly on the character level:
+the identifiers use special unicode symbols to convey font features such
+as boldness or Fraktur, so it needs to be normalized by converting characters
+from special ``Mathematical Alphanumeric Symbols'' unicode block \cite{allen2007unicode}
+back to the standard ASCII positions (``Basic Latin'' block).
+Some identifiers (such as ``$\hbar$'' or ``$\ell$'') are expressed using
+characters from a special ``Letterlike Symbols'' table, and these characters
+are normalized as well.
+
+Additionally, the is a lot of noise on the annotation level in MathML formulas:
+many non-identifiers are captures as identifiers inside \verb|<mi>| tags. Among
+them there are many mathematic-related symbols
+like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$'';
+miscellaneous symbols like ``$\diamond$'' or
+``$\circ$'', arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
+``$\lceil$''. %Ideally, there symbols should be represented by \verb|<mo>| tags, 
+%but there are many cases when they are not.
+
+To filter out these one-symbol false identifiers we fully exclude all characters from
+the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'',
+``Geometric Shapes'', ``Arrows'', ``Miscellaneous Technical'', ``Box Drawing'',
+``Mathematical Operators'' (except ``$\nabla$'' which is sometimes used as an identifier)
+and ``Supplemental Mathematical Operators'' \cite{allen2007unicode}.
+Some symbols (like ``='', ``+'', ``\verb|~|'', ``\%'', ``?'', ``!'')
+belong to commonly used unicode blocks which we cannot exclude altogether.
+For these symbols we manually prepare a stop list for filtering them.
+
+It also captures multiple-symbol false positives: operator and function names
+like ``\texttt{sin}'', ``\texttt{cos}'', ``\texttt{exp}'', ``\texttt{max}'', ``\texttt{trace}'';
+words commonly used in formulas like ``\texttt{const}'', ``\texttt{true}'', ``\texttt{false}'',
+``\texttt{vs}'', ``\texttt{iff}''; auxiliary words like ``\texttt{where}'',
+``\texttt{else}'', ``\texttt{on}'', ``\texttt{of}'', ``\texttt{as}'', ``\texttt{is}'';
+units like ``\texttt{mol}'', ``\texttt{dB}'', ``\texttt{mm}''.
+These false identifiers are excluded by a stop list as well: if a
+candidate identifier is in the list, it is filtered out.
+The stop list of false positives is quite similar for
+both English and Russian: for Russian wikipedia we only need
+to handle the auxiliary words such as ``\texttt{где}'' (``\texttt{where}''),
+``\texttt{иначе}'' (``\texttt{else}'') and so on. The names for operators and functions
+are more or less consistent across both data sources.
+
+
+Then, at the next stage, the definitions are extracted. However many
+shortlisted definitions are either not valid definitions or too general.
+For example, some identifiers become associated with ``\texttt{if and only if}'',
+``\texttt{alpha}'', ``\texttt{beta}'', ``\texttt{gamma}'', which are not valid definitions.
+
+Other definitions like ``\texttt{element}'' (``\texttt{элемент}''),
+``\texttt{number}'' (``\texttt{число}'') or \\ ``\texttt{variable}'' (``\texttt{переменная}'' )
+are valid, but they are too general and not descriptive. We maintain a stop list of such
+false definitions and filter them out from the result. The elements
+of the stop list are also consistent across both data data sets,
+in the sense that the false definition candidates are same but expressed
+in different languages.
+
+The Russian language is highly inflected, and because of this extracted
+definitions have many different forms, depending on grammatical gender,
+form (singular or plural) and declensions. This highly increases the
+variability of the definitions, and to reduce it lemmatize the definitions:
+they are reduced to the same common form (nominative, singular and masculinum).
+This is done using Pymorphy2: a python library for Russian and
+Ukrainian morphology \cite{korobov2015morphological}.
+
+At the next stage the retrieved identifier/definition pairs
+are used for document clustering. Some definitions are used only
+once and we can note that they are not very useful because
+they do not have any discriminative power. Therefore all such
+definitions are excluded.
+
+
+\subsubsection{Dataset Statistics}  \ \\
+
+At the identifier extraction step when the data set is cleaned,
+some identifiers are discarded, and after that some documents
+become empty: they no longer contain any identifiers, and which is why
+these documents are not considered for further analysis.
+Additionally, we discard all the documents that have only one identifier.
+This leaves only 22\,515 documents out of 30\,000, and they
+contain 12\,771 distinct identifiers, which occur about 2 million times.
+
+The most frequent identifiers are ``$x$'' (125\,500 times), ``$p$'' (110\,000),
+``$m$'' (105\,000 times) and ``$n$'' (83\,000 times), but about 3\,700 identifiers occur
+only once and 1\,950 just twice. Clearly, the distribution of
+identifiers follows some power law distribution (see fig.~\ref{fig:ed-wiki-ids}).
+
+\begin{figure}[h]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{en-wiki-ids-1.pdf}
+  \caption{Frequencies of the first 50 identifiers}
+  \label{fig:en-wiki-ids-1}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{en-wiki-ids-2-log.pdf}
+  \caption{Frequencies, log-log scale}
+  \label{fig:en-wiki-ids-2-log.pdf}
+\end{subfigure}
+\hfill
+\caption{Distribution of frequencies of identifiers}
+\label{fig:ed-wiki-ids}
+\end{figure}
+
+
+
+The distribution of counts for identifiers inside the documents also
+appears to follow a long tail power law distribution: there are few articles
+that contain many identifiers, while most of the articles do not
+(see fig.~\ref{fig:en-wiki-doc-ids-1.pdf}).
+The biggest article (``Euclidean algorithm'') has 22\,766 identifiers, a
+and the second largest (``Lambda lifting'') has only 6\,500 identifiers.
+The mean number of identifiers per document is 33.
+The distribution for number of distinct identifiers per document
+is less skewed (see fig.~\ref{fig:en-wiki-doc-ids-2.pdf}).
+The largest number of distinct identifiers is 287 (in the article
+``Hooke's law''), and it is followed by 194 (in ``Dimensionless quantity'').
+The median number of identifiers per document is 10.
+
+
+\begin{figure}[h]
+\centering
+
+\begin{subfigure}[b]{\textwidth}
+  \centering
+  \includegraphics[width=0.9\textwidth]{en-wiki-doc-ids-1.pdf}
+  \caption{Identifier frequencies per document for first 80 most largest documents}
+  \label{fig:en-wiki-doc-ids-1.pdf}
+\end{subfigure}
+
+\begin{subfigure}[b]{\textwidth}
+  \centering
+  \includegraphics[width=0.9\textwidth]{en-wiki-doc-ids-2.pdf}
+  \caption{No. of distinct identifiers per document for first 80 most largest documents}
+  \label{fig:en-wiki-doc-ids-2.pdf}
+\end{subfigure}
+
+\begin{subfigure}[b]{\textwidth}
+  \centering
+  \includegraphics[width=0.9\textwidth]{en-wiki-doc-def.pdf}
+  \caption{Definitions per document}
+  \label{fig:en-wiki-doc-def.pdf}
+\end{subfigure}
+
+\caption{Frequencies per documents}
+\label{fig:freqs-doc}
+
+\end{figure}
+
+
+For 12\,771 identifiers the algorithm extracted 115\,300 definitions, and the
+number of found definitions follows a long tail distribution as well
+(see fig.~\ref{fig:en-wiki-doc-def.pdf}), with the median number of
+definitions per page being 4.
+
+The following is the list of the most common identifier-definition pairs
+extracted from English Wikipedia:
+
+\begin{itemize}
+\item $t$: ``time'' (1086)
+\item $m$: ``mass'' (424)
+\item $\theta$: ``angle'' (421)
+\item $T$: ``temperature'' (400)
+\item $r$: ``radius'' (395)
+\item $v$: ``velocity'' (292)
+\item $\rho$: ``density'' (290)
+\item $G$: ``group'' (287)
+\item $V$: ``volume'' (284)
+\item $\lambda$: ``wavelength'' (263)
+\item $R$: ``radius'' (257)
+\item $n$: ``degree'' (233)
+\item $r$: ``distance'' (220)
+\item $c$: ``speed of light'' (219)
+\item $L$: ``length'' (216)
+\item $n$: ``length'' (189)
+\item $n$: ``order'' (188)
+\item $n$: ``dimension'' (185)
+\item $n$: ``size'' (178)
+\item $M$: ``mass'' (171)
+\item $d$: ``distance'' (163)
+\item $X$: ``topological space'' (159)
+\end{itemize}
+
+In Russian Wikipedia only 5\,300 articles contain enough identifiers,
+and the remaining 9\,500 are discarded.
+
+The identifiers and definitions extracted from the Russain version of
+Wikipedia exhibit the similar properties. The most frequently
+occurring identifier is ``$x$'' with 13\,248 occurrences,
+but the median frequency of an identifer is only 3 times.
+The article with the largest number of identifiers is ``Уравнения Максвелла''
+(``Maxwell's equations'') which contains 1\,831 identifiers, while
+the median number of identifiers is just 3;
+the article with the largest number of distinct identifiers
+is also  ``Уравнения Максвелла'' with 112 unique identifiers, and
+the median number of distinct identifiers in the data set is 5.
+Finally, the largest number of extracted definitions is 44
+(again, for ``Уравнения Максвелла'') with 2 being the median number of
+definitions per page.
+
+The following is the list most frequent relations extracted
+from Russian wikipedia:
+
+\begin{itemize}
+\item $f$: ``функция'' (``function'') (215)
+\item $t$: ``время'' (``time'') (130)
+\item $X$: ``множество'' (``set'') (113)
+\item $m$: ``масса'' (``mass'') (103)
+\item $c$: ``скорость свет'' (``speed of light'') (89)
+\item $G$: ``группа'' (``group'') (87)
+\item $T$: ``температура'' (``temperature'') (69)
+\item $h$: ``постоянный планка'' (``Plank constant'') (68)
+\item $\rho$: ``плотность'' (``density'') (57)
+\item $M$: ``многообразие'' (``manifold'') (53)
+\item $K$: ``поль'' (``field'') (53)
+\item $X$: ``пространство'' (``space'') (50)
+\item $v$: ``скорость'' (``speed'') (50)
+\item $X$: ``топологический пространство'' (``topological space'') (46)
+\item $G$: ``граф'' (``graph'') (44)
+\item $R$: ``радиус'' (``radius'') (38)
+\item $R$: ``кольцо'' (``ring'') (36)
+\item $G$: ``гравитационный постоянный'' (``gravitational constant'') (34)
+\item $E$: ``энергия'' (``energy'') (34)
+\item $m$: ``модуль'' (``modulo'') (33)
+\item $S$: ``площадь'' (``area'') (32)
+\item $k$: ``постоянный больцмана'' (``Boltzmann constant'') (30)
+\end{itemize}
+
+
+\textbf{TODO put a table to compare English vs Russian}
+
+
+\subsection{Document Clustering} \label{sec:clustering-impl}
+
+At the Document Clustering stage we want to find cluster of documents
+that are good namespace candidates.
+
+Before we can do this, we need to vectorize our dataset: i.e. build the
+Identifier Space (see section~\ref{sec:vsm}) and represent each document
+in this space.
+
+There are three choices for dimensions of the Identifier space:
+
+\begin{itemize}
+  \item identifiers alone,
+  \item ``weak'' identifier-definition association,
+  \item ``strong'' association: use identifier-definition pairs.
+\end{itemize}
+
+In the first case we are only interested in identifier information and
+discard the definitions altogether.
+
+In the second and third cases we keep the definitions and use them to
+index the dimensions of the Identifier Space. Bur there is some
+variability in the definitions: for example, the same identifier
+``$\sigma$'' in one document can be assigned to ``Cauchy stress tensor'' and
+in other it can be assigned to ``stress tensor'', which are almost the same thing.
+To reduce this variability we perform some preprocessing: we tokenize
+the definitions and use individual tokens to index dimensions of the space.
+For example, suppose we have two pairs ($\sigma$, ``Cauchy stress tensor'')
+and ($\sigma$, ``stress tensor''). In the ``weak'' association case
+we have will dimensions $(\sigma, \text{Cauchy}, \text{stress}, \text{tensor})$,
+while for the ``strong'' association case we will have
+$(\sigma\text{\_Cauchy}, \sigma\text{\_stress}, \sigma\text{\_tensor})$.
+
+Additionally, the effect of variability can be decreased further
+by applying a stemming technique for each definition token.
+In this work we use Snowball stemmer for English \cite{porter2001snowball}
+implemented in NLTK \cite{bird2006nltk}: a python library for
+Natural Language Processing. For Russian we use Pymorphy2 \cite{korobov2015morphological}.
+
+Using \verb|TfidfVectorizer|  from  scikit-learn \cite{scikit-learn} we vectorize
+each document. The experiments are performed with $\log \text{TF} \times \text{IDF}$ weighting,
+and therefore we use \verb|use_idf=False, sublinear_tf=True| parameters
+for the vectorizer. Additionally, we use \verb|min_df=2| to discard identifiers
+that occurs only once.
+
+The output is a document-identifier matrix (analogous to ``document-term''):
+documents are rows and identifiers/definitions are columns.
+The output of \verb|TfidfVectorizer| is row-normalized, i.e. all rows has unit length.
+
+Once we the documents are vectorized, we can apply clustering techniques
+to them. We use $K$-Means (see section~\ref{sec:kmeans}) implemented as a
+class \verb|KMeans| in scikit-learn and Mini-Batch $K$-Means (class \verb|MiniBatchKMeans|) \cite{scikit-learn}. Note that if rows are unit-normalized, then running $K$-Means with
+Euclidean distance is equivalent to cosine distance
+(see section~\ref{sec:cosine}).
+
+% TODO: uncomment if use it during the experiments
+%Bisecting $K$-Means (see section~\ref{sec:kmeans}) was implemented on top of
+%scikit-learn: at each step we take a subset of the dataset and apply
+%$K$-Means with $K = 2$ to this subset. If the subset is big (with number of
+%documents $n > 2000$), then we use Mini-Batch $K$-means with $K=2$
+%because it converges much faster.
+
+
+DBSCAN (section~\ref{sec:dbscan}) and SNN Clustering (also section~\ref{sec:dbscan})
+algorithms were %also
+implemented manually: available DBSCAN implementations usually take distance
+measure rather than a similarity measure. The similarity matrix cleated by similarity measures
+are typically very sparse, because usually only a small fraction of the documents
+are similar to some given document. Similarity measures
+can be converted to distance measures, but in this case
+the matrix will no longer be sparse, and we would like to avoid that.
+Additionally, available implementations are usually general purpose
+implementations and do not take advantage of the structure of the data:
+in text-like data clustering algorithms can be sped up significantly
+by using an inverted index.
+
+
+Dimensionality reduction techniques are also important: they
+not only reduce the dimensionality, but also help reveal the latent
+structure of data. In this work we use Latent Semantic Analysis (LSA) (section~\ref{sec:lsa})
+which is implemented using randomized Singular Value Decomposition (SVD)
+\cite{tropp2009finding}, The implementation of randomized SVD is taken from scikit-learn
+\cite{scikit-learn} -- method \verb|randomized_svd|. Non-negative Matrix Factorization
+is an alternative technique for dimensionality reduction (section~\ref{sec:lsa}).
+Its implementation is also taken from scikit-learn \cite{scikit-learn},
+class \verb|NMF|.
+
+To assess the quality of produced clusters we use wikipedia categories. It is
+quite difficult to extract category information from raw wikipedia text,
+therefore we use DBPedia \cite{bizer2009dbpedia} for that: it provides
+machine-readable information about categories for each wikipedia article.
+Additionally, categories in wikipedia form a hierarchy, and this hierarchy
+is available as a SKOS ontology.
+
+Unfortunately, there is no information about articles from Russian Wiki\-pedia on
+DBPedia. However the number of documents is not very large, and therefore
+this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wikipedia.org/w/api.php}} individually for each
+document. This information can be retrieved in chunks for a group of several
+documents at once, and therefore it is quite fast.
+
+\subsubsection{Building Namespaces} \ \\
+
+Once a cluster analysis algorithm assigns documents in our collection to
+some clusters, we need to find namespaces among these clusters. We assume that
+some clusters are namespace-defining: they are not only homogenous in the cluster
+analysis sense (for example, in case of $K$-Means it means that within-cluster sum
+of squares is minimal), but also ``pure'': they are about the same topic.
+
+A cluster is \emph{pure} if all documents belong to the same category.
+Using categories information we can find the most frequent category of the
+cluster, and then we can define purity of a cluster $C$ as
+$$\operatorname{purity}(C) = \cfrac{\max_i \operatorname{count}(c_i)}{|C|},$$
+where $c_i$'s are cluster categories.
+Thus we can select all clusters with purity above some pre-defined threshold
+and refer to them as namespace-defining clusters.
+
+Then we convert these clusters into namespaces by collecting all the identifiers
+and their definitions in the documents of each cluster. To do this, we first
+collect all the identifier-definition pairs, and then group them by identifier.
+When extracting, each definition candidate is scored, and this score is used
+to determine, which definition an identifier will be assigned in the namespace.
+
+For example, consider three documents with the following extracted relations:
+
+\begin{itemize}
+  \item Document A:
+  \begin{itemize}
+\item $n$: (predictions, 0.95), (size, 0.92), (random sample, 0.82), (population, 0.82)
+\item $\theta$: (estimator, 0.98), (unknown parameter, 0.98), (unknown parameter, 0.94)
+\item $\mu$: (true mean, 0.96), (population, 0.89)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (population variance, 0.86), (square error, 0.83), (estimators, 0.82)
+  \end{itemize}
+
+  \item Document B:
+    \begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95)
+\item $\theta$: (sufficient statistic, 0.93)
+\item $\mu$: (mean, 0.99), (variance, 0.95), (random variables, 0.89), (normal, 0.83)
+\item $\sigma$: (variance, 0.99), (mean, 0.83)
+  \end{itemize}
+
+  \item Document C:
+    \begin{itemize}
+\item $n$: (tickets, 0.96), (maximum-likelihood estimator, 0.89)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (statistic, 0.95), (estimator, 0.93), (estimator, 0.93), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (expectation, 0.96), (variance, 0.93), (population, 0.89)
+\item $\sigma$: (variance, 0.94), (population variance, 0.91), (estimator, 0.87)
+  \end{itemize}
+\end{itemize}
+
+We take all these relations, and combine together. If an identifer
+have two or more definitions that are exactly the same, them we
+merge them into one and its score is the sum of scores:
+
+\begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95), (Poisson, 0.82)
+\item $n$: (tickets, 0.96), (predictions, 0.95), (size, 0.92), (maximum-likelihood estimator, 0.89), (random sample, 0.82), (population, 0.82)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (estimator, 0.98+0.93+0.93), (unknown parameter, 0.98+0.94), (statistic, 0.95), (sufficient statistic, 0.93), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (random variables, 0.89+0.89+0.89), (variance, 0.95+0.93), (mean, 0.99), (true mean, 0.96), (expectation, 0.96), (normal, 0.83)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (variance, 0.99+0.94), (population variance, 0.91+0.86), (estimator, 0.87), (square error, 0.83), (mean, 0.83), (estimators, 0.82)
+\end{itemize}
+
+There is some lexical variance in the definitions. For example, ``variance'' and ``population
+variance'' or ``mean'' and ``true mean'' are very related definitions, and
+it makes sense to group them together to form one definition.
+It can be done by fuzzy string matching (or approximate matching)
+\cite{navarro2001guided}. To implement it, we use a python library FuzzyWuzzy
+\cite{fuzzywuzzy}, and using fuzzy matching we group related identifiers and then
+sum over their scores.
+
+Then we have the following:
+
+\begin{itemize}
+\item $P_\theta$: (family, 0.87)
+\item $X$: (measurable space, 0.95), (Poisson, 0.82)
+\item $n$: (tickets, 0.96), (predictions, 0.95), (size, 0.92), (maximum-likelihood estimator, 0.89), (random sample, 0.82), (population, 0.82)
+\item $x$: (data, 0.99), (observations, 0.93)
+\item $\theta$: (estimator, 2.84), (unknown parameter, 1.92), (\{statistic, sufficient statistic\}, 1.88), (rise, 0.91), (statistical model, 0.85), (fixed constant, 0.82)
+\item $\mu$: (random variables, 2.67), (\{mean, true mean\}, 1.95), (variance, 1.88),  (expectation, 0.96), (normal, 0.83)
+\item $\mu_4$: (central moment, 0.83)
+\item $\sigma$: (\{variance, population variance\}, 3.7), (\{estimator, estimators\}, 1.69), (square error, 0.83), (mean, 0.83)
+\end{itemize}
+
+In a namespace an identifier can have at most one definition, and therefore the next step
+is selecting the definition with the highest score. This gives us the following namespace:
+
+\begin{itemize}
+\item ($P_\theta$, family, 0.87)
+\item ($X$, measurable space, 0.95)
+\item ($n$, tickets, 0.96)
+\item ($x$, data, 0.99
+\item ($\theta$, estimator, 2.84)
+\item ($\mu$, random variables, 2.67)
+\item ($\mu_4$, central moment, 0.83)
+\item ($\sigma$: variance, 3.7)
+\end{itemize}
+
+
+The more an identifier occurs, the more is its score. If an identifier occurs 
+3 times, then it most likely will have a score around 2.5-3, and this 
+gives us more confidence in the correct definition of an identifier than 
+a score of less than 1 - because it corresponds to an identifier that 
+occurred just once. To compare confidence scores we can apply an additional 
+transformation to normalize the scores to the $[0, 1]$ scale. 
+To do this we can apply the hyperbolic tangent function: it is zero at 0 
+and it is almost 1 around 5. However, the usual tanh is quite steep, 
+if something occurred just 3 times it is not enough to give it a score of
+0.99, therefore we use tanh(x/2).
+
+Score normalization to $[0, 1]$ scale: use tanh (see fig.~\ref{fig:tanh})
+Usual tanh is too steep: tanh(2) is 0.95 and tanh(3) is 0.99, so we use 
+tanh(x/2) instead, and it will give  tanh(3/2) = 0.90
+
+tanh is monotonous therefore larger values of transformed ... correspond to 
+larger values of ...
+
+
+\begin{figure}[h!]
+\centering\includegraphics[width=0.6\textwidth]{tanh.pdf}
+\caption{Non-linear transformation of scores with $\tanh$ function.}
+\label{fig:tanh}
+\end{figure}
+
+Thus, after applying this transformation, we obtain the following namespace:
+
+
+\begin{itemize}
+\item ($P_\theta$, family, 0.41)
+\item ($X$, measurable space, 0.44)
+\item ($n$, tickets, 0.45)
+\item ($x$, data, 0.46)
+\item ($\theta$, estimator, 0.89)
+\item ($\mu$, random variables, 0.87)
+\item ($\mu_4$, central moment, 0.39)
+\item ($\sigma$: variance, 0.95)
+\end{itemize}
+
+The category of this namespace is selected as the category that the majority of the documents
+in the namespace-defining cluster share.
+

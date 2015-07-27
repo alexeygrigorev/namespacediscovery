@@ -1,13 +1,13 @@
 \section{Conclusions}
 
-
+What worked and what did not.
 
 
 The obtained results indicate that there are namespaces in mathematical notation
-and it is possible to discover them automatically from a collection of documents. 
+and it is possible to discover them automatically from a collection of documents.
 However, there are still ...
 
-Minimize the number of false definitions, and improve the results of clustering. 
+Minimize the number of false definitions, and improve the results of clustering.
 In the next section we discuss how this can be approached.
 
 
@@ -17,40 +17,56 @@ multiple languages: In our case it was not very hard to adapt it to Russian
 with some minor modifications.
 
 
-\subsection{Future Work}
+Questions:
+
+What is the goal?
+
+Which approximation had to be applied and why?
+
+How did the result vary based on the language? 
+
+Which results were expected based on the theory?
+
+Was this result achieved? 
+
+What are the derivations? 
+
+
+
+\section{Outlook and Future Work}
 
 \subsubsection{Implementation and Other Algorithms}  \ \\
 
-We use the Probabilistic approach to extracting definitions for identifiers. 
-While this approach works well most of the time, sometimes we observe 
-some false positives, most likely due to the fact that the dataset is 
+We use the Probabilistic approach to extracting definitions for identifiers.
+While this approach works well most of the time, sometimes we observe
+some false positives, most likely due to the fact that the dataset is
 quite noisy. It potentially can be improved by using some Machine Learning
-method, which, however, may require creating a hand-labeled dataset 
-with identifier-definition relations. To facilitate the creation of such a 
+method, which, however, may require creating a hand-labeled dataset
+with identifier-definition relations. To facilitate the creation of such a
 dataset it is possible to pre-generate some data using using the current approach
-for further labeling. 
+for further labeling.
 
-In the experiments section we have observed that cluster algorithms that produce 
-many clusters tend to have good performance. However, they also tend to create related 
-clusters from the same category and with same or similar identifiers and 
-definitions. Therefore such results can be refined further and merged. 
-This can be done, for example, by using the join operation from 
-the Scatter/Gather algorithm \cite{cutting1992scatter}, which finds the most 
+In the experiments section we have observed that cluster algorithms that produce
+many clusters tend to have good performance. However, they also tend to create related
+clusters from the same category and with same or similar identifiers and
+definitions. Therefore such results can be refined further and merged.
+This can be done, for example, by using the join operation from
+the Scatter/Gather algorithm \cite{cutting1992scatter}, which finds the most
 similar clusters and merges them.
 
-We were not able to apply hierarchical agglomerative clustering algorithms because 
-their time complexity is prohibitive, but they may produce good clusters. 
-For these algorithms we are usually interested in the nearest neighbors of a given 
-data point, and therefore we can use approximation algorithms for computing nearest 
+We were not able to apply hierarchical agglomerative clustering algorithms because
+their time complexity is prohibitive, but they may produce good clusters.
+For these algorithms we are usually interested in the nearest neighbors of a given
+data point, and therefore we can use approximation algorithms for computing nearest
 neighbors such as Locality-Sensitive Hashing (LSH) \cite{leskovec2014mining}.
 The LSH algorithms can be used for text clustering \cite{ravichandran2005randomized},
-and therefore they should work well for identifiers. Additionally, LSH is also a 
-dimensionality reduction technique, and we have observed that generally 
-reducing dimensionality helps to obtain better clusters. 
+and therefore they should work well for identifiers. Additionally, LSH is also a
+dimensionality reduction technique, and we have observed that generally
+reducing dimensionality helps to obtain better clusters.
 
-In this work we use hard assignment clustering algorithms, which means, that a document 
-can import only from one namespace. This assumption does not necessarily always hold true 
-and we may model the fact that documents may import from several namespaces by 
+In this work we use hard assignment clustering algorithms, which means, that a document
+can import only from one namespace. This assumption does not necessarily always hold true
+and we may model the fact that documents may import from several namespaces by
 using Fuzzy Clustering (or Soft Clustering) algorithms \cite{baraldi1999survey}.
 
 In Latent Semantic Analysis other dimensionality reduction techniques
@@ -65,8 +81,8 @@ Additionally, we can try different approaches to clustering such as
 Spectral Clustering \cite{ng2002spectral} or Micro-Clustering \cite{uno2015micro}.
 
 Finally, topic modeling techniques such as Latent Dirichlet Allocation
-\cite{blei2003latent} can be quite useful for modeling namespaces. It can be 
-seen as a ``soft clustering'' technique and it can naturally model the fact that 
+\cite{blei2003latent} can be quite useful for modeling namespaces. It can be
+seen as a ``soft clustering'' technique and it can naturally model the fact that
 a document may import from several namespaces.
 
 
@@ -75,35 +91,35 @@ a document may import from several namespaces.
 
 In this work we assume that document can import only from one namespace,
 but in reality is should be able to import from several namespaces. As discussed,
-it can be modeled by Fuzzy Clustering. But it also can be achieved by 
+it can be modeled by Fuzzy Clustering. But it also can be achieved by
 dividing the document in parts (for example, by paragraphs)
 and then treating each part as an independent document.
 
-For document clustering we only use identifiers, extracted definitions 
-and categories. It is possible to take advantage of additional information from 
+For document clustering we only use identifiers, extracted definitions
+and categories. It is possible to take advantage of additional information from
 Wikipedia articles. For example, extract some keywords from the articles
 and use them to get a better cluster assignment.
 
-The Wikipedia data set can be seen as a graph, where two articles have 
-an edge if there is an interwiki link between them. Pages that describe 
-certain namespaces may be quite interconnected, and using this idea it is possible 
-to apply link-based clustering methods (such as ones described in 
-\cite{botafogo1991identifying} and \cite{johnson1996adaptive}) to find namespace 
-candidates. There are also hybrid approaches that can use both textual representation 
+The Wikipedia data set can be seen as a graph, where two articles have
+an edge if there is an interwiki link between them. Pages that describe
+certain namespaces may be quite interconnected, and using this idea it is possible
+to apply link-based clustering methods (such as ones described in
+\cite{botafogo1991identifying} and \cite{johnson1996adaptive}) to find namespace
+candidates. There are also hybrid approaches that can use both textual representation
 and links \cite{oikonomakou2005review}.
 
-Vector Space Model is not the only possible model to represent textual 
+Vector Space Model is not the only possible model to represent textual
 information as vectors. There are other ways to embed textual information
-into vector spaces like word2vec \cite{mikolov2013efficient} or 
-GloVe \cite{pennington2014glove}, and these methods may be useful 
+into vector spaces like word2vec \cite{mikolov2013efficient} or
+GloVe \cite{pennington2014glove}, and these methods may be useful
 for representing identifers and definitions as well.
 
-Tensors may be a better way of representing 
-identifier-definition pairs. For example, we can represent the data set 
-as a 3-dimensional tensor indexed by documents, identifiers and definition. 
-Tensor Factorization methods for revealing semantic information 
+Tensors may be a better way of representing
+identifier-definition pairs. For example, we can represent the data set
+as a 3-dimensional tensor indexed by documents, identifiers and definition.
+Tensor Factorization methods for revealing semantic information
 are an active area of research in NLP and linguistics \cite{anisimov2014semantic},
-so it is also possible to apply these methods to the namespace discovery problem. 
+so it is also possible to apply these methods to the namespace discovery problem.
 
 Finally, while running experiments, we observed that sometimes results of
 clustering algorithms with the same parameters produce quite different
@@ -123,28 +139,28 @@ documents until no new clusters are discovered.
 \subsubsection{Datasets}  \ \\
 % Other Datasets
 
-In this work we use Wikipedia as the data source and extract namespaces from the 
-English part of Wikipedia. Additionally, we also apply the methods to the Russian 
-part, and therefore it shows that it is possible to extract namespaces from 
-Wikipedia in any other available language. 
+In this work we use Wikipedia as the data source and extract namespaces from the
+English part of Wikipedia. Additionally, we also apply the methods to the Russian
+part, and therefore it shows that it is possible to extract namespaces from
+Wikipedia in any other available language.
 
-But we can also apply to some other larger dataset, such as arXiv\footnote{\url{http://arxiv.org/}}, a repository of over one million 
-of scientific papers in many different areas. The source code of these 
+But we can also apply to some other larger dataset, such as arXiv\footnote{\url{http://arxiv.org/}}, a repository of over one million
+of scientific papers in many different areas. The source code of these
 articles are available in \LaTeX, and it can be processed automatically.
 
 There are many scientific Q\&A websites on the Internet. The stack
-exchange\footnote{\url{http://stackexchange.com/}} is one of the largest Q\&A networks, 
+exchange\footnote{\url{http://stackexchange.com/}} is one of the largest Q\&A networks,
 and there are many sites on this network that contain mathematical formulae, such as
-``mathematics'', ``mathoverflow'', ``cross validated'', ``data science'', 
+``mathematics'', ``mathoverflow'', ``cross validated'', ``data science'',
 ``theoretical computer science'', ``physics'', ``astronomy'', ``economics'' and many others.
-This network makes their data available for download and it also can be a good 
-data source for namespace discovery. In addition to content, the questions contain 
-a lot of potentially useful metadata such as related questions and tags. 
+This network makes their data available for download and it also can be a good
+data source for namespace discovery. In addition to content, the questions contain
+a lot of potentially useful metadata such as related questions and tags.
 
 \subsubsection{Unsolved Questions} \ \\
 
-There are questions that are still not answered and we are not certain 
-how they can be approached. 
+There are questions that are still not answered and we are not certain
+how they can be approached.
 
 The biggest question is how to extend this method to situations when
 no additional information about document category is known. To solve
@@ -154,17 +170,17 @@ for discovering namespace-defining clusters.
 Also, a metric for evaluating the quality of a namespace is needed.
 Now we assume that pure clusters are namespace-defining clusters. But the namespace
 candidates should adhere to the namespace definition as much as possible,
-and therefore a good criteria is needed to quantify to what extent the definition 
-is satisfied. This will help to define whether a cluster defines a good namespace 
-or not. 
+and therefore a good criteria is needed to quantify to what extent the definition
+is satisfied. This will help to define whether a cluster defines a good namespace
+or not.
 
-After namespaces are discovered we organize them into hierarchies. 
-To do that we use existing hierarchies, but they are not always complete 
-and there are mismatches. What is more, when this technique is applied to some 
-other language, a different hierarchy is needed for this language, and we experienced 
-it when processing the Russian part of Wikipedia: for that we needed to obtain 
+After namespaces are discovered we organize them into hierarchies.
+To do that we use existing hierarchies, but they are not always complete
+and there are mismatches. What is more, when this technique is applied to some
+other language, a different hierarchy is needed for this language, and we experienced
+it when processing the Russian part of Wikipedia: for that we needed to obtain
 a special hierarchy. There should be a way of building these hierarchies
 automatically, without the need of external dataset.
-Potentially it should be possible to use hierarchical clustering 
-algorithms, but it may result in very deep and unnatural hierarchies, and 
-therefore some additional investigation in this direction may be needed. 
+Potentially it should be possible to use hierarchical clustering
+algorithms, but it may result in very deep and unnatural hierarchies, and
+therefore some additional investigation in this direction may be needed.

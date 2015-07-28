@@ -1,27 +1,24 @@
 \section{Background and Related Work}
 
-Explain related work: give a short overview about existing 
-approaches and methods that are relevant.
+In this chapter we explain the related work: we give a short overview 
+about existing approaches and relevant methods. 
 
-%In this chapter we will discuss how the relations can be discovered automatically.
-%It is organized as follows: first, we discuss Part-of-Speech Tagging and its application
-%to mathematical texts in section~\ref{sec:postagging} and then
-%review the extraction methods in section~\ref{sec:definition-extraction-methods}.
+First, we describe the concept of a namespace from the Computer Science point
+of view in section~\ref{sec:namespaces-cs}. Then we discuss how identifier 
+definitions can be extracted, and for that we first introduce Part-of-Speech 
+Tagging and its application to mathematical texts in section~\ref{sec:postagging},
+and then review the extraction methods in section~\ref{sec:definition-extraction-methods}.
 
-%In this chapter, we discuss how the process of namespace discovery
-%can be automated.
+Next, section~\ref{sec:vsm}  describes the Vector Space Model, a traditional
+way of representing a collection of documents as vectors, and then 
+section~\ref{sec:similarity-distance} reviews common similarity and distance 
+functions that are useful for document clustering. 
 
-%First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM):
-%the traditional way of representing a collection of documents as vectors.
-%Then, we \textbf{go over } (replace) common similarity and distance functions that are useful
-%for document clustering in section~\ref{sec:similarity-distance}.
-%Next, we review common techniques for document clustering in section~\ref{sec:doc-clustering}
-%and the Latent Semantic Analysis method in section~\ref{sec:lsa}.
-
+Finally, document clustering techniques are described in section~\ref{sec:doc-clustering},
+and the Latent Semantic Analysis method is in section~\ref{sec:lsa}.
 
 
-
-\subsection{Namespaces in Computer Science}
+\subsection{Namespaces in Computer Science} \label{sec:namespaces-cs}
 
 In computer science, a \emph{namespace} refers to a collection of terms
 that are grouped because they share functionality or purpose,
@@ -102,8 +99,6 @@ namespaces should be as low as possible. Cohesion, on the other hand,
 refers to the dependence within the classes of the same namespace,
 and the high cohesion principle says that the related classes
 should all be put together in the same namespace.
-
-% TODO What's the significance?
 
 
 \subsection{Math-aware POS tagging} \label{sec:postagging}
@@ -633,12 +628,11 @@ are related, and therefore Euclidean $K$-means is the same as
 % (3) apply traditional $K$-Means to this cluster with $K=2$ to split it;
 % (4) repeat until have desired number of clusters.
 
-However, when there are many documents, the centroids tend
-to contain a lot of words, which leads to a significant slowdown.
-To solve this problem, some terms of the centroid can be truncated.
-There are several possible ways of truncating the terms: for example,
-we can keep only the top $c$ terms, or remove the least frequent words
-such that at least 90\% (or 95\%) of the original vector norm is
+In cases when there are many documents, the centroids tend to contain a lot of words, 
+which leads to a significant slowdown. To solve this problem, some terms of the 
+centroid can be truncated. There are several possible ways of truncating the 
+terms: for example, we can keep only the top $c$ terms, or remove the least 
+frequent words such that at least 90\% (or 95\%) of the original vector norm is
 retained \cite{schutze1997projections}.
 
 

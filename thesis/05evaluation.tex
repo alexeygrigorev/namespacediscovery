@@ -22,9 +22,6 @@ The following things can be changed:
       rank of output.
 \end{itemize}
 
-% The approach for finding
-% Distance and similarity measures used
-% Euclidean distance, cosine similarity, jaccard similarity, SNN Similarity
 
 To find the best parameters set we use the grid search approach: we try
 different combinations of parameters and keep track on the number of
@@ -94,7 +91,6 @@ clusters, while the mean value is 23.85.
 
 The first way of building the identifier space is to use only identifiers
 and do not use definitions at all.
-
 If we do this, the identifier-document matrix is $6075 \times 22512$
 (we keep only identifiers that occur at least twice), and it contains  302\, 541
 records, so the density of this matrix is just 0.002.
@@ -523,8 +519,8 @@ matrix has the dimensionality of $37879 \times 22512$ identifier-document matrix
 It has 499070 entries, so the density of this matrix is just 0.00058.
 
 Like for the soft association case, we choose not to perform usual $K$-Means,
-and instead proceed directly to MiniBatch $K$-Means on the LSA space
-reduced with SVD. With rank $k=500$ and number of clusters $K = 8250$
+and instead proceed directly to \textbf{MiniBatch $K$-Means} on the LSA space
+reduced with \textbf{SVD}. With rank $k=500$ and number of clusters $K = 8250$
 is achieves the best result of 340 clusters (see fig.~\ref{fig:k-vs-kmeans-len-svd-strong}),
 which is slightly worse than in the weak association case. The purity
 of obtained clustering is 0.5683.
@@ -537,12 +533,14 @@ of obtained clustering is 0.5683.
 \end{figure}
 
 
-We do not attempt to perform Non-Negative Matrix Factorization as we have previously
+We do not attempt to perform \textbf{Non-Negative Matrix Factorization} as we have previously
 established that it usually does not give better results while taking significantly
 longer time.
 
 
 \subsection{Result Analysis}
+
+\textbf{TODO: rewrite slightly}
 
 
 The best performing method is $K$-Means, and the best way to include 
@@ -714,7 +712,7 @@ and in our case the best dimensionality reduction method is SVD.
 
 
 
-\subsection{Russian Wikipedia} \ \\
+\subsection{Russian Wikipedia} % \ \\
 
 Based on the experiments we have performed on English Wikipedia, we see that the best
 performance is obtained with weak association by using MiniBatch $K$-Means on
@@ -1254,10 +1252,7 @@ in software: we do observe namespaces directly, and documents (that is, classes)
 are also the elements of the namespaces.
 
 
-
-
-
-\subsection{Result Analysis}
+\subsection{Evaluation Summary}
 
 
 Hierarcical methods are too slow, and SLINK is not good.

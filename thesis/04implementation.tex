@@ -1,6 +1,8 @@
 \section{Implementation}
 
-Give important implementation details
+In this chapter we give important implementation details.
+
+First, we describe the datasets for our experiments in section~\ref{sec:dataset}
 
 
 \subsection{Data set} \label{sec:dataset}
@@ -22,7 +24,7 @@ to the English version of Wikipedia. At the moment of writing
 (\today) English Wikipedia contains about 4.9 million
 articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}.
 However, just a small portion of these articles are math related:
-there are only 30.000 pages that contain at least one \verb|<math>| tag.
+there are only 30\,000 pages that contain at least one \verb|<math>| tag.
 
 Apart from the text data and formulas Wikipedia articles have information
 about categories, and we can exploit this information as well.
@@ -470,7 +472,7 @@ At the Document Clustering stage we want to find cluster of documents
 that are good namespace candidates.
 
 Before we can do this, we need to vectorize our dataset: i.e. build the
-Identifier Space (see section~\ref{sec:vsm}) and represent each document
+Identifier Space (see section~\ref{sec:ism}) and represent each document
 in this space.
 
 There are three choices for dimensions of the Identifier space:
@@ -504,7 +506,7 @@ implemented in NLTK \cite{bird2006nltk}: a python library for
 Natural Language Processing. For Russian we use Pymorphy2 \cite{korobov2015morphological}.
 
 Using \verb|TfidfVectorizer|  from  scikit-learn \cite{scikit-learn} we vectorize
-each document. The experiments are performed with $\log \text{TF} \times \text{IDF}$ weighting,
+each document. The experiments are performed with $(\log \text{TF}) \times \text{IDF}$ weighting,
 and therefore we use \verb|use_idf=False, sublinear_tf=True| parameters
 for the vectorizer. Additionally, we use \verb|min_df=2| to discard identifiers
 that occurs only once.
@@ -527,8 +529,7 @@ Euclidean distance is equivalent to cosine distance
 %because it converges much faster.
 
 
-DBSCAN (section~\ref{sec:dbscan}) and SNN Clustering (also section~\ref{sec:dbscan})
-algorithms were %also
+DBSCAN and SNN Clustering (see section~\ref{sec:dbscan}) algorithms were
 implemented manually: available DBSCAN implementations usually take distance
 measure rather than a similarity measure. The similarity matrix cleated by similarity measures
 are typically very sparse, because usually only a small fraction of the documents
@@ -564,7 +565,7 @@ this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wiki
 document. This information can be retrieved in chunks for a group of several
 documents at once, and therefore it is quite fast.
 
-\subsection{Building Namespaces} \ \\
+\subsection{Building Namespaces} 
 
 Once a cluster analysis algorithm assigns documents in our collection to
 some clusters, we need to find namespaces among these clusters. We assume that

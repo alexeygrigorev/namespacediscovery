@@ -1,7 +1,5 @@
 \section{Introduction}
 
-
-
 In computer science, a \emph{namespace} refers to a collection of terms
 that are grouped because they share functionality or purpose,
 typically for providing modularity and resolving name conflicts \cite{duval2002metadata}.
@@ -9,43 +7,48 @@ For example, XML uses namespaces to prefix element names to ensure uniqueness an
 
 In this thesis we will extend the notion of namespaces to mathematical formulae. 
 In mathematics, there exists a special system of choosing identifers, and it is called 
-mathematical notation. Because of the notation, when people write ``$E=mc^2$'', 
-the meaning of this expression is recognized among scientists. 
-However, the same identifier may be used in different areas but denote 
+\emph{mathematical notation} \cite{wikinotation}. Because of the notation, 
+when people write ``$E=mc^2$'', the meaning of this expression is recognized among scientists. 
+However, the same identifier may be used in different areas, but denote 
 different things: For example, ``$E$'' may refer to ``energy'', ``expected value'' or 
 ``elimination matrix'', depending on the domain of the article.
 We can compare this problem with the problem of name collision in computer science 
-and introduce namespaces to identifiers in mathematical notation to overcome it. 
+and introduce namespaces of identifiers in mathematical notation to overcome it. 
 
+In this work we aim to discover namespaces of identifiers in mathematical notation. 
+However, the notation only exists in the documents where it is used, and it does 
+not exist in isolation. 
+It means that the identifer namespaces should be discovered from the documents 
+with mathematical formulae. 
 
-The goal of this work is to discover namespaces of identifiers in mathematical notation. 
-However, 
- 
-
-
-\textbf{automatically discover a set of identifier
+Therefore, the goal of this work is to \textbf{automatically discover a set of identifier
 namespaces given a collection of documents}.
-The goal of 
 
-Formulas comprise an integral part of a mathematical corpus and the main objective of this study is to discover namespaces of identifiers based on these formulas. We expect the namespaces to be meaningful, in the sense that they can be related to real-world areas of knowledge, such as physics, linear algebra or statistics.
+\textbf{TODO: Should I describe here that we want to use the document clustering
+techniques? or it goes to the chap3?}
 
-Once such namespaces are found, they can give good categorization of scientific documents based on formulas and notation used in them. We believe that this may facilitate better user experience: for instance, it will allow users to navigate easily between documents of the same
-category and see in which other documents a particular identifier is used, how it is used, how it is derived, etc. Additionally, it may give a way to avoid ambiguity. If we follow the XML approach [11] and prepend namespace to the identifier, e.g. “physics.E”, then it will give additional context and make it clear that “physics.E” means “energy” rather than “expected value”.
+We expect the namespaces to be meaningful, in the sense that they can be related to real-world areas of knowledge, such as physics, linear algebra or statistics.
 
-We also see that using namespaces is beneficial for relating identifiers to definitions. Thus, as an application of namespaces, we would like to be able to use them for better definition extraction. It may help to overcome some of the current problems in this area, for example, the problem of dangling identifiers - identifiers that are used in formulas but never defined in the document. Such identifiers may be defined in other documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
+Once such namespaces are found, they can give good categorization of scientific 
+documents based on formulas and notation used in them. We believe that this may 
+facilitate better user experience: when learning a new area it will help the users 
+familiarize with the notation faster.
+Additionally, it may also help to locate the usages of a particular identifier and 
+refer to other documents where the identifier is used. 
+
+%Finally, it gives a way to avoid am
+%Additionally, it may give a way to avoid ambiguity. If we follow the XML approach 
+% [11] and prepend namespace to the identifier, e.g. ``physics.E'', then it will 
+% give additional context and make it clear that ``physics.$E$'' means ``energy'' 
+% rather than ``expected value''.
+
+Finally, using namespaces is beneficial for relating identifiers to 
+definitions. Thus, as an application of namespaces, we can use them for better 
+definition extraction. It will help to overcome some of the current problems in this area, 
+for example, the problem of dangling identifiers -- identifiers that are used in formulas but never defined in the document \cite{pagael2014mlp}. Such identifiers may be defined in other 
+documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
 
 
-To accomplish it ....
-
-
-
-
-we suggest a different
-approach: use Machine Learning techniques for discovering namespaces automatically.
-
-
-Just briefly motivate the problem 
-(maybe take stuff from the thesis proposal)
 
 
 \subsection{Thesis Outline}

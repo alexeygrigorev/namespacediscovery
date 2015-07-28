@@ -1,10 +1,17 @@
 \section{Namespace Discovery}
 
-describe the approach to solve the problem
+In this chapter we introduce the problem of namespace discovery in 
+mathematical notation and suggest how this problem can be approached. 
+
+First, we extend the idea of namespaces to mathematics in section~\ref{sec:math-namespaces},
+and discuss the problem of namespace discovery in section~\ref{sec:discovery-namespaces},
+and then argues that it is possible to use document cluster analysis 
+to solve the problem in section~\ref{sec:clusters-namespaces}. 
+Finally, we propose a way of representing identifiers in a vector space 
+in section~\ref{sec:ism}.
 
 
-
-\subsection{Namespaces in Mathematical Notation}
+\subsection{Namespaces in Mathematical Notation} \label{sec:math-namespaces}
 
 \textbf{why we need namespaces in math?}
 
@@ -97,7 +104,7 @@ and these pairs can be used to discover the namespaces.
 In the next section we discuss how this problem can be addressed.
 
 
-\subsection{Discovery of Identifier Namespaces}
+\subsection{Discovery of Identifier Namespaces} \label{sec:discovery-namespaces}
 
 There are several ways of constructing a set of namespaces given a collection 
 of documents. 
@@ -220,7 +227,7 @@ Vector Space Models for words, and then we can apply clustering algorithm
 to documents represented in this space.
 
 
-\subsection{Identifier Vector Space Model}
+\subsection{Identifier Vector Space Model} \label{sec:ism}
 
 The Vector Space Model discussed in section \ref{sec:vsm} can be adjusted to 
 represent documents by identifers they contain instead of words. 

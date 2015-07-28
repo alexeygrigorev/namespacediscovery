@@ -1,3 +1,69 @@
 \section{Namespace Discovery}
 
 describe the approach to solve the problem
+
+VSM also extend it to identifiers and discuss how definitions can
+be incorporated in this space.
+
+
+\subsection{Identifier Vector Space Model}
+
+The Vector Space Model can be adjusted to represent documents by identifers
+they contain instead of words. To do that we replace the vocabulary $\mathcal V$
+with  a set of identifiers $\mathcal I = \{ i_1, i_2, \ ... \ , i_m \}$,
+but documents are still represented as $m$-vectors $\mathbf d_j = (w_1, w_2, \ ... \ , w_m)$,
+where $w_k$ is a weight of identifier $i_k$ in the document $\mathbf d_j$.
+Likewise, we can define an identifier-document matrix $D$ as a matrix where
+columns are document vectors and rows are indexed by the identifiers.
+
+Identifiers, as terms, suffer from the problems of synonymy and polysemy,
+and we solve this problem by extracting definitions for all the identifiers.
+There are several ways of incorporating the extracted definitions into the
+model:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item do not include definition information at all, use only identifiers;
+  \item use ``weak'' identifier-definition association: include identifiers and
+        definitions as separate dimensions;
+  \item use ``strong'' association: append definition to identifier.
+\end{itemize}
+
+To illustrate how it is done, consider three relations ($E$, ``energy''),
+($m$, ``mass'') and ($c$, ``speed of light''), and three documents
+$d_1 = \{E, m, c\}, d_2 = \{ m, c\}, d_3 = \{ E \}$. Then
+
+\begin{itemize}\itemsep1pt\parskip0pt\parsep0pt
+  \item no definitions: dimensions are ($E$, $m$, $c$) and the identifier-document matrix is
+  $$D = \left[
+    \begin{array}{c|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E & 1 & 0 & 1  \\
+      m & 1 & 1 & 0 \\
+      c & 1 & 1 & 0 \\
+    \end{array}
+  \right];$$
+  \item ``weak'' association: dimensions are ($E$, $m$, $c$, energy, mass,
+  speed of light), and the matrix is $$D = \left[
+    \begin{array}{r|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E                     & 1 & 0 & 1  \\
+      m                     & 1 & 1 & 0 \\
+      c                     & 1 & 1 & 0 \\
+      \text{energy}         & 1 & 0 & 1  \\
+      \text{mass}           & 1 & 1 & 0 \\
+      \text{speed of light} & 1 & 1 & 0 \\
+    \end{array}
+  \right];$$
+  \item ``strong'' association: dimensions are ($E$\_energy, $m$\_mass, $c$\_speed of light), and the matrix is $$D = \left[
+    \begin{array}{r|ccc}
+       & d_1 & d_2 & d_3 \\
+      \hline
+      E\text{\_energy} & 1 & 0 & 1  \\
+      m\text{\_mass} & 1 & 1 & 0 \\
+      c\text{\_speed of light} & 1 & 1 & 0 \\
+    \end{array}
+  \right].$$
+\end{itemize}

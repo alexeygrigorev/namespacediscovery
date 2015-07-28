@@ -3,51 +3,16 @@
 Explain related work: give a short overview about existing 
 approaches and methods that are relevant.
 
-
-In Natural Language Processing, Word Sense Disambiguation is a problem of
-identifying in which sense a polysemous word is used \cite{jurafsky2000speech}.
-Analogously, the Identifier Disambiguation problem is a problem of
-determining the meaning of an identifier in a mathematical formula. This
-problem is typically solved by extracting definitions from the natural
-language description that surrounds the formula.
-
-For example, given the sentence ``The relation between energy and mass is
-described by  the mass-energy equivalence formula $E = mc^2$,
-where $E$ is energy, $m$ is mass and $c$ is the speed of
-light''\footnote{\url{https://en.wikipedia.org/wiki/Mass\%E2\%80\%93energy\_equivalence}}
-the goal is to extract the following identifier-definition relations:
-($E$, ``energy''), ($m$, ``mass'') and ($c$, ``the speed of light'').
-
-Formally, a phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item \emph{definiendum} is the term to be defined: it is a mathematical expression
-      or an identifier;
-  \item \emph{definiens} is the definition itself: it is the word or phrase that defines the definiendum in a definition;
-  \item \emph{definitor} is a relator verb that links definiendum and definiens.
-\end{itemize}
-
-In this work, we are interested in the first two parts: \emph{definiendum} and
-\emph{definiens}. Thus we define a \emph{relation} as a pair
-(definiendum, definiens). For example, ($E$, ``energy'') is a relation where
-$E$ is a definiendum, and ``energy'' is a definiens. We refer to definiendum as
-identifier, and to definiens as definition, so relations are identifier-definition
-pairs.
-
 In this chapter we will discuss how the relations can be discovered automatically.
 It is organized as follows: first, we discuss Part-of-Speech Tagging and its application
 to mathematical texts in section~\ref{sec:postagging} and then
 review the extraction methods in section~\ref{sec:definition-extraction-methods}.
 
-
 In this chapter, we discuss how the process of namespace discovery
 can be automated.
 
 First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM):
-the traditional way of representing a collection of documents as vectors,
-and also extend it to identifiers and discuss how definitions can
-be incorporated in this space.
+the traditional way of representing a collection of documents as vectors.
 Then, we \textbf{go over } (replace) common similarity and distance functions that are useful
 for document clustering in section~\ref{sec:similarity-distance}.
 Next, we review common techniques for document clustering in section~\ref{sec:doc-clustering}
@@ -109,6 +74,38 @@ relations.
 
 
 \subsection{Mathematical Definition Extraction} \label{sec:definition-extraction-methods}
+
+In Natural Language Processing, Word Sense Disambiguation is a problem of
+identifying in which sense a polysemous word is used \cite{jurafsky2000speech}.
+Analogously, the Identifier Disambiguation problem is a problem of
+determining the meaning of an identifier in a mathematical formula. This
+problem is typically solved by extracting definitions from the natural
+language description that surrounds the formula.
+
+For example, given the sentence ``The relation between energy and mass is
+described by  the mass-energy equivalence formula $E = mc^2$,
+where $E$ is energy, $m$ is mass and $c$ is the speed of
+light''\footnote{\url{https://en.wikipedia.org/wiki/Mass\%E2\%80\%93energy\_equivalence}}
+the goal is to extract the following identifier-definition relations:
+($E$, ``energy''), ($m$, ``mass'') and ($c$, ``the speed of light'').
+
+Formally, a phrase that defines a mathematical expression consists of three parts \cite{kristianto2012extracting}:
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+  \item \emph{definiendum} is the term to be defined: it is a mathematical expression
+      or an identifier;
+  \item \emph{definiens} is the definition itself: it is the word or phrase that defines the definiendum in a definition;
+  \item \emph{definitor} is a relator verb that links definiendum and definiens.
+\end{itemize}
+
+In this work, we are interested in the first two parts: \emph{definiendum} and
+\emph{definiens}. Thus we define a \emph{relation} as a pair
+(definiendum, definiens). For example, ($E$, ``energy'') is a relation where
+$E$ is a definiendum, and ``energy'' is a definiens. We refer to definiendum as
+identifier, and to definiens as definition, so relations are identifier-definition
+pairs.
+
 There are several ways of extracting the identifier-definition relations.
 Here we will review the following:
 
@@ -121,9 +118,7 @@ Here we will review the following:
 \end{itemize}
 
 
-\subsubsection{Nearest Noun Method}
-
-\ \\
+\subsubsection{Nearest Noun Method} \ \\
 
 The Nearest Noun  \cite{grigore2009towards} \cite{yokoi2011contextual}
 is the simplest definition extraction method.
@@ -141,9 +136,7 @@ $G$ in ...'' we will extract a relation ($\sigma$, "bijection").
 
 
 
-\subsubsection{Pattern Matching Methods} \label{sec:pattern-matching}
-
-\ \\
+\subsubsection{Pattern Matching Methods} \label{sec:pattern-matching} \ \\
 
 The Pattern Matching method \cite{quoc2010mining} is an extension of the
 Nearest Noun method: In Nearest Noun, we are looking for one specific patten
@@ -260,8 +253,6 @@ In Vector Space Model we make two assumptions about the data:
 (1) \emph{Bag of Words assumption}: the order of words is not important,
 only word counts;
 (2) \emph{Independence assumption}: we treat all words as independent.
-% Bag of Words = unordered list of terms
-% good enough for topic similarity
 Both assumptions are quite strong, but nonetheless this method often
 gives good results.
 
@@ -319,70 +310,6 @@ where $\text{tf}(t, \mathbf d)$ is term frequency of term $t$ in document
 $\mathbf d$ and $\text{df}(t)$ is the document frequency of term $t$ in
 the document collection.
 
-\ \\
-
-\textbf{TODO: move this to some other section}
-
-The Vector Space Model can be adjusted to represent documents by identifers
-they contain instead of words. To do that we replace the vocabulary $\mathcal V$
-with  a set of identifiers $\mathcal I = \{ i_1, i_2, \ ... \ , i_m \}$,
-but documents are still represented as $m$-vectors $\mathbf d_j = (w_1, w_2, \ ... \ , w_m)$,
-where $w_k$ is a weight of identifier $i_k$ in the document $\mathbf d_j$.
-Likewise, we can define an identifier-document matrix $D$ as a matrix where
-columns are document vectors and rows are indexed by the identifiers.
-
-Identifiers, as terms, suffer from the problems of synonymy and polysemy,
-and we solve this problem by extracting definitions for all the identifiers.
-There are several ways of incorporating the extracted definitions into the
-model:
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-  \item do not include definition information at all, use only identifiers;
-  \item use ``weak'' identifier-definition association: include identifiers and
-        definitions as separate dimensions;
-  \item use ``strong'' association: append definition to identifier.
-\end{itemize}
-
-To illustrate how it is done, consider three relations ($E$, ``energy''),
-($m$, ``mass'') and ($c$, ``speed of light''), and three documents
-$d_1 = \{E, m, c\}, d_2 = \{ m, c\}, d_3 = \{ E \}$. Then
-
-\begin{itemize}\itemsep1pt\parskip0pt\parsep0pt
-  \item no definitions: dimensions are ($E$, $m$, $c$) and the identifier-document matrix is
-  $$D = \left[
-    \begin{array}{c|ccc}
-       & d_1 & d_2 & d_3 \\
-      \hline
-      E & 1 & 0 & 1  \\
-      m & 1 & 1 & 0 \\
-      c & 1 & 1 & 0 \\
-    \end{array}
-  \right];$$
-  \item ``weak'' association: dimensions are ($E$, $m$, $c$, energy, mass,
-  speed of light), and the matrix is $$D = \left[
-    \begin{array}{r|ccc}
-       & d_1 & d_2 & d_3 \\
-      \hline
-      E                     & 1 & 0 & 1  \\
-      m                     & 1 & 1 & 0 \\
-      c                     & 1 & 1 & 0 \\
-      \text{energy}         & 1 & 0 & 1  \\
-      \text{mass}           & 1 & 1 & 0 \\
-      \text{speed of light} & 1 & 1 & 0 \\
-    \end{array}
-  \right];$$
-  \item ``strong'' association: dimensions are ($E$\_energy, $m$\_mass, $c$\_speed of light), and the matrix is $$D = \left[
-    \begin{array}{r|ccc}
-       & d_1 & d_2 & d_3 \\
-      \hline
-      E\text{\_energy} & 1 & 0 & 1  \\
-      m\text{\_mass} & 1 & 1 & 0 \\
-      c\text{\_speed of light} & 1 & 1 & 0 \\
-    \end{array}
-  \right].$$
-\end{itemize}
-
 
 \subsection{Similarity Measures and Distances} \label{sec:similarity-distance}
 
@@ -410,7 +337,8 @@ as $\| \mathbf x - \mathbf y \| = \sqrt{\sum_{i = 1}^n (x_i - y_i)^2}$.
 
 This distance is useful for low-dimensional data, but it does not always work
 well in high dimensions, especially with sparse vector such as
-document vectors \cite{ertoz2003finding}.
+document vectors \cite{ertoz2003finding}, and this effect is often called 
+``Curse of Dimensionality'' \cite{beyer1999nearest}.
 
 
 \subsubsection{Inner product} \ \\

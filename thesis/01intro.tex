@@ -8,10 +8,24 @@ typically for providing modularity and resolving name conflicts \cite{duval2002m
 For example, XML uses namespaces to prefix element names to ensure uniqueness and remove ambiguity between them \cite{xmlnamespaces}, and the Java programming language uses packages to organize identifiers into namespaces for modularity \cite{gosling2014java}.
 
 In this thesis we will extend the notion of namespaces to mathematical formulae. 
+In mathematics, there exists a special system of choosing identifers, and it is called 
+mathematical notation. Because of the notation, when people write ``$E=mc^2$'', 
+the meaning of this expression is recognized among scientists. 
+However, the same identifier may be used in different areas but denote 
+different things: For example, ``$E$'' may refer to ``energy'', ``expected value'' or 
+``elimination matrix'', depending on the domain of the article.
+We can compare this problem with the problem of name collision in computer science 
+and introduce namespaces to identifiers in mathematical notation to overcome it. 
 
-$E=mc^2$. However, the same identifier may be used in different areas but denote different things: For example, E may refer to "energy", "expected value" or "elimination matrix", depending on the domain of the article. 
 
-In this thesis we compare different approaches for namespace discovery. 
+The goal of this work is to discover namespaces of identifiers in mathematical notation. 
+However, 
+ 
+
+
+\textbf{automatically discover a set of identifier
+namespaces given a collection of documents}.
+The goal of 
 
 Formulas comprise an integral part of a mathematical corpus and the main objective of this study is to discover namespaces of identifiers based on these formulas. We expect the namespaces to be meaningful, in the sense that they can be related to real-world areas of knowledge, such as physics, linear algebra or statistics.
 
@@ -25,9 +39,6 @@ To accomplish it ....
 
 
 
-In this work we study the problem of namespace discovery and the
-goal of this work is to \textbf{automatically discover a set of identifier
-namespaces given a collection of documents}.
 
 we suggest a different
 approach: use Machine Learning techniques for discovering namespaces automatically.

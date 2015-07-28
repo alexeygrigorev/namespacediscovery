@@ -361,7 +361,7 @@ Therefore, we try a wide range of larger $K$ for different $k \in \{150, 250, 35
 The performance in terms of discovered pure clusters does not depend much on the
 rank $k$ of the reduced space (see fig.~\ref{fig:k-vs-kmeans-len-nodef}). In fact,
 it is very hard to distinguish different lines because they are quite perplexed.
-The maximum for is achieved at $K \approx 10000$ for all $k$.
+The maximum for is achieved at $K \approx 10\,000$ for all $k$.
 
 \begin{figure}[h!]
 \centering\includegraphics[width=0.9\textwidth]{k-vs-kmeans-len-nodef.pdf}
@@ -394,21 +394,8 @@ but the performance is quite similar (see fig.~\ref{fig:k-vs-kmeans-len-nmf-node
 For NMF, however, it is easier to see the difference in performance when different rank $k$ is used, and the curves are not as perplexed as for SVD. We see that $k=250$ does better on
 $K=[8000; 12000]$ than $k=150$ and $k=350$. For example, $K$-Means with
 $K=9500$ and $k=250$ discovered a clustering with 200 namespace-defining clusters.
-The found clusters are slightly different. For example, there is no ``Measure Theory''
-cluster of size 8 as in the results, found by SVD (see table~\ref{tab:nodef-kmeans-lsa}).
-Let us instead consider a namespace defined by the cluster ``Statistics''
-(see table~\ref{tab:nodef-nmf-stat}): there are 6 documents in the cluster
-(see table~\ref{tab:nodef-nmf}) and about 43 identifier-definition in the namespace
-defined by this cluster (see table~\ref{tab:nodef-nmf-def}).
-Note that ``$\mu$'' is not assigned correctly in this cluster: it is defined as
-``variance'' instead of ``mean''. If we look at all definitions of ``$\mu$''
-in this clustering (see table~\ref{tab:nodef-nmf-mu}) we see that, although the problems
-are the same as with decomposition by SVD, the found definitions are different.
-However the difference is likely to be because of non-convexity of $K$-Means
-rather than some crucial difference in the way the matrix are factorized.
 
-
-We also see that generally clustering works better on reduced spaces.
+We can also observe that generally clustering works better on reduced spaces.
 
 
 \begin{figure}[h!]
@@ -531,10 +518,9 @@ achieves the best performance (see fig.~\ref{fig:soft-weighing}).
 
 \subsubsection{Strong Association} \ \\
 
-$37879 \times 22512$ sparse identifier-document matrix with 499070 entries,
-so the density of this matrix is just 0.00058.
-
-\textbf{DBSCAN?}
+In the case when we use the strong association, the identifier-document 
+matrix has the dimensionality of $37879 \times 22512$ identifier-document matrix.
+It has 499070 entries, so the density of this matrix is just 0.00058.
 
 Like for the soft association case, we choose not to perform usual $K$-Means,
 and instead proceed directly to MiniBatch $K$-Means on the LSA space
@@ -557,6 +543,10 @@ longer time.
 
 
 \subsection{Result Analysis}
+
+
+The best performing method is $K$-Means, and the best way to include 
+definitions into Identifier Space is by using the soft association. 
 
 
 \begin{table}[h!]
@@ -610,17 +600,17 @@ Symmetric matrix & $\Lambda,\lambda_1,\lambda_2,D,Q,P,\lambda_i,...$ \\
 \hline
 ID & Definition & Score\\
 \hline
-$D$ & diagonal matrix & 1.81 \\
-$t$ & real argument & 0.99 \\
-$u$ & eigenvalues & 0.89  \\
-$u_i$ & eigenvector & 0.89  \\
-$v_1$ & eigenvectors & 1.86  \\
-$\Lambda$ & diagonal matrix & 2.65  \\
-$\lambda$ & eigenvalue & 0.85 \\
-$\lambda_1$ & eigenvalues & 3.66 \\
-$\lambda_2$ & eigenvalues & 1.76 \\
-$\lambda_3$ & eigenvalues & 0.83 \\
-$\lambda_i$ & eigenvalue & 4.40 \\
+$D$ & diagonal matrix & 0.72 \\
+$t$ & real argument & 0.46 \\
+$u$ & eigenvalues & 0.42 \\
+$u_i$ & eigenvector & 0.42 \\
+$v_1$ & eigenvectors & 0.73 \\
+$\Lambda$ & diagonal matrix & 0.87 \\
+$\lambda$ & eigenvalue & 0.4  \\
+$\lambda_1$ & eigenvalues & 0.95 \\
+$\lambda_2$ & eigenvalues & 0.71 \\
+$\lambda_3$ & eigenvalues & 0.39 \\
+$\lambda_i$ & eigenvalue & 0.98 \\
 \hline
 \end{tabular}
 \caption{Definitions in ``Linear Algebra''}
@@ -638,66 +628,69 @@ $\lambda_i$ & eigenvalue & 4.40 \\
   \hline
   Size & Namespace Name & Definition & Score \\
   \hline
-3 & Algebra & multiplicity & 0.93 \\
-4 & Analysis of variance & marquardt & 1.71 \\
-3 & Applied and interdisciplinary physics & wavelength & 4.52 \\
-6 & Cartographic projections & longitude & 10.02 \\
-3 & Cartography & longitude & 7.24 \\
-3 & Category theory & natural isomorphisms & 0.84 \\
-4 & Condensed matter physics & penetration depth & 0.95 \\
-5 & Continuous distributions & affine parameter & 0.99 \\
-3 & Coordinate systems & longitude & 2.74 \\
-3 & Differential equations & differential operator & 0.89 \\
-8 & Differential geometry & vector fields & 1.82 \\
-7 & Electronic amplifiers & typical value & 0.93 \\
-3 & Electrostatics & unit length & 0.93 \\
-10 & Fluid dynamics & wavelength & 6.44 \\
-6 & Fluid dynamics & free path & 0.93 \\
-3 & Infinity & limit ordinals & 2.68 \\
-7 & Linear algebra & eigenvalue & 0.85 \\
-5 & Linear algebra & matrix & 0.87 \\
-3 & Linear algebra & eigenvalue & 2.53 \\
-3 & Liquids & relaxation time & 0.88 \\
-3 & Materials science & rate & 0.95 \\
-3 & Mathematical analysis & eigenvalue & 0.86 \\
-3 & Mathematical theorems & poisson distribution & 0.87 \\
-4 & Measure theory & lebesgue measure & 0.95 \\
-3 & Measurement & order & 0.89 \\
-8 & Mechanics & previous expression & 0.95 \\
-4 & Mechanics & power series & 0.88 \\
-3 & Metalogic & empty word & 0.96 \\
-7 & Number theory & partition & 1.90 \\
-4 & Number theory & modular lambda function & 0.99 \\
-3 & Operator theory & algebraic multiplicity & 0.95 \\
-5 & Optics & wavelength & 1.76 \\
-5 & Partial differential equations & constants & 0.87 \\
-4 & Physical optics & wavelength & 3.59 \\
-5 & Physics & exciton state & 2.76 \\
-6 & Probability distributions & references & 0.89 \\
-4 & Quantum field theory & coupling constant & 1.94 \\
-5 & Quantum mechanics & wavelength & 6.47 \\
-5 & Quantum mechanics & state & 2.66 \\
-3 & Radioactivity & decay & 1.82 \\
-4 & Representation theory of Lie groups & weight & 7.11 \\
-3 & Riemannian geometry & contravariant vector field & 0.96 \\
-4 & Rubber properties & engineering strain & 8.96 \\
-3 & Statistical data types & regularization parameter & 0.96 \\
-20 & Statistics & words & 0.93 \\
-3 & Statistics & expectation & 0.99 \\
-3 & Stellar astronomy & mean free path & 0.92 \\
-3 & Surface chemistry & ideal gas & 0.83 \\
-3 & Theoretical physics & eigenvalue & 2.71 \\
-5 & Theories of gravitation & dicke & 0.95 \\
-3 & Wave mechanics & wavelength & 2.65 \\
+3 & Algebra & multiplicity & 0.43 \\
+4 & Analysis of variance & marquardt & 0.69 \\
+3 & Applied and interdisciplinary physics & wavelength & 0.98 \\
+6 & Cartographic projections & longitude & 1.00 \\
+3 & Cartography & longitude & 1.00 \\
+3 & Category theory & natural isomorphisms & 0.40 \\
+4 & Condensed matter physics & penetration depth & 0.44 \\
+5 & Continuous distributions & affine parameter & 0.46 \\
+3 & Coordinate systems & longitude & 0.88 \\
+3 & Differential equations & differential operator & 0.42 \\
+8 & Differential geometry & vector fields & 0.72 \\
+7 & Electronic amplifiers & typical value & 0.43 \\
+3 & Electrostatics & unit length & 0.43 \\
+10 & Fluid dynamics & wavelength & 1.00 \\
+6 & Fluid dynamics & free path & 0.43 \\
+3 & Infinity & limit ordinals & 0.87 \\
+7 & Linear algebra & eigenvalue & 0.4  \\
+5 & Linear algebra & matrix & 0.41 \\
+3 & Linear algebra & eigenvalue & 0.85 \\
+3 & Liquids & relaxation time & 0.41 \\
+3 & Materials science & rate & 0.44 \\
+3 & Mathematical analysis & eigenvalue & 0.41 \\
+3 & Mathematical theorems & poisson distribution & 0.41 \\
+4 & Measure theory & lebesgue measure & 0.44 \\
+3 & Measurement & order & 0.42 \\
+8 & Mechanics & previous expression & 0.44 \\
+4 & Mechanics & power series & 0.41 \\
+3 & Metalogic & empty word & 0.45 \\
+7 & Number theory & partition & 0.74 \\
+4 & Number theory & modular lambda function & 0.46 \\
+3 & Operator theory & algebraic multiplicity & 0.44 \\
+5 & Optics & wavelength & 0.71 \\
+5 & Partial differential equations & constants & 0.41 \\
+4 & Physical optics & wavelength & 0.95 \\
+5 & Physics & exciton state & 0.88 \\
+6 & Probability distributions & references & 0.42 \\
+4 & Quantum field theory & coupling constant & 0.75 \\
+5 & Quantum mechanics & wavelength & 1.00 \\
+5 & Quantum mechanics & state & 0.87 \\
+3 & Radioactivity & decay & 0.72 \\
+4 & Representation theory of Lie groups & weight & 1.00 \\
+3 & Riemannian geometry & contravariant vector field & 0.45 \\
+4 & Rubber properties & engineering strain & 1.00 \\
+3 & Statistical data types & regularization parameter & 0.45 \\
+20 & Statistics & words & 0.43 \\
+3 & Statistics & expectation & 0.46 \\
+3 & Stellar astronomy & mean free path & 0.43 \\
+3 & Surface chemistry & ideal gas & 0.39 \\
+3 & Theoretical physics & eigenvalue & 0.88 \\
+5 & Theories of gravitation & dicke & 0.44 \\
+3 & Wave mechanics & wavelength & 0.8 \\
 \hline
 \end{tabular}
 \caption{Some of definitions of ``$\lambda$''.}
 \label{tab:soft-kmeans-lambda}
 \end{table}
 
-The best result in this scheme is 414 namespace-defining clusters
-(ten times better than the baseline), and it is achieved by $K$-Means with 
-soft association and with $K=9750$ and $k=350$. The purity of this clustering is $0.63$.
+The best result is 414 namespace-defining clusters, it is ten times better
+than the baseline result, and it is achieved by $K$-Means with
+soft association using parameters $K=9750$ and $k=350$. The purity of this 
+clustering is $0.63$. The largest namespace-defining clusters discovered 
+by this methods are presented in the table~\ref{tab:soft-kmeans-svd}.
+
 Let us consider a ``Linear Algebra'' cluster (table~\ref{tab:soft-kmeans-lsa})
 with 6 documents and some of extracted definitions in documents
 of this cluster, and all these articles share identifers $\lambda_1$, $m$ and $n$.
@@ -710,6 +703,14 @@ where $\lambda$ denotes different things (e.g. in two ``Quantum Mechanics'' clus
 or in the case of ``Linear Algebra'' cluster where it denotes a matrix.
 
 
+Clustering results with sort association are better than results obtained
+with hard association. One of the reasons for that can the the fact that
+definitions may act as keywords that describe the document and they are
+better in describing the semantic content of the document. 
+
+
+Additionally, we see that clustering on the reduced space works better, 
+and in our case the best dimensionality reduction method is SVD.
 
 
 
@@ -748,7 +749,9 @@ Additionally, some of the non-valid definitions seem to result from misclassific
 by the POS-tagger, for example, ``$\Sigma$'' is defined as ``вдоль'' (literally ``along''),
 which do not make much sense.
 Additionally we can look at all definitions of ``$\lambda$'' across all discovered namespaces
-(see table~\ref{tab:rus-lambda}).
+(see table~\ref{tab:rus-lambda}). The scores of namespace relations extracted from Russian 
+wikipedia are generally smaller than in English, but it is most likely because 
+there are fewer relations in the Russian dataset.
 
 \begin{table}[h!]
 \centering
@@ -804,20 +807,20 @@ Additionally we can look at all definitions of ``$\lambda$'' across all discover
   \hline
   ID & Definition & Definition (English) & Score \\
   \hline
-$H$ & гильбертов & hilbert & 0.95 \\
-$L$ & отображение & transformation & 3.69 \\
-$L_k$ & оператор & operator & 0.87 \\
-$M$ & воздействие матрица & matrix & 1.77 \\
-$T$ & линейный отображение & linear transformation & 0.93 \\
-$U$ & унитарный матрица & unitary matrix & 1.77 \\
-$V$ & пространство & space  & 5.57 \\
-$g$ & билинейный форма & bilinear form & 1.78 \\
-$r$ & ранг & rank & 0.99 \\
-$x$ & собственный вектор & eigenvector & 0.95 \\
-$\Lambda$ & диагональный матрица & diagonal matrix & 2.76 \\
-$\Sigma$ & вдоль & ``along'' & 0.94 \\
-$\lambda$ & скаляр & scalar & 0.99 \\
-$\sigma$ & сингулярный число & singular value & 0.96 \\
+$H$ & гильбертов & hilbert & 0.44 \\
+$L$ & отображение & transformation & 0.95 \\
+$L_k$ & оператор & operator & 0.41 \\
+$M$ & воздействие матрица & matrix & 0.71 \\
+$T$ & линейный отображение & linear transformation & 0.43 \\
+$U$ & унитарный матрица & unitary matrix & 0.71 \\
+$V$ & пространство & space  & 0.99 \\
+$g$ & билинейный форма & bilinear form & 0.71 \\
+$r$ & ранг & rank & 0.46 \\
+$x$ & собственный вектор & eigenvector & 0.44 \\
+$\Lambda$ & диагональный матрица & diagonal matrix & 0.88 \\
+$\Sigma$ & вдоль & ``along'' & 0.44 \\
+$\lambda$ & скаляр & scalar & 0.46 \\
+$\sigma$ & сингулярный число & singular value & 0.45 \\
 \hline
 \end{tabular}
 \caption{Definitions in the ``Linear Algebra'' namespace.}
@@ -832,18 +835,18 @@ $\sigma$ & сингулярный число & singular value & 0.96 \\
   \hline
   Size & Original name & English name & Original definition & English definition & Score \\
   \hline
-3 & Алгебра & Algebra & поль & field & 1.90 \\
-5 & Гидродинамика & Fluid dynamics & тепловой движение & thermal motion & 0.89 \\
-4 & Гравитация & Gravitation & коэф. затухание & damping coefficient & 0.99 \\
-6 & Картография & Cartography & долгота & longitude & 4.75 \\
-5 & Линейная алгебра & Linear algebra & скаляр & scalar & 0.99 \\
-4 & Оптика & Optics & длина & length & 2.75 \\
-3 & Оптика & Optics & длина волна & wavelength & 0.95 \\
-5 & \begin{tabular}[x]{@{}c@{}} Релятивистские и \\ гравитационные явления \end{tabular} & \begin{tabular}[x]{@{}c@{}} Relativity and \\ gravitation \end{tabular} & частота & frequency & 0.89 \\
-3 & Статистическая физика & Statistical physics & итоговый выражение & final expression & 0.89 \\
-3 & \begin{tabular}[x]{@{}c@{}} Теоремы \\ комплексного анализа \end{tabular}  & \begin{tabular}[x]{@{}c@{}} Theorems of \\ complex analysis \end{tabular}  & нуль порядок & ``zero order'' & 0.96 \\
-3 & Теория алгоритмов & Algorithms & функция переход & transition function & 2.86 \\
-5 & Физические науки & Physical sciences & длина & length & 0.93 \\
+3 & Алгебра & Algebra & поль & field & 0.74 \\
+5 & Гидродинамика & Fluid dynamics & тепловой движение & thermal motion & 0.42 \\
+4 & Гравитация & Gravitation & коэф. затухание & damping coefficient & 0.46 \\
+6 & Картография & Cartography & долгота & longitude & 0.98 \\
+5 & Линейная алгебра & Linear algebra & скаляр & scalar & 0.46 \\
+4 & Оптика & Optics & длина & length & 0.88 \\
+3 & Оптика & Optics & длина волна & wavelength & 0.44 \\
+5 & \begin{tabular}[x]{@{}c@{}} Релятивистские и \\ гравитационные явления \end{tabular} & \begin{tabular}[x]{@{}c@{}} Relativity and \\ gravitation \end{tabular} & частота & frequency & 0.42 \\
+3 & Статистическая физика & Statistical physics & итоговый выражение & final expression & 0.42 \\
+3 & \begin{tabular}[x]{@{}c@{}} Теоремы \\ комплексного анализа \end{tabular}  & \begin{tabular}[x]{@{}c@{}} Theorems of \\ complex analysis \end{tabular}  & нуль порядок & ``zero order'' & 0.45 \\
+3 & Теория алгоритмов & Algorithms & функция переход & transition function & 0.89 \\
+5 & Физические науки & Physical sciences & длина & length & 0.43 \\
   \hline
 \end{tabular}
 \caption{Definitions of ``$\lambda$'' across all namespaces.}

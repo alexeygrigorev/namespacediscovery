@@ -67,7 +67,7 @@ Schubotz in \cite{pagael2014mlp}\footnote{\url{https://github.com/rbzn/project-m
 The first step is to keep only mathematical articles and discard the rest.
 This is done by retaining only those articles that contain
 at least one \verb|<math>| tag with a simple python script
-\verb|wikiFilter|\footnote{\url{https://github.com/physikerwelt/wikiFilter}}. 
+\verb|wikiFilter|\footnote{\url{https://github.com/physikerwelt/wikiFilter}}.
 Once the data set is filtered, then
 all the \LaTeX\ formulas form the \verb|<math>| tags are converted
 to MathML, an XML-based representation of mathematical
@@ -212,10 +212,15 @@ Therefore this problem with identifiers can be solved similarly
 by reducing identifiers to their ``root'' form. This can be done
 by discarding all additional visual information, such that
 ``$\bar X$'' becomes ``$X$'', ``$\mathbf w$'' becomes ``$w$'' and ``$\mathfrak R$''
-becomes ``$R$''. The disadvantage of this approach is that we lose
-the additional semantic information about the identifier that overwise
-could be useful.
+becomes ``$R$''.
 
+The disadvantage of this approach is that we lose
+the additional semantic information about the identifier that overwise
+could be useful. Additionally, in some cases we will treat different
+identifiers like they are the same. For example, in Statistics, ``$\bar X$''
+usually denotes the mean value of a random variable $X$, but when we remove
+the bar, we lose this semantic information, and it becomes impossible to
+distinguish between different usages of $X$.
 
 The diacritic marks can easily be discarded because they are represented
 by special MathML instructions that can be ignored when
@@ -235,8 +240,8 @@ them there are many mathematic-related symbols
 like ``\textasciicircum'', ``\#'',``$\forall$'', ``$\int$'';
 miscellaneous symbols like ``$\diamond$'' or
 ``$\circ$'', arrows like ``$\to$'' and ``$\Rightarrow$'', and special characters like
-``$\lceil$''. %Ideally, there symbols should be represented by \verb|<mo>| tags, 
-%but there are many cases when they are not.
+``$\lceil$''. Ideally, there symbols should be represented inside \verb|<mo>| tags,
+but unfortunately there are many cases when they are not.
 
 To filter out these one-symbol false identifiers we fully exclude all characters from
 the following unicode blocks: ``Spacing Modifier Letters'', ``Miscellaneous Symbols'',
@@ -377,33 +382,46 @@ number of found definitions follows a long tail distribution as well
 (see fig.~\ref{fig:en-wiki-doc-def.pdf}), with the median number of
 definitions per page being 4.
 
-The following is the list of the most common identifier-definition pairs
-extracted from English Wikipedia:
 
-\begin{itemize}
-\item $t$: ``time'' (1086)
-\item $m$: ``mass'' (424)
-\item $\theta$: ``angle'' (421)
-\item $T$: ``temperature'' (400)
-\item $r$: ``radius'' (395)
-\item $v$: ``velocity'' (292)
-\item $\rho$: ``density'' (290)
-\item $G$: ``group'' (287)
-\item $V$: ``volume'' (284)
-\item $\lambda$: ``wavelength'' (263)
-\item $R$: ``radius'' (257)
-\item $n$: ``degree'' (233)
-\item $r$: ``distance'' (220)
-\item $c$: ``speed of light'' (219)
-\item $L$: ``length'' (216)
-\item $n$: ``length'' (189)
-\item $n$: ``order'' (188)
-\item $n$: ``dimension'' (185)
-\item $n$: ``size'' (178)
-\item $M$: ``mass'' (171)
-\item $d$: ``distance'' (163)
-\item $X$: ``topological space'' (159)
-\end{itemize}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+  \hline
+  ID & Definition & Count & Definition Rus & Count \\
+  \hline
+  $t$ & time & 1086 & время & 130 \\
+$m$ & mass & 424 & масса & 103 \\
+$\theta$ & angle & 421 &    &  \\
+$T$ & temperature & 400 & температура & 69 \\
+$r$ & radius & 395 &  &    \\
+$v$ & velocity & 292 & скорость & 50 \\
+$\rho$ & density & 290 & плотность & 57 \\
+$G$ & group & 287 & группа & 87 \\
+$V$ & volume & 284 &  &    \\
+$\lambda$ & wavelength & 263 &   &  \\
+$R$ & radius & 257 & радиус & 38 \\
+$n$ & degree & 233 &  &   \\
+$r$ & distance & 220 &  &   \\
+$c$ & speed of light & 219 & скорость свет & 89 \\
+$L$ & length & 216 &  &   \\
+$n$ & length & 189 &  &    \\
+$n$ & order & 188 &  &    \\
+$n$ & dimension & 185 &    &  \\
+$n$ & size & 178 &  &    \\
+$M$ & mass & 171 &  &    \\
+$d$ & distance & 163 &    &  \\
+$X$ & topological space & 159 & топ. пространство & 46 \\
+\hline
+\end{tabular}
+\caption{Most frequent relations from English Wikipedia and corresponding relations
+from Russian wikipedia.}
+\label{tab:top-def}
+\end{table}
+
+Table~\ref{tab:top-def} shows the list of the most common 
+identifier-definition relations extracted English Wikipedia. 
+
+
 
 In Russian Wikipedia only 5\,300 articles contain enough identifiers,
 and the remaining 9\,500 are discarded.
@@ -422,24 +440,19 @@ Finally, the largest number of extracted definitions is 44
 (again, for ``Уравнения Максвелла'') with 2 being the median number of
 definitions per page.
 
-The following is the list most frequent relations extracted
-from Russian wikipedia:
+
+We can compare the most frequent identifier-definition relations extracted 
+from Russian Wikipedia (see table~\ref{tab:top-def}): some of the top relations
+appear in both datasets. Other frequent identifier-definition relations 
+extracted from Russian wikipedia include:
 
 \begin{itemize}
 \item $f$: ``функция'' (``function'') (215)
-\item $t$: ``время'' (``time'') (130)
 \item $X$: ``множество'' (``set'') (113)
-\item $m$: ``масса'' (``mass'') (103)
-\item $c$: ``скорость свет'' (``speed of light'') (89)
-\item $G$: ``группа'' (``group'') (87)
-\item $T$: ``температура'' (``temperature'') (69)
 \item $h$: ``постоянный планка'' (``Plank constant'') (68)
-\item $\rho$: ``плотность'' (``density'') (57)
 \item $M$: ``многообразие'' (``manifold'') (53)
 \item $K$: ``поль'' (``field'') (53)
 \item $X$: ``пространство'' (``space'') (50)
-\item $v$: ``скорость'' (``speed'') (50)
-\item $X$: ``топологический пространство'' (``topological space'') (46)
 \item $G$: ``граф'' (``graph'') (44)
 \item $R$: ``радиус'' (``radius'') (38)
 \item $R$: ``кольцо'' (``ring'') (36)
@@ -449,9 +462,6 @@ from Russian wikipedia:
 \item $S$: ``площадь'' (``area'') (32)
 \item $k$: ``постоянный больцмана'' (``Boltzmann constant'') (30)
 \end{itemize}
-
-
-\textbf{TODO put a table to compare English vs Russian}
 
 
 \subsection{Document Clustering} \label{sec:clustering-impl}
@@ -554,7 +564,7 @@ this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wiki
 document. This information can be retrieved in chunks for a group of several
 documents at once, and therefore it is quite fast.
 
-\subsubsection{Building Namespaces} \ \\
+\subsection{Building Namespaces} \ \\
 
 Once a cluster analysis algorithm assigns documents in our collection to
 some clusters, we need to find namespaces among these clusters. We assume that
@@ -658,24 +668,8 @@ is selecting the definition with the highest score. This gives us the following 
 \end{itemize}
 
 
-The more an identifier occurs, the more is its score. If an identifier occurs 
-3 times, then it most likely will have a score around 2.5-3, and this 
-gives us more confidence in the correct definition of an identifier than 
-a score of less than 1 - because it corresponds to an identifier that 
-occurred just once. To compare confidence scores we can apply an additional 
-transformation to normalize the scores to the $[0, 1]$ scale. 
-To do this we can apply the hyperbolic tangent function: it is zero at 0 
-and it is almost 1 around 5. However, the usual tanh is quite steep, 
-if something occurred just 3 times it is not enough to give it a score of
-0.99, therefore we use tanh(x/2).
-
-Score normalization to $[0, 1]$ scale: use tanh (see fig.~\ref{fig:tanh})
-Usual tanh is too steep: tanh(2) is 0.95 and tanh(3) is 0.99, so we use 
-tanh(x/2) instead, and it will give  tanh(3/2) = 0.90
-
-tanh is monotonous therefore larger values of transformed ... correspond to 
-larger values of ...
-
+Intuitively, the more a relation occurs,  the higher the score, and it 
+gives us more confidence that the definition is indeed correct. 
 
 \begin{figure}[h!]
 \centering\includegraphics[width=0.6\textwidth]{tanh.pdf}
@@ -683,8 +677,21 @@ larger values of ...
 \label{fig:tanh}
 \end{figure}
 
-Thus, after applying this transformation, we obtain the following namespace:
+However, it is more convenient to compare scores when they are on the $[0, 1]$
+scale, and therefore we may apply additional transformation to convert the scores. 
+Hyperbolic tangent function is a good choice for such transformation: 
+it is near zero for small values and it never exceeds one (see fig.~\ref{fig:tanh})
+But it is quite steep and converges to 1 rather quickly: for a relation 
+with score of 3 it would produce a score of 0.99, which is quite high. 
+Instead, we can use a less steep $\tanh x/2$ (see fig.~\ref{fig:tanh}):
+for 3,  $\tanh 3/2$ produces a score of 0.90, which is better.
 
+Because the hyperbolic tangent is a monotonously increasing function, larger 
+values of the original score correspond to larger values of the transformed 
+score, and therefore we still can use the output of $\tanh x/2$ to 
+rank the relations. 
+
+Thus, after applying this transformation, we obtain the following namespace:
 
 \begin{itemize}
 \item ($P_\theta$, family, 0.41)

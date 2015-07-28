@@ -3,24 +3,107 @@
 Explain related work: give a short overview about existing 
 approaches and methods that are relevant.
 
-In this chapter we will discuss how the relations can be discovered automatically.
-It is organized as follows: first, we discuss Part-of-Speech Tagging and its application
-to mathematical texts in section~\ref{sec:postagging} and then
-review the extraction methods in section~\ref{sec:definition-extraction-methods}.
+%In this chapter we will discuss how the relations can be discovered automatically.
+%It is organized as follows: first, we discuss Part-of-Speech Tagging and its application
+%to mathematical texts in section~\ref{sec:postagging} and then
+%review the extraction methods in section~\ref{sec:definition-extraction-methods}.
 
-In this chapter, we discuss how the process of namespace discovery
-can be automated.
+%In this chapter, we discuss how the process of namespace discovery
+%can be automated.
 
-First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM):
-the traditional way of representing a collection of documents as vectors.
-Then, we \textbf{go over } (replace) common similarity and distance functions that are useful
-for document clustering in section~\ref{sec:similarity-distance}.
-Next, we review common techniques for document clustering in section~\ref{sec:doc-clustering}
-and the Latent Semantic Analysis method in section~\ref{sec:lsa}.
+%First, in section~\ref{sec:vsm} we describe the Vector Space Model (VSM):
+%the traditional way of representing a collection of documents as vectors.
+%Then, we \textbf{go over } (replace) common similarity and distance functions that are useful
+%for document clustering in section~\ref{sec:similarity-distance}.
+%Next, we review common techniques for document clustering in section~\ref{sec:doc-clustering}
+%and the Latent Semantic Analysis method in section~\ref{sec:lsa}.
+
+
 
 
 \subsection{Namespaces in Computer Science}
 
+In computer science, a \emph{namespace} refers to a collection of terms
+that are grouped because they share functionality or purpose,
+typically for providing modularity
+and resolving name conflicts \cite{duval2002metadata}.
+
+
+\textbf{Example 1.} Namespaces are used in XML (eXtensible Markup Language), which
+is a framework for defining markup languages \cite{moller2006introduction}.
+However, different XML languages may use the same names for elements and attributes.
+For example, consider two XML languages: XHTML for specifying the layout of web
+pages, and some XML language for describing furniture. Both these languages have
+the \verb|<table>| elements there, in XHTML table is used to present some data in
+a tabular form, while the second one uses it to describe a particular piece of
+furniture in the database.
+
+The \verb|<table>| elements have very different semantics in these languages
+and there should be a way to distinguish between these two elements.
+In XML this problem is solved with XML namespaces~\cite{xmlnamespaces}:
+the namespaces are used to ensure the uniqueness of attributes and resolve ambiguity.
+It is done by binding a short namespace alias with some uniquely defined URI
+(Unified Resource Identifier), and then appending the alias to
+all attribute names that come from this namespace. In the example above,
+we can bind an alias \verb|h| with XHTML's URI \url{http://www.w3.org/TR/xhtml1}
+and then use \verb|<h:table>| to refer to XHTML's table. Likewise,
+in the furniture database language the element names can be prepended
+with a prefix \verb|d|, where \verb|d| is bound to some URI, e.g.
+\url{http://www.furniture.de/2015/db}.
+
+
+% Ralf's comment: ``namespaces" were deeply studied mainly in
+% the field of distributed systems/ middleware (like DCE, CORBA, etc.) in the middle
+% of the 80s/ 90s ...
+
+
+\textbf{Example 2.} Namespaces are also used in programming languages for organizing
+variables, procedures and other identifiers into groups and
+for resolving name collisions. In programming languages without
+namespaces the programmers have to take special care to avoid
+naming conflicts. For example, in the PHP programming language
+prior to version 5.3 \cite{mcarthur2008php6} there is no notion of namespace, and
+the namespaces have to be emulated to ensure that the names
+are unique, and long names like
+\verb|Zend_Search_Lucene_Analysis_Analyzer|\footnote{\url{http://framework.zend.com/apidoc/1.7/Zend_Search_Lucene/Analysis/Zend_Search_Lucene_Analysis_Analyzer.html}}.
+is the result.
+
+Other programming languages have the notion of namespaces built in
+from the very first versions. For example, the Java programming
+language~\cite{gosling2014java} uses packages to organize identifiers into
+namespaces, and packages solve the problem of ambiguity. For example,
+in the standard Java API there are two classes with the name \texttt{Date}:
+one in the package \texttt{java.util} and another in the package \texttt{java.sql}.
+To be able to distinguish between them, the classes are referred by their
+\emph{fully qualified name}: an unambiguous name that uniquely specifies the class
+by combining the package name with the class name. Thus, to refer to a particular
+\texttt{Date} class in Java  \texttt{java.util.Date} or  \texttt{java.sql.Date}
+should be used.
+
+It is not always convenient to use the fully qualified name in the code to
+refer to some class from another package. Therefore in Java it is possible to
+\emph{import} the class by using the import statement which associates
+a short name alias with its fully qualified name.
+For example, to refer to \texttt{java.sql.Date} it is possible to import
+it by using \texttt{import java.sql.Date} and then refer to it by the alias
+\texttt{Date} in the class \cite{gosling2014java}.
+
+
+Although there are no strict rules about how to organize the classes into
+packages, it is a good software design practice to put
+related objects into the same namespace and by doing this achieve
+better modularity. There are design principles that tell software engineers
+how to best organize the source code: classes in a well designed system
+should be grouped in such a way that namespaces
+exhibit low \emph{coupling} and high \emph{cohesion}~\cite{larman2005applying}.
+Coupling describes the degree of dependence between namespaces, and
+low coupling means that the interaction between classes of different
+namespaces should be as low as possible. Cohesion, on the other hand,
+refers to the dependence within the classes of the same namespace,
+and the high cohesion principle says that the related classes
+should all be put together in the same namespace.
+
+% TODO What's the significance?
 
 
 \subsection{Math-aware POS tagging} \label{sec:postagging}

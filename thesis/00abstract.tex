@@ -1,36 +1,32 @@
 \section*{Abstract}
 
 
-In computer science, a \emph{namespace} refers to a collection of 
-terms that are managed together because they share functionality or 
-purpose, typically for providing modularity and resolving name conflicts. 
-For example, XML uses namespaces to prefix element names to ensure uniqueness 
-and remove ambiguity between them, and the Java programming language uses 
-packages to organize identifiers into namespaces for modularity.
+In computer science, a \emph{namespace} refers to a collection of
+terms that are managed together because they share functionality or
+purpose, typically for providing modularity and resolving name conflicts.
 
 In this thesis we extend the notion of namespaces to mathematical formulae.
-In mathematics, the same identifier may be used in different areas 
-but denote different things: For example, ``$E$'' may refer to ``energy'', 
-``expected value'' or ``elimination matrix'', depending on the domain of the article 
-where this identifier is used. By introducing namespaces to 
-formulae, this ambiguity can be resolved. If we follow the XML approach
-and prepend namespace name to the identifier, e.g. ``physics.$E$'', then it 
-will give additional context and make it clear that ``physics.$E$'' means ``energy''
-rather than ``expected value''.
+In mathematics, the same identifier may be used in different areas
+but denote different things: For example, ``$E$'' may refer to ``energy'',
+``expected value'' or ``elimination matrix'', depending on the domain of the article
+where this identifier is used. By introducing namespaces to
+formulae, this ambiguity can be resolved. 
+%If we follow the XML approach
+%and prepend namespace name to the identifier, e.g. ``physics.$E$'', then it
+%will give additional context and make it clear that ``physics.$E$'' means ``energy''
+%rather than ``expected value''.
 
-There is correlation between  the identifiers used in a document and
-the namespace of its identifiers, and we exploit it to discover namespaces.
-We argue that document representation in terms of identifiers is 
+We argue that document representation in terms of identifiers is
 similar to the traditional way of representing documents as a Bag of Words
-in the Vector Space Model. By comparing these approaches we 
-develop a method for automatic namespace discovery based on techniques from 
-document clustering. 
+in the Vector Space Model. By comparing these approaches we
+develop a method for automatic namespace discovery based on techniques from
+document clustering.
 
-To cluster documents we use established cluster analysis algorithms like 
-$K$-Means, DBSCAN and Latent Semantic Analysis, and these techniques 
-are evaluated on English Wikipedia. Additionally, we also use Russian 
-Wikipedia to compare the obtained results, and try the same set of 
+To cluster documents we use established cluster analysis algorithms like
+$K$-Means, DBSCAN and Latent Semantic Analysis, and these techniques
+are evaluated on English Wikipedia. Additionally, we also use Russian
+Wikipedia to compare the obtained results, and try the same set of
 techniques to extract namespaces from Java source code.
 
-The obtained results indicate that the identifier namespace discovery is 
+The obtained results indicate that the identifier namespace discovery is
 possible, ... (\textbf{TODO}: finish when conclusion is finished).

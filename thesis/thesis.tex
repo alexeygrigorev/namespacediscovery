@@ -76,11 +76,14 @@
 \frenchspacing
 
 
-
 % highlight text
 \usepackage{soul}
 
 \usepackage{enumitem}
+
+% http://tex.stackexchange.com/questions/5017/center-column-with-specifying-width-in-table-tabular-enviroment
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}m{#1}}
 
 \begin{document}
 

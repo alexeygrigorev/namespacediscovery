@@ -1,43 +1,40 @@
 \section{Conclusions}
 
-What worked and what did not.
+The goal of this work was to discover namespaces in mathematical notation
+given a collection of documents with mathematical formulae. To achieve that,
+we used document clustering techniques on documents, where each document is 
+represented by identifiers, used in its formulae. 
+
+We expected to discover namespaces, that are homogenies and corresponded
+to the same area of knowledge. The clusters that we discovered are homogenous, 
+but not all corresponded to the same category. This is why we 
+additionally used the category information to recognize the namespaces-defining
+clusters amount all clusters, and then we built namespaces from them.
+
+We also initially expected that there would be more namespace-defining clusters, 
+but in our results the majority of clusters are not ``pure'': documents inside these 
+clusters do not belong to the same category. These clusters are only homogenous in 
+the cluster analysis sense: the within-cluster distances is minimal. 
 
 
-The obtained results indicate that there are namespaces in mathematical notation
-and it is possible to discover them automatically from a collection of documents.
-However, there are still ...
+Nevertheless, the obtained results indicate that there are namespaces in mathematical 
+notation and it is possible to discover them automatically from a collection of 
+documents. We also verified that clustering document is better than random guessing 
+by the factor of ten. We observed that dimensionality reduction techniques 
+are very helpful, and clustering algorithms work better on the reduce space. 
+MiniBatch $K$-Means algorithms shows the best results for discovering 
+namespace-defining clusters.
 
-Minimize the number of false definitions, and improve the results of clustering.
-In the next section we discuss how this can be approached.
-
-
-In this work we use the Probabilistic approach for identifier-definition relation
-discovery. This method is good because it requires almost no tuning and it works for
-multiple languages: In our case it was not very hard to adapt it to Russian
-with some minor modifications.
-
-
-Questions:
-
-What is the goal?
-
-Which approximation had to be applied and why?
-
-How did the result vary based on the language? 
-
-Which results were expected based on the theory?
-
-Was this result achieved? 
-
-What are the derivations? 
-
+There are many ways in which the present approach can be improved further.
+In the next section we discuss possible directions.
 
 
 \section{Outlook and Future Work}
 
-\subsubsection{Implementation and Other Algorithms}  \ \\
+\subsection{Implementation and Other Algorithms}  % \ \\
 
-We use the Probabilistic approach to extracting definitions for identifiers.
+We use the Probabilistic approach to extracting definitions for identifiers, and
+it is good because it requires almost no parameter tuning.
 While this approach works well most of the time, sometimes we observe
 some false positives, most likely due to the fact that the dataset is
 quite noisy. It potentially can be improved by using some Machine Learning
@@ -86,7 +83,7 @@ seen as a ``soft clustering'' technique and it can naturally model the fact that
 a document may import from several namespaces.
 
 
-\subsubsection{Other Concepts}  \ \\
+\subsection{Other Concepts} %  \ \\
 % Other concepts
 
 In this work we assume that document can import only from one namespace,
@@ -136,7 +133,7 @@ remove the discovered pure clusters, and run the algorithm again on the remainin
 documents until no new clusters are discovered.
 
 
-\subsubsection{Datasets} \ \\
+\subsection{Other Datasets} % \ \\
 % Other Datasets
 
 In this work we use Wikipedia as the data source and extract namespaces from the
@@ -158,12 +155,9 @@ data source for namespace discovery. In addition to content, the questions conta
 a lot of potentially useful metadata such as related questions and tags.
 
 
-\subsubsection{Unsolved Questions} \ \\
+\subsection{Unsolved Questions} % \ \\
 
-There are questions that are still not answered and we are not certain
-how they can be approached.
-
-The biggest question is how to extend this method to situations when
+The most important question is how to extend this method to situations when
 no additional information about document category is known. To solve
 it, we need to replace the notion of purity with some other objective
 for discovering namespace-defining clusters.

@@ -543,12 +543,12 @@ established that it usually does not give better results while taking significan
 longer time.
 
 
-\subsubsection{Russian Wikipedia} 
+\subsubsection{Russian Wikipedia}  \ \\
 
 Based on the experiments we have performed on English Wikipedia, we see that the best
 performance is obtained with weak association by using MiniBatch $K$-Means on
 LSA space reduced by SVD.
-In this section we apply the best performing technique on Russian Wikipedia.
+We apply the same best performing technique on Russian Wikipedia.
 
 The identifier-document matrix has the dimensionality of $3948 \times 5319$
 with 79171 non-zero elements, so the density of this matrix is 0.0038.
@@ -1132,6 +1132,290 @@ For example:
 
 
 
+\subsection{Evaluation Summary}
+
+
+The best definition embedding technique is soft association.
+The best clustering algorithm is $K$-Means with $K=9500$
+on the semantic space produced by rank-reduced SVD with $k = 250$
+with TF-IDF weight where TF is sublinear.
+
+To visualize the discovered namespaces, we first map them to a hierarchy
+as previously described in section~\ref{sec:hierarchy}, and then find the
+most frequent categories according to this hierarchy. Then, for each
+category, we rank all discovered identifier-definitions pairs, and show
+only the most highly ranked ones
+(see table~\ref{tab:top-namespaces}). Additionally, we show the most
+frequent Wikipedia categories that the documents inside the namespaces
+have, and also the most influential documents: the ones that contain
+more identifiers than others. We also repeat the same for Russian Wikipedia
+(see table~\ref{tab:top-namespaces-rus}).
+
+We can note that the top discovered namespaces are quite different
+across the two datasets, and there is no single namespace among the top namespaces
+that both datasets share. However, ``Group theory and generalizations''
+and ``Алгебра'' (``Algebra'') look a little similar and share a few identifiers.
+It is probably due to the fact that the datasets may be different in the content
+and have different distribution of categories. Also, the hierarchies matter
+as well: in case of Russian, the hierarchy is more general, and therefore
+the matched categories tend to be more general as well.
+
+
+
+
+\begin{table}
+\makebox[\textwidth][c]{\begin{tabular}{|c|x{3cm}|x{4cm}|x{3.5cm}|x{4cm}|}
+		\hline							
+Freq.	&	Namespaces	&	Definitions	&	Categories	&	Top Articles	\\
+		\hline							
+10	&	Fluid mechanics	&	$\rho$: density,
+$p$: pressure,
+$g$: acceleration,
+$k$: wavenumber,
+$u$: velocity,
+$v$: velocity,
+$\eta$: free surface,
+$\omega$: angular frequency,
+$z$: free surface,
+$\nu$: kinematic viscosity	&	Fluid dynamics;
+Fluid mechanics;
+Dynamics;
+Aerodynamics;
+Partial differential equations	&	Navier–Stokes equations;
+Stokes wave;
+Airy wave theory;
+Mild-slope equation;
+Classic energy problem in open-channel flow	\\
+		\hline							
+9	&	Differential and difference algebra	&	$R$: ring,
+$k$: field,
+$D$: city,
+$K$: field,
+$x$: polynomials,
+$\Gamma$: value group,
+$M$: submodule,
+$n$: matrix,
+$S$: ring,
+$v$: valuation	&	Abstract algebra;
+Algebra;
+Functions and mappings;
+Polynomials;
+Analytic functions	&	Recurrence relation;
+Spectral radius;
+Levi-Civita symbol;
+Perron–Frobenius theorem;
+Leibniz formula for determinants	\\
+		\hline							
+9	&	Partial differential equations	&	$\Omega$: domain,
+$t$: time,
+$L$: space,
+$p$: space,
+$\omega$: angular frequency,
+$V$: hilbert space,
+$D$: domain,
+$u$: horizontal velocity,
+$x$: time,
+$U$: velocity profiles	&	Partial differential equations;
+Differential equations;
+Multivariable calculus;
+Mathematical analysis;
+Fluid dynamics	&	Orr–Sommerfeld equation;
+Helmholtz equation;
+Fictitious domain method;
+Green's function for the three-variable Laplace equation;
+Eikonal equation	\\
+		\hline							
+8	&	Mathematical economics	&	$K$: strike,
+$P$: price level,
+$p$: probability,
+$u$: utility,
+$V$: money,
+$M$: money,
+$\alpha$: confidence level,
+$g$: distortion function,
+$\sigma$: volatility,
+$R_f$: return	&	Economics;
+Financial economics;
+Microeconomics;
+Mathematical finance;
+Economic theories	&	Modern portfolio theory;
+Lookback option;
+Binary option;
+Equation of exchange;
+Slutsky equation	\\
+		\hline							
+8	&	Foundations of probability theory	&	$X$: process,
+$t$: time,
+$X_t$: process,
+$P$: probability measure,
+$S$: state space,
+$s$: stochastic processe,
+$f$: measurable function,
+$M$: local martingale,
+$M_t$: local martingale,
+$W_t$: process	&	Stochastic processes;
+Probability theory;
+Statistics;
+Statistical data types;
+Measure theory	&	Wiener process;
+It\={o} calculus;
+Local martingale;
+Stratonovich integral;
+Glivenko–Cantelli theorem	\\
+		\hline							
+7	&	Group theory and generalizations	&	$G$: group,
+$H$: subgroup,
+$Z$: group,
+$K$: subgroup,
+$N$: group,
+$p$: power,
+$n$: root,
+$F$: free group,
+$Q$: extension,
+$T$: homomorphism	&	Group theory;
+Abstract algebra;
+Metric geometry;
+Algebraic structures;
+Theorems in group theory	&	Free abelian group;
+Center (group theory);
+Holomorph (mathematics);
+$P$-group;
+Powerful $p$-group	\\
+		\hline							
+7	&	General logic	&	$w$: world,
+$R$: binary relation,
+$P$: predicate,
+$Q$: statement,
+$W$: nodes,
+$\phi$: modal formula,
+$n$: natural number,
+$v$: world,
+$T$: relation,
+$k$: degree	&	Mathematical logic;
+Logic;
+Proof theory;
+Syntax (logic);
+Formal systems	&	Sequent calculus;
+First-order logic;
+Original proof of G\"odel's completeness theorem;
+Kripke semantics;
+Szpilrajn extension theorem	\\
+		\hline							
+\end{tabular}}
+\caption{Most frequent definitions in most frequent namespaces extracted from
+English Wikipedia.}
+\label{tab:top-namespaces}
+\end{table}
+
+
+
+\newgeometry{bottom=2cm}
+\begin{table}
+\makebox[\textwidth][c]{\begin{tabular}{|c|x{3cm}|x{5.2cm}|x{4.2cm}|x{4cm}|}
+		\hline							
+Freq.	&	Namespaces	&	Definitions	&	Categories	&	Top Articles	\\
+		\hline							
+10	&	Алгебра (Algebra)	&	$G$: группа (group),
+$V$: пространство (space),
+$p$: простой число (prime number),
+$K$: подпространство (subspace),
+$R$: кольцо (ring),
+$C$: категория (category),
+$n$: ``o ( n )'',
+$F$: поль (field),
+$L$: линейный пространство (linear space),
+$D$: категория (category)	&	Действие группы (Group action),
+Линейная алгебра (Linear algebra),
+Векторное пространство (Vector space),
+Алгебра (Algebra),
+Нормированное пространств (Normed vector space)	&	Общая алгебра (General algebra),
+Алгебра (algebra),
+Теория групп (Group theory),
+Линейная алгебра (Linear algebra),
+Теория колец (Ring theory)	\\
+\hline									
+7	&	Топология (Topology)	&	$M$: многообразие (manifold),
+$X$: топологический пространство (topologic space),
+$n$: многообразие (manifold),
+$U$: окрестность (neighborhood),
+$C$: класс (class),
+$S$: пучок (sheaf),
+$x$: пространство (space),
+$k$: ранг (rank),
+$V$: слой (layer),
+$f$: степень отображение (degree of mapping)	&	Топология (Topology);
+Дифференциальная геометрия и топология (Differential geometry and topology);
+Геометрия (Geometry);
+Общая топология (General topology);
+Общая алгебра (General algebra)	&	Параллельное поле (Parallel field);
+Алгебраическая топология (Algebraic topology);
+Векторное расслоение (Vector bundle);
+Когомологии де Рама (De Rham cohomologies);
+Структура (дифференциальная геометрия) (Structure -- differential geometry)	\\
+\hline									
+6	&	Теория вероятностей и математическая статистика (Probability and statistics)	&	$\Omega$: элементарный событие (event),
+$P$: вероятность (probability),
+$F$: алгебра событие (event algebra),
+$X$: случайный величина (random variable),
+$\omega$: множество элемент (element of set),
+$g$: интегрировать функция (integrable function),
+$n$: стремление (convergence),
+$N$: счётный мера (countable measure),
+$\sigma$: событие (event),
+$p$: момент (moment)	&	Теория вероятностей (Probability);
+Теория вероятностей и математическая статистика (Probability and statistics);
+Теория меры (Measure theory);
+Математические теоремы (Mathematical theorems);
+Теоремы теории вероятностей и математической статистики (Theorems of probability and statistics)	&	 Случайная величина (Random variable);
+Аксиоматика Колмогорова (Kolmogorov axioms);
+Пространство элементарных событий (Sample space);
+Теорема Лебега о мажорируемой сходимости (Lebesgue's dominated convergence theorem);
+$t$-Критерий Стьюдента (Student's $t$-test)	\\
+\hline									
+5	&	Физика элементарных частиц. Теория полей. Физика высоких энергий (Particle physics. Field theory. High energy physics)	&	$G$: гравитационный постоянный (gravitation constant),
+$M$: масса (mass),
+$c$: скорость свет (speed of light),
+$m_2$: масса (mass),
+$m$: масса (mass),
+$\Psi$: волновой функция (wave function),
+$m_1$: материальный точка масса (mass of material point),
+$t$: время (time),
+$r$: расстояние (distance),
+$R$: масса (mass)	&	Гравитация (Gravitation);
+Астрономия (Astronomy);
+Общая теория относительности (General relativity);
+Теория относительности (Relativity theory);
+Физическая космология (Physical cosmology)	&	Чёрная дыра (Black hole);
+Гравитационное красное смещение (Gravitational redshift);
+Квантовый компьютер (Quantum computer);
+Метрика Шварцшильда (Schwarzschild metric);
+Гравитация (Gravitation)	\\
+\hline									
+5	&	Оптика (Optics)	&	$\Phi_0$: поток излучение (Radiant flux),
+$\lambda$: длина (length),
+$\Phi$: поток излучение (Radiant flux),
+$l$: расстояние (distance),
+$\varepsilon$: приёмник (``receiver''),
+$n_1$: показатель преломление (refractive index),
+$K_m$: световой эффективность излучение (luminous efficacy),
+$n$: показатель преломление (refractive index),
+$n_2$: преломление среда (``refractive environment''),
+$r$: рассеяние (dispersion)	&	Оптика (Optics);
+Физические науки (Physical sciences);
+Волновая физика (Wave mechanics);
+Фотометрия (Photometry);
+Методы экспериментальной физики (Methods of experimental physics)	&	Энергия излучения (оптика) (Radiant energy);
+Облучённость (фотометрия) (Irradiance);
+Фотонный кристалл (Photonic crystal);
+Свет (Light);
+Сила излучения (фотометрия) (Radiant intensity) \\
+\hline									
+\end{tabular}}
+\caption{Most frequent definitions in most frequent namespaces extracted from Russian Wikipedia.}
+\label{tab:top-namespaces-rus}
+\end{table}
+\restoregeometry
+
 
 
 \subsection{Java Language Processing} \label{sec:jlp}
@@ -1309,18 +1593,3 @@ namespaces are not directly observed, and instead we can see only the documents 
 these namespaces are used. It is not the case for real namespaces
 in software: we do observe namespaces directly, and documents (that is, classes)
 are also the elements of the namespaces.
-
-
-\subsection{Evaluation Summary}
-
-
-
-
-
-The best definition embedding technique is soft association.
-The best clustering algorithm is $K$-Means with $K=9500$
-on the semantic space produced by rank-reduced SVD with $k = 250$
-with TF-IDF weight where TF is sublinear.
-
-
-

@@ -743,6 +743,12 @@ better in describing the semantic content of the document.
 Additionally, we see that clustering on the reduced space works better, 
 and in our case the best dimensionality reduction method is SVD.
 
+We also note that we do not discover many namespace-defining clusters. The 
+best result identifiers 414 clusters, while the desired number of clusters $K$
+is almost 10\,000. It means that information from about 9\,000 clusters is 
+discarded: in total there are 22\,512 documents, but identifiers from only 1\,773 
+are used, and the rest of the document (about 92\%) are not utilized at all.
+
 
 \subsubsection{Russian Wikipedia} \ \\
 
@@ -763,6 +769,9 @@ Additionally we can look at all definitions of ``$\lambda$'' across all discover
 (see table~\ref{tab:rus-lambda}). The scores of namespace relations extracted from Russian 
 wikipedia are generally smaller than in English, but it is most likely because 
 there are fewer relations in the Russian dataset.
+
+For the Russian part of Wikipedia, we also utilize just 382 documents, which is only 7\%, 
+and the rest of the documents (93\%) are filtered out.
 
 \begin{table}[h!]
 \centering
@@ -1574,16 +1583,56 @@ The top dimensions with the most influence in this cluster are
 \verb|svd.Factorization|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd.Factorization}}
 and \texttt{factorization}.
 
-% One of these
-% clusters is \verb|org.apache.mahout.math.neighborhood| cluster with
-% BruteSearch, FastProjectionSearch, LocalitySensitiveHashSearch, ProjectionSearch,
-% Searcher, LocalitySensitiveHashSearchTest, SearchSanityTest. All these classes are
-%related. Not all classes from this package are included. For example,
-% HashedVector and LumpyData are not, and, judging by the name of these
-%classes, they appear a bit different from the rest. Therefore
-%these classes are indeed semantically related.
-% There are many identifiers in this namespace
+Another interesting namespace is the distance namespace, with classes mostly 
+from \verb|common.distance|\footnote{full name: \texttt{org.apache.mahout.common.distance}}
+(see table~\ref{tab:mahout-dist-classes}).
+What is interesting, there are mostly tests in this cluster, but because they use 
+classes that they test, they roughly can be seen as documents that refer to
+some concepts defined outside of the cluster (see table~\ref{tab:mahout-dist-ids}). 
 
+
+\begin{table}[h!]
+\centering
+\begin{subtable}{\textwidth}
+\centering
+\begin{tabular}{|c|}
+  \hline
+Class name \\
+\hline
+\verb|org.apache.mahout.math.neighborhood.UpdatableSearcher| \\
+\verb|org.apache.mahout.common.distance.CosineDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.DefaultDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.DefaultWeightedDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.TestChebyshevMeasure| \\
+\verb|org.apache.mahout.common.distance.TestMinkowskiMeasure| \\
+\hline
+\end{tabular}
+\caption{A namespace-defining cluster about Distances.}
+\label{tab:mahout-dist-classes}
+\end{subtable}
+
+\begin{subtable}{\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+  \hline
+  ID & Class  \\
+  \hline
+\verb|chebyshevDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure| \\
+\verb|distanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|euclideanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|manhattanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|minkowskiDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|v| &  \verb|org.apache.mahout.math.Vector|  \\
+\verb|vector| &  \verb|org.apache.mahout.math.Vector| \\
+\hline
+\end{tabular}
+\caption{Definitions in the distance namespace.}
+\label{tab:mahout-dist-ids}
+\end{subtable}
+
+\caption{Namespace ``\texttt{distance}'' extracted from Apache Mahout.}
+\label{tab:mahout-namespaces}
+\end{table}
 
 Note that there is a difference between mathematical namespaces and
 namespaces discovered in the source code. The found ``namespaces'' do not necessarily

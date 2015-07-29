@@ -2,7 +2,12 @@
 
 In this chapter we give important implementation details.
 
-First, we describe the datasets for our experiments in section~\ref{sec:dataset}
+First, we describe the data sets we use for our experiments and how they are
+cleaned  in section~\ref{sec:dataset}.
+Then we explain how definition extraction is implemented in 
+section~\ref{sec:defextraction-impl} and how we implement cluster analysis methods. 
+Finally, section~\ref{sec:building-namespaces} shows how we can build a namespace 
+from a cluster of documents. 
 
 
 \subsection{Data set} \label{sec:dataset}
@@ -565,7 +570,7 @@ this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wiki
 document. This information can be retrieved in chunks for a group of several
 documents at once, and therefore it is quite fast.
 
-\subsection{Building Namespaces} 
+\subsection{Building Namespaces}  \label{sec:building-namespaces}
 
 Once a cluster analysis algorithm assigns documents in our collection to
 some clusters, we need to find namespaces among these clusters. We assume that

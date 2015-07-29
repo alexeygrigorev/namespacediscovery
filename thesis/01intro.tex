@@ -5,12 +5,12 @@ that are grouped because they share functionality or purpose,
 typically for providing modularity and resolving name conflicts \cite{duval2002metadata}.
 For example, XML uses namespaces to prefix element names to ensure uniqueness and remove ambiguity between them \cite{xmlnamespaces}, and the Java programming language uses packages to organize identifiers into namespaces for modularity \cite{gosling2014java}.
 
-In this thesis we will extend the notion of namespaces to mathematical formulae. 
+In this thesis we extend the notion of namespaces to mathematical formulae. 
 In mathematics, there exists a special system of choosing identifers, and it is called 
 \emph{mathematical notation} \cite{wikinotation}. Because of the notation, 
 when people write ``$E=mc^2$'', the meaning of this expression is recognized among scientists. 
 However, the same identifier may be used in different areas, but denote 
-different things: For example, ``$E$'' may refer to ``energy'', ``expected value'' or 
+different things: For example, ``$E$\,'' may refer to ``energy'', ``expected value'' or 
 ``elimination matrix'', depending on the domain of the article.
 We can compare this problem with the problem of name collision in computer science 
 and introduce namespaces of identifiers in mathematical notation to overcome it. 
@@ -20,7 +20,6 @@ However, the notation only exists in the documents where it is used, and it does
 not exist in isolation. 
 It means that the identifer namespaces should be discovered from the documents 
 with mathematical formulae. 
-
 Therefore, the goal of this work is to \textbf{automatically discover a set of identifier
 namespaces given a collection of documents}.
 
@@ -36,17 +35,19 @@ familiarize with the notation faster.
 Additionally, it may also help to locate the usages of a particular identifier and 
 refer to other documents where the identifier is used. 
 
-%Finally, it gives a way to avoid am
-%Additionally, it may give a way to avoid ambiguity. If we follow the XML approach 
-% [11] and prepend namespace to the identifier, e.g. ``physics.E'', then it will 
-% give additional context and make it clear that ``physics.$E$'' means ``energy'' 
-% rather than ``expected value''.
+Namespaces also give a way to avoid ambiguity. If we refer to an identifier from a 
+particular namespace, then it is clear what the semantic meaning of this 
+identifier. For example, if we say that ``$E$\,'' belongs to a namespaces 
+about physics, it gives additional context and makes it clear that ``$E$\,''
+means ``energy'' rather than ``expected value''.
 
 Finally, using namespaces is beneficial for relating identifiers to 
 definitions. Thus, as an application of namespaces, we can use them for better 
-definition extraction. It will help to overcome some of the current problems in this area, 
-for example, the problem of dangling identifiers -- identifiers that are used in formulas but never defined in the document \cite{pagael2014mlp}. Such identifiers may be defined in other 
-documents that share the same namespace, and thus we can take the definition from the namespace and assign it to the dangling identifier.
+definition extraction. It will help to overcome some of the current problems in 
+this area, for example, the problem of dangling identifiers~-- identifiers that are 
+used in  formulas but never defined in the document \cite{pagael2014mlp}. 
+Such identifiers may be defined in other documents that share the same namespace, 
+and thus we can take the definition from the namespace and assign it to the dangling identifier.
 
 
 

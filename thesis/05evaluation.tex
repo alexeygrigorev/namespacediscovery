@@ -1,6 +1,11 @@
 \section{Evaluation}
 
-Describe  the dataset and experimental setup; describe the results.
+% Describe  the dataset and experimental setup; describe the results.
+In this chapter we describe the experimental setup and the obtained 
+results. 
+
+First, section~\ref{sec:param-tuning} describes parameter tuning: there 
+are many possible choices of parameters, and we find the best. 
 
 
 
@@ -538,7 +543,35 @@ established that it usually does not give better results while taking significan
 longer time.
 
 
+\subsubsection{Russian Wikipedia} 
+
+Based on the experiments we have performed on English Wikipedia, we see that the best
+performance is obtained with weak association by using MiniBatch $K$-Means on
+LSA space reduced by SVD.
+In this section we apply the best performing technique on Russian Wikipedia.
+
+The identifier-document matrix has the dimensionality of $3948 \times 5319$
+with 79171 non-zero elements, so the density of this matrix is 0.0038.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{k-vs-kmeans-rus.pdf}
+\caption{Performace of $K$-Means with SVD for Russian Wikipedia.}
+\label{fig:k-vs-kmeans-rus.pdf}
+\end{figure}
+
+As usually, we applied SVD with different values of rank $k \in \{150, 250, 350\}$,
+and, similarity to no-definitions case for English Wikipedia, we do not
+observe significant differences across different values of $k$
+(see fig.~\ref{fig:k-vs-kmeans-rus.pdf}). The best achieved result is 
+105 namespace-defining clusters. 
+
+
 \subsection{Result Analysis}
+
+\subsubsection{English Wikipedia} \ \\
+
 
 \textbf{TODO: rewrite slightly}
 
@@ -711,31 +744,11 @@ Additionally, we see that clustering on the reduced space works better,
 and in our case the best dimensionality reduction method is SVD.
 
 
+\subsubsection{Russian Wikipedia} \ \\
 
-\subsection{Russian Wikipedia} % \ \\
-
-Based on the experiments we have performed on English Wikipedia, we see that the best
-performance is obtained with weak association by using MiniBatch $K$-Means on
-LSA space reduced by SVD.
-In this section we apply the best performing technique on Russian Wikipedia.
-
-The identifier-document matrix has the dimensionality of $3948 \times 5319$
-with 79171 non-zero elements, so the density of this matrix is 0.0038.
-
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.9\textwidth]{k-vs-kmeans-rus.pdf}
-\caption{Performace of $K$-Means with SVD for Russian Wikipedia.}
-\label{fig:k-vs-kmeans-rus.pdf}
-\end{figure}
-
-As usually, we applied SVD with different values of rank $k \in \{150, 250, 350\}$,
-and, similarity to no-definitions case for English Wikipedia, we do not
-observe significant differences across different values of $k$
-(see fig.~\ref{fig:k-vs-kmeans-rus.pdf}).
-The best results with 105 namespace-defining clusters and with overall purity of 0.73 is
-obtained by $K=3000$ and $k = 250$, and the largest namespace-defining clusters
+For Russian Wikipedia, the best results is 105 namespace-defining clusters 
+with overall purity of 0.73. It was obtained by $K=3000$ and $k = 250$. 
+The largest namespace-defining clusters
 are shown in table~\ref{tab:rus-wiki-categories}. Interestingly, there is a cluster
 ``Животные'' (``Animals'') where mathematical formulae are used to describe ``tooth formula''.
 Let us consider a cluster about Linear Algebra (see table~\ref{tab:rus-la})
@@ -960,11 +973,9 @@ between these vectors is calculated. For this example, the cosine is
 approximately 0.75, and this is the largest similarity, and therefore this namespace
 is mapped to the ``General logic'' subcategory.
 
-Unfortunately the mapping is not always correct.
+\ \\
 
-
-For example, let us consider ... the best clustering with 400+ discovered namespaces
-from LSA with SVD and $K$-Means.
+For example, let us consider the namespaces discovered from English Wikipedia.
 
 The majority of namespaces are mapped correctly. For example:
 
@@ -1009,7 +1020,7 @@ The majority of namespaces are mapped correctly. For example:
 \end{small}
 
 
-Some are somewhat accurate:
+Some of the mapped namespaces are partially accurate:
 
 \begin{small}
 \begin{itemize}
@@ -1071,7 +1082,55 @@ Finally, namespaces marked as ``OTHER'' are usually matched incorrectly:
 \end{itemize}
 \end{small}
 
-\textbf{TODO: Here goes the Russian hierarchy}
+\ \\
+
+For the Russian version of Wikipedia, the majority of namespaces are also mapped correctly. 
+For example: 
+
+\begin{small}
+\begin{itemize}
+
+\item АСТРОНОМИЯ (ASTRONOMY)
+    \begin{itemize}
+      \item Звезды (Stars)
+           (wiki: Физические науки (Physical sciences), Астрофизика (Astrophysics), Астрономия (Astronomy))
+    \end{itemize}
+
+\item ГЕОФИЗИКА (GEOPHYSICS)
+    \begin{itemize}
+      \item Океанология (Oceanology) (wiki: Океанология (Oceanology), Физическая география (Physical geography), Гидрология (Hydrology))
+    \end{itemize}
+
+\item КИБЕРНЕТИКА (CYBERNETICS)
+    \begin{itemize}
+      \item Теория информации (Information theory) (wiki: Цифровые системы (Digital systems), Теория информации (Information theory), Теория кодирования (Coding theory))
+      \item Теория конечных автоматов и формальных языков (Finite state automata and formal languages) (wiki: Теория алгоритмов (Algorithmic theory), Теория автоматов (Automata theory), Визуализация данных (Data visualization))
+    \end{itemize}
+
+\item МАТЕМАТИКА (MATHEMATICS)
+    \begin{itemize}
+      \item Математический анализ (Mathematical analysis) (wiki: Математический анализ (Mathematical analysis), Разделы математики (Parts of mathematics), Функциональный анализ (Functional analysis))
+      \item Теория вероятностей и математическая статистика (Probability and statistics) (wiki: Теория вероятностей (Probability), Теория вероятностей и математическая статистика (Probability and statistics), Теория меры (Measure theory))
+      \item Основания математики и математическая логика (Foundation of mathematics and mathematica logics) (wiki: Логика (Logic), Разделы математики (Parts of mathematics), Математика (Mathematics))
+      \item Алгебра (Algebra) (wiki: Теория колец (Rings Theory), Теория полей (Fields Theory), Теория групп (Groups Theory))
+    \end{itemize}
+
+\item МЕТРОЛОГИЯ (METROLOGY)
+    \begin{itemize}
+      \item Измерения отдельных величин и характеристик (Measurements of individual values and characteristics) (wiki: Единицы измерения (Units of measure), Системы мер (Measure systems), Макс Планк (Max Plank))
+    \end{itemize}
+
+\item ФИЗИКА (PHYSICS)
+    \begin{itemize}
+      \item Физика элементарных частиц. Теория полей. Физика высоких энергий (Particle physics. Field theory. High-energy physics) (wiki: Гравитация (Gravity), Классическая механика (Classical mechanics), Классическая физика (Classical physics))
+      \item Физика твердых тел (Physics of solids) (wiki: Физика конденсированного состояния (Condensed matter physics), Кристаллография (Crystallography), Физика твёрдого тела (Physics of solids))
+      \item Оптика (Optics) (wiki: Оптика (Optics), Физические науки (Physical sciences), Методы экспериментальной физики (Methods of experimental physics))
+    \end{itemize}
+
+\end{itemize}
+\end{small}
+
+
 
 
 
@@ -1255,16 +1314,6 @@ are also the elements of the namespaces.
 \subsection{Evaluation Summary}
 
 
-Hierarcical methods are too slow, and SLINK is not good.
-%Bisecting $K$-Means is good for explaining steps but not very practical
-
-MiniBatch K means is preferred to usual KMeans:
-fast but same results
-
-The baseline of random cluster assignment is beaten.
-
-NMF takes a lot of time to decompose a matrix with large
-$k$
 
 
 

@@ -4,30 +4,51 @@
 In computer science, a \emph{namespace} refers to a collection of
 terms that are managed together because they share functionality or
 purpose, typically for providing modularity and resolving name conflicts.
+%TODO: Where does this definition come from. I would prefer to argue that
+% NS are heavily used and greatly appreciated by programmer to ...
 
-In this thesis we extend the notion of namespaces to mathematical formulae.
 In mathematics, the same identifier may be used in different areas
-but denote different things. By introducing namespaces to
+but denote different things. 
+%TODO: Describe the consequences for Mathematicians and especially people
+% coming from other fields that are confused by ambiguity describe the idea
+% to transfer the NS concept originating from CS to STEM.
+In this thesis, we extend the notion of namespaces to mathematical formulae.
+By introducing namespaces to
 formulae, this ambiguity can be resolved. 
 
-It is not feasible to construct identifier namespaces manually, and 
+It is not feasible to construct identifier namespaces manually,
+% TODO: Describe how many formulae are out there. Estimate the effort it would be to
+% manually update all identifiers "it is not feasible" is not justified. Get rid
+% of all unjustified statements in your thesis and the quality will increase a lot.
+and 
 therefore we propose a method for namespace discovery given a collection
-of scientific documents. We argue that document representation in terms 
+of scientific documents.
+%We argue that 
+Document representation in terms 
 of identifiers is similar to the traditional way of representing documents
-in the Vector Space Model. By comparing these approaches we
-develop a method for automatic namespace discovery based on techniques from
-document clustering. Not all discovered clusters are equally good, and we apply 
-additional filtering to select namespace-defining clusters based on 
-document categories.
+in the Vector Space Model. 
+By comparing these %TODO: which?
+approaches we develop a method
+%TODO: This is too generic
+for automatic namespace discovery based on techniques from
+document clustering. 
+%Not all discovered clusters are equally good, and 
+We apply additional filtering to select namespace-defining clusters based on 
+document categories. %TODO: I don't understand that. How do we EVALUATE?
 
-To cluster documents we use established cluster analysis algorithms like
+To cluster documents we, use established cluster analysis algorithms like
 $K$-Means, DBSCAN and Latent Semantic Analysis, and these techniques
 are evaluated on English Wikipedia. Additionally, we use Russian
 Wikipedia to compare the performance of our approach on a different dataset, and
 the results are consistent across the languages. However there is some difference
+%TODO: Describe the differences and why they were expected
 in the distribution of extracted namespaces, which makes the direct 
 comparison difficult. 
 
 The obtained results indicate that the identifier namespace discovery is
 possible, although we expected to discover more namespaces. We see many ways 
 to improve the results further.
+%TODO: This is not very convincing. You should consider that you were the first
+% to work on this difficult problem and for your master thesis your time was
+% restricted to nominal 900 hours which usually can be multiplied with a factor
+% of 1.5 to estimate the time people expect you to have spent on your thesis.

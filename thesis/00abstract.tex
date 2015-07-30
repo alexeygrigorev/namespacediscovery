@@ -4,20 +4,22 @@ In computer science, a \emph{namespace} refers to a collection of
 terms that are grouped together because they share functionality or
 purpose, typically for providing modularity and resolving name conflicts
 \cite{duval2002metadata}.
-Programmers recognize the value of namespaces: they allow to 
-add the structure and hierarchical organization to the source code
-\cite{mcarthur2008php6}. 
+Programmers recognize the importance of namespaces: with namespaces, it is 
+possible to add the structure and hierarchical organization to the source code
+\cite{mcarthur2008php6}.
 
 In mathematics, the same identifier may be used in different areas
-but denote different things. 
-This ambiguity is confusing for people who are learning a particular 
-area while coming from a different field.
+but denote different things, and this
+ambiguity is confusing for people who are learning a particular 
+area. It would be helpful for them to have a clear way of organizing 
+identifiers into a hierarchical structure, in the same way the source 
+code is organized in programming languages.
 %TODO: Describe the consequences for Mathematicians and especially people
 % coming from other fields that are confused by ambiguity describe the idea
 % to transfer the NS concept originating from CS to STEM.
-In this thesis, we extend the notion of namespaces to mathematical formulae.
+In this thesis we extend the notion of namespaces to mathematical formulae.
 By introducing namespaces to mathematics not only the ambiguity can be resolved, 
-but also it can help organize the mathematical knowledge in hierarchies,
+but also the mathematical knowledge can be systematized,
 thus helping scientists to comprehend the notation in new areas quicker. 
 
 It is not feasible to construct identifier namespaces manually:
@@ -28,18 +30,19 @@ it would take approximately 3.4 months to complete the task.
 % TODO: Describe how many formulae are out there. Estimate the effort it would be to
 % manually update all identifiers "it is not feasible" is not justified. Get rid
 % of all unjustified statements in your thesis and the quality will increase a lot.
-Therefore we propose an automatic method for namespace discovery, and our goal 
+In this work we propose an automatic method for namespace discovery, and our goal 
 is to discover namespaces in mathematical identifiers given a collection of scientific 
 documents.
 
-We argue that document representation in terms of identifiers is similar to the 
-traditional way of representing documents in the Vector Space Model. We recognize 
-that the problem of namespace discovery can be seen as a clustering problem.
+We recognize that the problem of namespace discovery can be seen as a 
+clustering problem.
+In addition, we argue that document representation in terms of identifiers is similar to the 
+traditional way of representing documents in the Vector Space Model. 
 By comparing both ways of representing documents, we develop a method based 
 on techniques from document clustering: first, we apply cluster analysis algorithms 
 to discover document clusters, and then, we retain only pure ``namespace-defining'' clusters.
 The purity of clusters is calculated based on the category information, and a 
-cluster is \emph{namespace-defining}, if it its documents are about the same category. 
+cluster is \emph{namespace-defining}, if it its documents are about the same domain. 
 
 %By comparing these %TODO: which?
 %approaches we develop a method

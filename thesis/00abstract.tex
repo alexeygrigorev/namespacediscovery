@@ -1,81 +1,52 @@
 \section*{Abstract}
 
-In computer science, a \emph{namespace} refers to a collection of
-terms that are grouped together because they share functionality or
-purpose, typically for providing modularity and resolving name conflicts
-\cite{duval2002metadata}.
-Programmers recognize the importance of namespaces: with namespaces, it is 
-possible to add the structure and hierarchical organization to the source code
-\cite{mcarthur2008php6}.
+% Motivation 
+In Computer Science, namespaces help to structure source code and
+organize it into hierarchies. Initially, the concept of a namespace did not 
+exist for programming languages, and programmers had to manage the source code
+such that there was no name conflicts. However, nowadays, the majority 
+of modern programming languages have adopted this concept and have namespaces. 
 
-In mathematics, the same identifier may be used in different areas
-but denote different things, and this
-ambiguity is confusing for people who are learning a particular 
-area. It would be helpful for them to have a clear way of organizing 
-identifiers into a hierarchical structure, in the same way the source 
-code is organized in programming languages.
-%TODO: Describe the consequences for Mathematicians and especially people
-% coming from other fields that are confused by ambiguity describe the idea
-% to transfer the NS concept originating from CS to STEM.
-In this thesis we extend the notion of namespaces to mathematical formulae.
-By introducing namespaces to mathematics not only the ambiguity can be resolved, 
-but also the mathematical knowledge can be systematized,
-thus helping scientists to comprehend the notation in new areas quicker. 
+The concept of namespaces is beneficial for mathematics as well: 
+In mathematics, short one-symbol identifiers are very common, 
+and the meaning of these identifiers is hard to understand immediately. 
+If we transfer the concept of namespaces to mathematics for organizing mathematical identifiers, 
+mathematician will also benefit from a hierarchical organization of 
+knowledge in the same way as programmers. In addition, this structure 
+will make it easier to understand what each identifier in a document means.
 
-It is not feasible to construct identifier namespaces manually:
-for a data set with 300\,000 identifiers, assuming that the speed of 
-assigning an identifier to its namespace is 30 seconds,
-% and also that the person performing the task is knowledgeable , 
-it would take approximately 3.4 months to complete the task.
-% TODO: Describe how many formulae are out there. Estimate the effort it would be to
-% manually update all identifiers "it is not feasible" is not justified. Get rid
-% of all unjustified statements in your thesis and the quality will increase a lot.
-In this work we propose an automatic method for namespace discovery, and our goal 
-is to discover namespaces in mathematical identifiers given a collection of scientific 
-documents.
 
-We recognize that the problem of namespace discovery can be seen as a 
-clustering problem.
-In addition, we argue that document representation in terms of identifiers is similar to the 
-traditional way of representing documents in the Vector Space Model. 
-By comparing both ways of representing documents, we develop a method based 
-on techniques from document clustering: first, we apply cluster analysis algorithms 
-to discover document clusters, and then, we retain only pure ``namespace-defining'' clusters.
-The purity of clusters is calculated based on the category information, and a 
-cluster is \emph{namespace-defining}, if it its documents are about the same domain. 
+% Goal 
+In this thesis, we look at the problem of assigning each identifier from a document 
+to some namespace. To the moment, there does not exist a special dataset where 
+all identifiers are grouped to namespaces, and therefore we need to create 
+such a dataset ourselves.
 
-%By comparing these %TODO: which?
-%approaches we develop a method
-%TODO: This is too generic
-%for automatic namespace discovery based on techniques from
-%document clustering.
-%Not all discovered clusters are equally good, and
-%We apply additional filtering to select namespace-defining clusters based on
-%document categories. %TODO: I don't understand that. How do we EVALUATE?
 
-To cluster documents, we use established cluster analysis algorithms like
-$K$-Means, DBSCAN and Latent Semantic Analysis, and we look for an algorithm 
-that discovers as many namespace-defining clusters as possible. 
-These techniques are evaluated on English Wikipedia, and additionally, we use Russian
-Wikipedia to compare the performance of our approach on a different dataset. 
-We observe that the results are consistent across the languages. However there is some 
-difference in the distribution of extracted namespaces: the most common 
-namespaces discovered from English Wikipedia are different from the namespaces 
-from Russian Wikipedia, and this is expected because the datasets are different. 
-%TODO: Describe the differences and why they were expected
-% which makes the direct comparison difficult.
+% Method + evaluation
+Namespaces are hard to prepare manually: it requires a lot of time and effort. 
+However, it can be done automatically, and we propose 
+a method for automatic namespace discovery from a collection of documents. 
 
-To our knowledge, the problem of discovering namespaces in mathematical notation
-has not been addressed before, and there are no established techniques that 
-work best. In this work we had to progress through trial and error, and 
-due to limited amount of time, it was not possible to evaluate all possible 
-approaches.
+First, we locate groups where documents use identifiers in the same way, and this 
+is a cluster analysis problem.
+We argue that documents can be represented by the identifiers they contain, and this 
+approach is similar to representing textual information in Vector Space Model.
+Because of this, we apply traditional document clustering techniques for namespace 
+discovery.
 
-However, the obtained results indicate that the identifier namespace discovery is
-possible, although we expected to discover more namespaces. We also outline many 
-ways to improve the results further.
+Then, to evaluate the results, we use the category information, and look for pure 
+``namespace-defining'' clusters: clusters where all documents are from the same category. 
+In the experiments, we look for algorithms that discover as many namespace-defining 
+clusters as possible.
 
-%TODO: This is not very convincing. You should consider that you were the first
-% to work on this difficult problem and for your master thesis your time was
-% restricted to nominal 900 hours which usually can be multiplied with a factor
-% of 1.5 to estimate the time people expect you to have spent on your thesis.
+The algorithms are evaluated on English Wikipedia, and the proposed method 
+can extract namespaces on a variety of topics. 
+We also apply it to Russian Wikipedia, and the results are consistent across 
+the languages.
+
+% Result
+To our knowledge, the problem of introducing namespaces to mathematics has not
+been studied before, and prior to our work there has been no dataset where identifiers 
+are grouped into namespaces. Thus, our result is not only a good start, 
+but it also a good indicator that automatic namespace discovery is possible. 

@@ -1,53 +1,77 @@
 \section*{Abstract}
 
-
 In computer science, a \emph{namespace} refers to a collection of
-terms that are managed together because they share functionality or
-purpose, typically for providing modularity and resolving name conflicts.
-%TODO: Where does this definition come from. I would prefer to argue that
-% NS are heavily used and greatly appreciated by programmer to ...
+terms that are grouped together because they share functionality or
+purpose, typically for providing modularity and resolving name conflicts
+\cite{duval2002metadata}.
+Programmers recognize the value of namespaces: they allow to 
+add the structure and hierarchical organization to the source code
+\cite{mcarthur2008php6}. 
 
 In mathematics, the same identifier may be used in different areas
 but denote different things. 
+This ambiguity is confusing for people who are learning a particular 
+area while coming from a different field.
 %TODO: Describe the consequences for Mathematicians and especially people
 % coming from other fields that are confused by ambiguity describe the idea
 % to transfer the NS concept originating from CS to STEM.
 In this thesis, we extend the notion of namespaces to mathematical formulae.
-By introducing namespaces to
-formulae, this ambiguity can be resolved. 
+By introducing namespaces to mathematics not only the ambiguity can be resolved, 
+but also it can help organize the mathematical knowledge in hierarchies,
+thus helping scientists to comprehend the notation in new areas quicker. 
 
-It is not feasible to construct identifier namespaces manually,
+It is not feasible to construct identifier namespaces manually:
+for a data set with 300\,000 identifiers, assuming that the speed of 
+assigning an identifier to its namespace is 30 seconds,
+% and also that the person performing the task is knowledgeable , 
+it would take approximately 3.4 months to complete the task.
 % TODO: Describe how many formulae are out there. Estimate the effort it would be to
 % manually update all identifiers "it is not feasible" is not justified. Get rid
 % of all unjustified statements in your thesis and the quality will increase a lot.
-and 
-therefore we propose a method for namespace discovery given a collection
-of scientific documents.
-%We argue that 
-Document representation in terms 
-of identifiers is similar to the traditional way of representing documents
-in the Vector Space Model. 
-By comparing these %TODO: which?
-approaches we develop a method
+Therefore we propose an automatic method for namespace discovery, and our goal 
+is to discover namespaces in mathematical identifiers given a collection of scientific 
+documents.
+
+We argue that document representation in terms of identifiers is similar to the 
+traditional way of representing documents in the Vector Space Model. We recognize 
+that the problem of namespace discovery can be seen as a clustering problem.
+By comparing both ways of representing documents, we develop a method based 
+on techniques from document clustering: first, we apply cluster analysis algorithms 
+to discover document clusters, and then, we retain only pure ``namespace-defining'' clusters.
+The purity of clusters is calculated based on the category information, and a 
+cluster is \emph{namespace-defining}, if it its documents are about the same category. 
+
+%By comparing these %TODO: which?
+%approaches we develop a method
 %TODO: This is too generic
-for automatic namespace discovery based on techniques from
-document clustering. 
-%Not all discovered clusters are equally good, and 
-We apply additional filtering to select namespace-defining clusters based on 
-document categories. %TODO: I don't understand that. How do we EVALUATE?
+%for automatic namespace discovery based on techniques from
+%document clustering.
+%Not all discovered clusters are equally good, and
+%We apply additional filtering to select namespace-defining clusters based on
+%document categories. %TODO: I don't understand that. How do we EVALUATE?
 
-To cluster documents we, use established cluster analysis algorithms like
-$K$-Means, DBSCAN and Latent Semantic Analysis, and these techniques
-are evaluated on English Wikipedia. Additionally, we use Russian
-Wikipedia to compare the performance of our approach on a different dataset, and
-the results are consistent across the languages. However there is some difference
+To cluster documents, we use established cluster analysis algorithms like
+$K$-Means, DBSCAN and Latent Semantic Analysis, and we look for an algorithm 
+that discovers as many namespace-defining clusters as possible. 
+These techniques are evaluated on English Wikipedia, and additionally, we use Russian
+Wikipedia to compare the performance of our approach on a different dataset. 
+We observe that the results are consistent across the languages. However there is some 
+difference in the distribution of extracted namespaces: the most common 
+namespaces discovered from English Wikipedia are different from the namespaces 
+from Russian Wikipedia, and this is expected because the datasets are different. 
 %TODO: Describe the differences and why they were expected
-in the distribution of extracted namespaces, which makes the direct 
-comparison difficult. 
+% which makes the direct comparison difficult.
 
-The obtained results indicate that the identifier namespace discovery is
-possible, although we expected to discover more namespaces. We see many ways 
-to improve the results further.
+To our knowledge, the problem of discovering namespaces in mathematical notation
+has not been addressed before, and there are no established techniques that 
+work best. In this work we had to progress through trial and error, and 
+due to limited amount of time, it was not possible to evaluate all possible 
+approaches.
+
+However, the obtained results indicate that the identifier namespace discovery is
+possible, although we expected to discover more namespaces. We also outline many 
+ways to improve the results further.
+
 %TODO: This is not very convincing. You should consider that you were the first
 % to work on this difficult problem and for your master thesis your time was
 % restricted to nominal 900 hours which usually can be multiplied with a factor

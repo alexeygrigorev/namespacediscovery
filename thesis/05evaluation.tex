@@ -578,11 +578,9 @@ observe significant differences across different values of $k$
 \subsubsection{English Wikipedia} \ \\
 
 
-\textbf{TODO: rewrite slightly}
-
-
-The best performing method is $K$-Means, and the best way to include 
-definitions into Identifier Space is by using the soft association. 
+In the previous chapter we have established that the best way to incorporate 
+definitions into Intensifier Vector Space is by using soft association, and the best 
+clustering performing method is MiniBatch $K$-Means.
 
 
 \begin{table}[h!]
@@ -722,7 +720,7 @@ $\lambda_i$ & eigenvalue & 0.98 \\
 \end{table}
 
 The best result is 414 namespace-defining clusters, it is ten times better
-than the baseline result, and it is achieved by $K$-Means with
+than the baseline result. The result is achieved by $K$-Means with
 soft association using parameters $K=9750$ and $k=350$. The purity of this 
 clustering is $0.63$. The largest namespace-defining clusters discovered 
 by this methods are presented in the table~\ref{tab:soft-kmeans-svd}.
@@ -738,12 +736,10 @@ Some cases are not correct, for example, when we have clusters with the same nam
 where $\lambda$ denotes different things (e.g. in two ``Quantum Mechanics'' clusters),
 or in the case of ``Linear Algebra'' cluster where it denotes a matrix.
 
-
 Clustering results with sort association are better than results obtained
 with hard association. One of the reasons for that can the the fact that
 definitions may act as keywords that describe the document and they are
 better in describing the semantic content of the document. 
-
 
 Additionally, we see that clustering on the reduced space works better, 
 and in our case the best dimensionality reduction method is SVD.
@@ -763,14 +759,14 @@ The largest namespace-defining clusters
 are shown in table~\ref{tab:rus-wiki-categories}. Interestingly, there is a cluster
 ``Животные'' (``Animals'') where mathematical formulae are used to describe ``tooth formula''.
 Let us consider a cluster about Linear Algebra (see table~\ref{tab:rus-la})
-and definitions extracted from it (see table~\ref{tab:rus-la}). Similarity to English wikipedia,
+and definitions extracted from it (see table~\ref{tab:rus-la}). Similarity to English Wikipedia,
 some of the definitions are correct and valid, for example, ``сингулярный число''
 (``singular value'') for ``$\sigma$''  or ``ранг'' (``rank'') for ``$r$'', while some
 are not quite correct, e.g. ``скаляр'' (``scalar'') for ``$\lambda$''.
 Additionally, some of the non-valid definitions seem to result from misclassifications
 by the POS-tagger, for example, ``$\Sigma$'' is defined as ``вдоль'' (literally ``along''),
 which do not make much sense.
-Additionally we can look at all definitions of ``$\lambda$'' across all discovered namespaces
+Furthermore, we can look at all definitions of ``$\lambda$'' across all discovered namespaces
 (see table~\ref{tab:rus-lambda}). The scores of namespace relations extracted from Russian 
 wikipedia are generally smaller than in English, but it is most likely because 
 there are fewer relations in the Russian dataset.
@@ -907,7 +903,7 @@ ends with 99: they are usually ``Miscellaneous topics'' or
 ``None of the above, but in this section''.
 
 Additionally, we excluded the following second level categories because
-they interfere with PACS, a hierarchy for Physics:
+they interfere with PACS, a different hierarchy for Physics:
 
 \begin{itemize}
 \item Quantum theory $\to$ Axiomatics, foundations, philosophy
@@ -928,13 +924,12 @@ The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS)
 Like in MSC, we remove the top-level category  ``GENERAL''.
 
 Finally, we also use the ACM Classification Scheme \cite{rous2012acm}
-available as a SKOS \cite{miles2005skos} ontology at their website \cite{amc2012ccs}.
-The SKOS ontology graph was processed with RDFLib \cite{rdflib}.
-We use the following top level categories:
-``Hardware'', ``Computer systems organization'', ``Networks'',
-``Software and its engineering'', ``Theory of computation'',
-``Information systems'', ``Security and privacy'',
-``Human-centered computing'', ``Computing methodologies''.
+available as a SKOS \cite{miles2005skos} ontology at their 
+website\footnote{\url{https://www.acm.org/about/class/2012}}. The SKOS ontology graph was 
+processed with RDFLib \cite{rdflib}. We use the following top level categories:
+``Hardware'', ``Computer systems organization'', ``Networks'', 
+``Software and its engineering'', ``Theory of computation'', ``Information systems'', 
+``Security and privacy'', ``Human-centered computing'', ``Computing methodologies''.
 
 After obtaining and processing the data, the three hierarchies
 are merged into one.
@@ -945,10 +940,10 @@ a different hierarchy is needed for Russian. One of such hierarchies is
 ``Госу\-дар\-ствен\-ный руб\-ри\-ка\-тор научно-тех\-ни\-чес\-кой инфор\-ма\-ции''
 (ГРНТИ)~-- ``State categorizator of scientific and technical information'', which
 is a state-recommended scheme for categorizing scientific articles published
-in Russian  \cite{feodosimov2000grnti}. The hierarchy  is extracted from the
-official website\footnote{\url{http://grnti.ru/}}. It provides
-a very general categorization and therefore we keep only the following math-related
-categories: ``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''),
+in Russian \cite{feodosimov2000grnti}. The hierarchy  is extracted from the
+official website\footnote{\url{http://grnti.ru/}}. It provides a very general categorization 
+and therefore we keep only the following math-related categories: 
+``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''),
 ``Информатика'' (``Informatics''), ``Математика'' (``Mathematics''),
 ``Механика'' (``Mechanics''), ``Ста\-тис\-тика'' (``Statistics''),
 ``Физика'' (``Physics''), ``Химия'' (``Chemistry''),
@@ -989,8 +984,7 @@ is mapped to the ``General logic'' subcategory.
 
 \ \\
 
-For example, let us consider the namespaces discovered from English Wikipedia.
-
+Let us consider the namespaces discovered from English Wikipedia.
 The majority of namespaces are mapped correctly. For example:
 
 \begin{small}
@@ -1034,7 +1028,7 @@ The majority of namespaces are mapped correctly. For example:
 \end{small}
 
 
-Some of the mapped namespaces are partially accurate:
+However, some of the mapped namespaces are accurate only partially:
 
 \begin{small}
 \begin{itemize}

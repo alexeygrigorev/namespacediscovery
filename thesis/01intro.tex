@@ -54,6 +54,43 @@ and thus we can take the definition from the namespace and assign it to the dang
 
 \subsection{Thesis Outline}
 
+The thesis is organizes as follows: 
 
-\textbf{TODO:} Content in form of bullet points.
+\begin{description}
+\item[Chapter \ref{sec:background} -- \nameref{sec:background}] \hfill \\
+  In this chapter we do a survey of the related work. We discuss how namespaces are
+  used in Computer Science. Secondly, we review how definitions for identifiers 
+  used in mathematical formulae can be extracted from the natural language text
+  around the formulae. Finally, we review the Vector Space Model~-- a way of 
+  transforming texts to vectors, and then discuss how these vectors can be 
+  clustered. 
 
+\item[Chapter \ref{sec:namespace-discovery-chap} -- \nameref{sec:namespace-discovery-chap}] \hfill \\
+  In chapter \ref{sec:namespace-discovery-chap} we introduce the problem of namespaces 
+  in mathematical notation, discuss its similarities with namespaces in Computer Science,
+  and propose an approach to namespace discovery by using document clustering techniques. 
+  We also extend the Vector Space Model to represent identifiers and suggest several 
+  ways to incorporate definition information to the vector space. 
+
+\item[Chapter \ref{sec:implementation} -- \nameref{sec:implementation}] \hfill \\
+  Chapter \ref{sec:implementation} describes how the proposed approach is implemented. 
+  It includes the description of the data sets for our experiments, and the details of 
+  implementation of definition extraction and document cluster analysis algorithms. 
+  Additionally, we propose a way of converting document clusters to namespaces.
+
+\item[Chapter \ref{sec:evaluation} -- \nameref{sec:evaluation}] \hfill \\
+  In chapter \ref{sec:evaluation} we describe the parameter selection procedure,
+  and we present the results of the best performing method. Once the clusters are 
+  discovered, they are mapped to a hierarchy, and we summarize our findings 
+  by analyzing the most frequent namespaces and most frequent identifier-definition
+  relations in these namespaces.
+
+\item[Chapter \ref{sec:conclusions} -- \nameref{sec:conclusions}] \hfill \\
+  Chapter \ref{sec:conclusions} summarizes the findings.
+
+\item[Chapter \ref{sec:future-work} -- \nameref{sec:future-work}] \hfill \\
+  Finally, in chapter \ref{sec:future-work} we discuss the possible areas of improvements.
+  We conclude this chapter by identifying the questions that are not resolved and 
+  present challenges for future research on identifier namespace discovery.
+
+\end{description}

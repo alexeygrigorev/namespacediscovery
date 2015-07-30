@@ -1,4 +1,4 @@
-\section{Background and Related Work}
+\section{Background and Related Work} \label{sec:background}
 
 In this chapter we explain the related work: we give a short overview 
 about existing approaches and relevant methods. 
@@ -181,7 +181,7 @@ Formally, a phrase that defines a mathematical expression consists of three part
 In this work, we are interested in the first two parts: \emph{definiendum} and
 \emph{definiens}. Thus we define a \emph{relation} as a pair
 (definiendum, definiens). For example, ($E$, ``energy'') is a relation where
-$E$ is a definiendum, and ``energy'' is a definiens. We refer to definiendum as
+``$E$'' is a definiendum, and ``energy'' is a definiens. We refer to definiendum as
 identifier, and to definiens as definition, so relations are identifier-definition
 pairs.
 
@@ -424,15 +424,15 @@ document vectors \cite{ertoz2003finding}, and this effect is often called
 
 The inner product between two vectors can be used as a similarity function:
 the more similar two vectors are, the larger is their inner product.
-Geometrically the inner product between two vectors $\mathbf x$ and $\mathbf z$
+Geometrically the inner product between two vectors $\mathbf x$ and $\mathbf y$
 is defined as
-$\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$
-where $\theta$ is the angle between vectors $\mathbf x$ and $\mathbf z$.
+$\mathbf x^T \mathbf y = \|\mathbf x \| \, \| \mathbf y \| \, \cos \theta$
+where $\theta$ is the angle between vectors $\mathbf x$ and $\mathbf y$.
 In Linear Algebra, however, the inner product
 is defined as a sum of element-wise products of two vectors:
-given two vectors $\mathbf x$ and $\mathbf z$, the inner product is
-$\mathbf x^T \mathbf z = \sum_{i = 1}^n x_i \, z_i$ where $x_i$ and $z_i$
-are $i$th elements of $\mathbf x$ and $\mathbf z$, respectively.
+given two vectors $\mathbf x$ and $\mathbf y$, the inner product is
+$\mathbf x^T \mathbf y = \sum_{i = 1}^n x_i \, y_i$ where $x_i$ and $y_i$
+are $i$th elements of $\mathbf x$ and $\mathbf y$, respectively.
 The geometric and algebraic definitions are equivalent \cite{huges2013calculus}.
 
 
@@ -453,9 +453,9 @@ a very good indicator of vectors being similar or not.
 
 The angle between two vectors can be calculated from the geometric
 definition of inner product:
-$\mathbf x^T \mathbf z = \|\mathbf x \| \, \| \mathbf z \| \, \cos \theta$.
+$\mathbf x^T \mathbf y = \|\mathbf x \| \, \| \mathbf y \| \, \cos \theta$.
 By rearranging the terms we get
-$\cos \theta = \mathbf x^T \mathbf z \, / \, (\|\mathbf x \| \, \| \mathbf z \|)$.
+$\cos \theta = \mathbf x^T \mathbf y \, / \, (\|\mathbf x \| \, \| \mathbf y \|)$.
 
 We do not need the angle itself and can use the cosine directly
 \cite{manning2008introduction}.
@@ -513,12 +513,12 @@ Thus, a typical agglomerative clustering algorithms consists of the following st
 
 \begin{enumerate}
 \itemsep1pt\parskip0pt\parsep0pt
-  \item let each document be a cluster on its own
-  \item compute similarity between all pairs of clusters an store the
-      results in a similarity matrix
-  \item merge two most similar clusters
-  \item update the similarity matrix
-  \item repeat until everything belongs to the same cluster
+  \item Let each document be a cluster on its own;
+  \item Compute similarity between all pairs of clusters an store the
+      results in a similarity matrix;
+  \item Merge two most similar clusters;
+  \item Update the similarity matrix;
+  \item Repeat until everything belongs to the same cluster.
 \end{enumerate}
 
 These algorithms differ only in the way they calculate similarity between

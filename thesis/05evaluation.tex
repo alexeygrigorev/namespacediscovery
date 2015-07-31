@@ -4,7 +4,9 @@
 In this chapter we describe the experimental setup and the obtained 
 results. 
 
-First, section~\ref{sec:param-tuning} describes parameter tuning: there 
+First, section~\ref{sec:jlp} verifies that the namespace discovery is possible
+by applying the proposed technique to Java source code. 
+Next, section~\ref{sec:param-tuning} describes parameter tuning: there
 are many possible choices of parameters, and we find the best. 
 Once the best algorithm and its parameters are selected, we analyze 
 the obtained results in section~\ref{sec:result-analysis}. Next, 
@@ -12,6 +14,253 @@ we describe how the discovered clusters can be mapped to a hierarchy
 in section~\ref{sec:hierarchy}, and finish by summarizing our findings 
 in section~\ref{sec:evaluation-summary}.
 
+
+
+
+\subsection{Java Language Processing} \label{sec:jlp}
+
+There is no ``gold standard'' data set for the namespace discovery problem
+because this problem has not been studied, and it is hard to verify if our 
+approach works or not. 
+
+Previously we have illustrated the idea of identifier namespaces by comparing
+it with namespaces in Computer Science, and it allowed us to develop an intuition
+behind the namespaces in mathematics and also propose a method to discover them:
+we motivated the assumption that there exist ``namespace defining''
+groups of documents by arguing that these groups also exist in
+programming languages.
+
+Therefore we try to use source code as a dataset, and see whether our method is able to 
+recover namespace information or not. 
+
+If a programming language is statically typed, like Java or Pascal,
+usually it is possible to know the type of a variable from the declaration
+of this variable. Therefore we can see variable names as ``identifiers''
+and variable types as ``definitions''. Clearly, there is a difference
+between variable types and identifier definitions, but we believe
+that this comparison is valid because the type carries additional semantic
+information about the variable and in what context it can be used --
+like the definition of an identifier.
+
+The information about variables and their types can be extracted from a
+source code repository, and each source file can be processed to
+obtain its Abstract Syntax Tree (AST). By processing the ASTs,
+we can extract the variable declaration information. Thus, each
+source file can be seen as a document, which is represented
+by all its variable declarations.
+
+In this work we process Java source code, and for parsing it
+and building ASTs we use a library JavaParser \cite{javaparser}.
+The Java programming language was chosen because it requires the programmer
+to always specify the type information when declaring a variable.
+It is different for other languages when the type information is
+usually inferred by the compilers at compilation time.
+
+
+In Java a variable can be declared in three places:
+as an inner class variable (or a ``field''), as a method (constructor)
+parameter or as a local variable inside a method or a constructor.
+We need to process all three types of variable declarations
+and then apply additional preprocessing, such as converting the name
+of the type from short to fully qualified using the information from the
+import statements. For example, \verb|String| is converted to
+\verb|java.lang.String| and \verb|List<Integer>| to \verb|java.util.List<Integer>|,
+but primitive types like \verb|byte| or \verb|int| are left unchanged.
+
+
+Consider an example in the listing~\ref{code:javaclass}. There is a
+class variable \texttt{threshold}, a method parameter \texttt{in} and
+two local variables \texttt{word} and \texttt{posTag}. The following
+relations will be extracted from this class: (``threshold'', \verb|double|),
+(``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|),
+(``posTag'', \verb|java.lang.String|).
+Since all primitives and classes from packages that start with
+\verb|java| are discarded, at the end the class \verb|WordProcesser|
+is represented with only one relation (``in'', \verb|domain.Word|).
+
+
+\begin{lstlisting}[language=Java,caption={A Java class},label={code:javaclass}]
+package process;
+
+import domain.Word;
+
+public class WordProcesser  {
+
+    private double threshold;
+
+    public boolean isGood(Word in) {
+        String word = in.getWord();
+        String posTag = in.getPosTag();
+        return isWordGood(word) && isPosTagGood(posTag);
+    }
+
+    // ...
+
+}
+\end{lstlisting}
+
+
+In the experiments we applied this source code analysis to
+the source code of Apache Mahout 0.10 \cite{mahout}, which is an open-source
+library for scalable Machine Learning and Data Mining.
+As on \today, this dataset consists of 1\,560 java classes with 45\,878
+variable declarations. After discarding declarations from the standard Java API,
+primitives and types with generic parameters, only 15\,869 declarations were
+retained.
+
+The following is top-15 variable/type declarations extracted from the Mahout
+source code:
+
+\begin{itemize}
+\item ``conf'', \verb|org.apache.hadoop.conf.Configuration| (491 times)
+\item ``v'', \verb|org.apache.mahout.math.Vector| (224 times)
+\item ``dataModel'', \verb|org.apache.mahout.cf.taste.model.DataModel| (207 times)
+\item ``fs'', \verb|org.apache.hadoop.fs.FileSystem| (207 times)
+\item ``log'', \verb|org.slf4j.Logger| (171 times)
+\item ``output'', \verb|org.apache.hadoop.fs.Path| (152 times)
+\item ``vector'', \verb|org.apache.mahout.math.Vector| (145 times)
+\item ``x'', \verb|org.apache.mahout.math.Vector| (120 times)
+\item ``path'', \verb|org.apache.hadoop.fs.Path| (113 times)
+\item ``measure'', \verb|org.apache.mahout.common.distance.DistanceMeasure| (102 times)
+\item ``input'', \verb|org.apache.hadoop.fs.Path| (101 times)
+\item ``y'', \verb|org.apache.mahout.math.Vector| (87 times)
+\item ``comp'', \verb|org.apache.mahout.math.function.IntComparator| (74 times)
+\item ``job'', \verb|org.apache.hadoop.mapreduce.Job| (71 times)
+\item ``m'', \verb|org.apache.mahout.math.Matrix| (70 times)
+\end{itemize}
+
+We use the ``soft'' association method to incorporate ``definition''
+(i.e. types), and considering each source code file as a document,
+we build an identifier-document matrix of dimensionality
+$1436 \times 1560$. Only identifiers that occur at least twice are used
+to build the matrix.
+
+To discover namespace-defining cluster, we use LSA with SVD and MiniBatch $K$-Means.
+For weight assignment, we try two weighting systems: usual TF component and sublinear TF.
+The best performance is achieved with the rank $k=200$ of SVD and
+number of clusters $K=200$ using sublinear weighting (see fig.~\ref{fig:jlp-perf}).
+% each experiment was repeated 10 times and we record the average
+
+\begin{figure}[h!]
+\centering
+\hfill
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{jlp-lens.pdf}
+  \caption{Usual TF $\times$ IDF weighting}
+  \label{fig:jlp-perf-tf}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{jlp-lens-sublin.pdf}
+  \caption{$(\log \text{TF}) \times \text{IDF}$ weighting}
+  \label{fig:jlp-perf-subtf}
+\end{subfigure}
+\caption{The performance MiniBatch $K$-Means on the Mahout dataset.}
+\label{fig:jlp-perf}
+\end{figure}
+
+
+With these parameters the best result is 33 clusters (see table~\ref{tab:mahout-namespaces}).
+One of such clusters is a cluster about SVD: there are 5 classes
+from the \verb|svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd}} package
+(\texttt{Factorization}, \texttt{FilePersistenceStrategy}, \texttt{NoPersistenceStrategy}, \texttt{PersistenceStrategy}, \texttt{FilePersistenceStrategyTest})
+and one from \\ \verb|kddcup.track1.svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.example.kddcup.track1.svd}} package
+(\texttt{Track1SVDRunner}).
+Although this cluster is not 100\% pure, in the sense that not all of
+these classes belong to the same package, these classes are
+clearly related: they are all about SVD.
+The top dimensions with the most influence in this cluster are
+\verb|svd.Factorization|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd.Factorization}}
+and \texttt{factorization}.
+
+Another interesting namespace is the distance namespace, with classes mostly
+from \verb|common.distance|\footnote{full name: \texttt{org.apache.mahout.common.distance}}
+(see table~\ref{tab:mahout-dist-classes}).
+What is interesting, there are mostly tests in this cluster, but because they use
+classes that they test, they roughly can be seen as documents that refer to
+some concepts defined outside of the cluster (see table~\ref{tab:mahout-dist-ids}).
+
+
+\begin{table}[h!]
+\centering
+\begin{subtable}{\textwidth}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Size & Namespace & Purity \\
+\hline
+16 & \verb|org.apache.mahout.h2obindings.ops| & 0.88 \\
+12 & \verb|org.apache.mahout.math.map| & 0.92 \\
+11 & \verb|org.apache.mahout.text| & 0.91 \\
+10 & \verb|org.apache.mahout.vectorizer.collocations.llr| & 1.00 \\
+10 & \verb|org.apache.mahout.classifier.sequencelearning.hmm| & 1.00 \\
+10 & \verb|org.apache.mahout.math.list| & 1.00 \\
+9 & \verb|org.apache.mahout.math.map| & 0.89 \\
+9 & \verb|org.apache.mahout.cf.taste.hadoop.item| & 1.00 \\
+8 & \verb|org.apache.mahout.cf.taste.hadoop.als| & 1.00 \\
+8 & \verb|org.apache.mahout.classifier.sgd| & 0.88 \\
+\hline
+\end{tabular}
+\caption{Top namespace-defining clusters discovered from Mahout.}
+\label{tab:mahout-namespaces}
+\end{subtable}
+\begin{subtable}{\textwidth}
+\centering
+\begin{tabular}{|c|}
+  \hline
+Class name \\
+\hline
+\verb|org.apache.mahout.math.neighborhood.UpdatableSearcher| \\
+\verb|org.apache.mahout.common.distance.CosineDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.DefaultDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.DefaultWeightedDistanceMeasureTest| \\
+\verb|org.apache.mahout.common.distance.TestChebyshevMeasure| \\
+\verb|org.apache.mahout.common.distance.TestMinkowskiMeasure| \\
+\hline
+\end{tabular}
+\caption{A namespace-defining cluster about Distances.}
+\label{tab:mahout-dist-classes}
+\end{subtable}
+\begin{subtable}{\textwidth}
+\centering
+\begin{tabular}{|c|c|}
+  \hline
+  ID & Class  \\
+  \hline
+\verb|chebyshevDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure| \\
+\verb|distanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|euclideanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|manhattanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|minkowskiDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
+\verb|v| &  \verb|org.apache.mahout.math.Vector|  \\
+\verb|vector| &  \verb|org.apache.mahout.math.Vector| \\
+\hline
+\end{tabular}
+\caption{Definitions in the v namespace.}
+\label{tab:mahout-dist-ids}
+\end{subtable}
+\caption{Namespaces extracted from Apache Mahout source code.}
+\label{tab:mahout-namespaces-dist}
+\end{table}
+
+%Note that there is a difference between mathematical namespaces and
+%namespaces discovered in the source code. The found ``namespaces'' do not necessarily
+%correspond to the real packages in the source code. The reason for this is
+%the document-centric view on the namespaces: for documents we assume that the
+%namespaces are not directly observed, and instead we can see only the documents where
+%these namespaces are used. It is not the case for real namespaces
+%in software: we do observe namespaces directly, and documents (that is, classes)
+%are also the elements of the namespaces.
+
+We are able to discover 33 namespaces using the Mahout source code as a dataset. 
+There are 150 packages in total. This means that using only identifier information
+it is enough to recover namespace information at least partially (in our case,
+we can recover 22\% of the namespaces). 
+
+Therefore, in principle, the approach works and it can be used to discover
+namespaces in mathematics.
 
 
 \subsection{Parameter Tuning} \label{sec:param-tuning}
@@ -1148,6 +1397,67 @@ The best clustering algorithm is $K$-Means with $K=9500$
 on the semantic space produced by rank-reduced SVD with $k = 250$
 with TF-IDF weight where TF is sublinear.
 
+We used ``$E = mc^2$'' as a motivating example for namespace discovery. 
+When namespaces are discovered, we can look at how the identifiers 
+``$E$'', ``$m$'', ``$c$'' are used in different namespaces. Additionally, 
+we can look at other common identifiers such as ``$\lambda$'', ``$\sigma$'' and 
+``$\mu$'' (see table~\ref{tab:def-en}). We see that definitions of 
+``$E$'', ``$m$'', ``$c$'' are correct for the ``General relativity'' namespace,
+and ``$E$'' is ``expectation'' for the ``Probability'' namespace, however
+we have not observed that ``$E$'' is ``Elimination matrix'' for the ``Linear 
+algebra'' namespaces, but it is just ``matrix''.
+
+We also repeat this experiment for Russian Wikipedia (table~\ref{tab:def-ru}), but 
+chose slightly different namespaces. 
+Similarly to English Wikipedia, ``$E$'', ``$m$'', ``$c$'' are discover
+correctly, but nothing is discovered for ``$E$'' in namespaces about probability
+and linear algebra. 
+ 
+
+
+\begin{table}[h!]
+\centering
+\makebox[\textwidth][c]{\begin{tabular}{|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|}
+\hline													
+	&	$E$	&	$m$	&	$c$	&	$\lambda$	&	$\sigma$	&	$\mu$	\\
+\hline													
+Linear algebra	&	matrix	&	matrix	&	scalar	&	eigenvalue	&	related permutation	&	algebraic multiplicity	\\
+\hline
+General relativity	&	energy	&	mass	&	speed of light	&	length	&	shear	&	reduced mass	\\
+\hline
+Coding theory	&	encoding function	&	message	&	transmitted codeword	&		&	natural isomorphisms	&		 \\
+\hline
+Optics	&		&	order fringe	&	speed of light in vacuum	&	wavelength	&	conductivity	&	 permeability	\\
+\hline
+Probability	&	expectation	&	sample size	&		&	affine parameter	&	variance	&	mean vector	\\
+\hline													
+\end{tabular}}
+\caption{Definitions for selected identifiers and namespaces extracted from English Wikipedia.}
+\label{tab:def-en}
+\end{table}
+
+
+\begin{table}[h!]
+\centering
+\makebox[\textwidth][c]{\begin{tabular}{|x{3cm}|x{1.8cm}|x{1.8cm}|x{1.8cm}|x{1.8cm}|x{1.8cm}|x{1.8cm}|}
+\hline													
+	&	$E$	&	$m$	&	$c$	&	$\lambda$	&	$\sigma$	&	$\mu$	\\
+\hline													
+Ћинейна€ алгебра (Linear algebra)	&		&	смена базис (change of basis)	&		&	скал€р (scalar)	&	
+сингул€рный число (singular value)	&		\\
+\hline													
+‘изические науки (Physical sciences)	&	энерги€ (energy)	&	масса частицы (mass of particle)	&	 скорость свет (speed of light)	&	длина (length)	&		&	привести масса (reduced mass)	\\
+\hline													
+¬еро€тность (Probability)	&		&		&		&		&	дисперси€ (variance)	&	среднее (mean)	\\
+\hline													
+\end{tabular}}
+\caption{Definitions for selected identifiers and namespaces extracted from Russian Wikipedia.}
+\label{tab:def-ru}
+\end{table}
+
+
+
+
 To visualize the discovered namespaces, we first map them to a hierarchy
 as previously described in section~\ref{sec:hierarchy}, and then find the
 most frequent categories according to this hierarchy. Then, for each
@@ -1176,7 +1486,7 @@ the matched categories tend to be more general as well.
 		\hline							
 Freq.	&	Namespaces	&	Definitions	&	Categories	&	Top Articles	\\
 		\hline							
-10	&	Fluid mechanics	&	$\rho$: density,
+10	&	Physics: Fluid mechanics	&	$\rho$: density,
 $p$: pressure,
 $g$: acceleration,
 $k$: wavenumber,
@@ -1195,7 +1505,7 @@ Airy wave theory;
 Mild-slope equation;
 Classic energy problem in open-channel flow	\\
 		\hline							
-9	&	Differential and difference algebra	&	$R$: ring,
+9	&	Algebra: Differential and difference algebra	&	$R$: ring,
 $k$: field,
 $D$: city,
 $K$: field,
@@ -1214,7 +1524,7 @@ Levi-Civita symbol;
 PerronЦFrobenius theorem;
 Leibniz formula for determinants	\\
 		\hline							
-9	&	Partial differential equations	&	$\Omega$: domain,
+9	&	Mathematical analysis: Partial differential equations	&	$\Omega$: domain,
 $t$: time,
 $L$: space,
 $p$: space,
@@ -1233,7 +1543,7 @@ Fictitious domain method;
 Green's function for the three-variable Laplace equation;
 Eikonal equation	\\
 		\hline							
-8	&	Mathematical economics	&	$K$: strike,
+8	&	Economics: Mathematical economics	&	$K$: strike,
 $P$: price level,
 $p$: probability,
 $u$: utility,
@@ -1252,7 +1562,7 @@ Binary option;
 Equation of exchange;
 Slutsky equation	\\
 		\hline							
-8	&	Foundations of probability theory	&	$X$: process,
+8	&	Probability theory	&	$X$: process,
 $t$: time,
 $X_t$: process,
 $P$: probability measure,
@@ -1271,7 +1581,7 @@ Local martingale;
 Stratonovich integral;
 GlivenkoЦCantelli theorem	\\
 		\hline							
-7	&	Group theory and generalizations	&	$G$: group,
+7	&	Algebra: Group theory and generalizations	&	$G$: group,
 $H$: subgroup,
 $Z$: group,
 $K$: subgroup,
@@ -1290,7 +1600,7 @@ Holomorph (mathematics);
 $P$-group;
 Powerful $p$-group	\\
 		\hline							
-7	&	General logic	&	$w$: world,
+7	&	Mathematical logic: General logic	&	$w$: world,
 $R$: binary relation,
 $P$: predicate,
 $Q$: statement,
@@ -1424,220 +1734,3 @@ $r$: рассе€ние (dispersion)	&	ќптика (Optics);
 \end{table}
 \restoregeometry
 
-
-
-\subsection{Java Language Processing} \label{sec:jlp}
-
-Previously we have illustrated the idea of identifier namespaces by comparing
-it with namespaces in Computer Science, and it allowed us to develop an intuition
-behind the namespaces in mathematics and also propose a method to discover them:
-we motivated the assumption that there exist ``namespace defining''
-groups of documents by arguing that these groups also exist in
-programming languages.
-In this section we will try to do the reserve: apply the methods
-developed for identifier namespace discovery to the source code.
-
-If a programming language is statically typed, like Java or Pascal,
-usually it is possible to know the type of a variable from the declaration
-of this variable. Therefore we can see variable names as ``identifiers''
-and variable types as ``definitions''. Clearly, there is a difference
-between variable types and identifier definitions, but we believe
-that this comparison is valid because the type carries additional semantic
-information about the variable and in what context it can be used --
-like the definition of an identifier.
-
-The information about variables and their types can be extracted from a
-source code repository, and each source file can be processed to
-obtain its Abstract Syntax Tree (AST). By processing the ASTs,
-we can extract the variable declaration information. Thus, each
-source file can be seen as a document, which is represented
-by all its variable declarations.
-
-In this work we process Java source code, and for parsing it
-and building ASTs we use a library JavaParser \cite{javaparser}.
-The Java programming language was chosen because it requires the programmer
-to always specify the type information when declaring a variable.
-It is different for other languages when the type information is
-usually inferred by the compilers at compilation time.
-
-
-In Java a variable can be declared in three places:
-as an inner class variable (or a ``field''), as a method (constructor)
-parameter or as a local variable inside a method or a constructor.
-We need to process all three types of variable declarations
-and then apply additional preprocessing, such as converting the name
-of the type from short to fully qualified using the information from the
-import statements. For example, \verb|String| is converted to
-\verb|java.lang.String| and \verb|List<Integer>| to \verb|java.util.List<Integer>|,
-but primitive types like \verb|byte| or \verb|int| are left unchanged.
-
-
-Consider an example in the listing~\ref{code:javaclass}. There is a
-class variable \texttt{threshold}, a method parameter \texttt{in} and
-two local variables \texttt{word} and \texttt{posTag}. The following
-relations will be extracted from this class: (``threshold'', \verb|double|),
-(``in'', \verb|domain.Word|), (``word'', \verb|java.lang.String|),
-(``posTag'', \verb|java.lang.String|).
-Since all primitives and classes from packages that start with
-\verb|java| are discarded, at the end the class \verb|WordProcesser|
-is represented with only one relation (``in'', \verb|domain.Word|).
-
-
-\begin{lstlisting}[language=Java,caption={A Java class},label={code:javaclass}]
-package process;
-
-import domain.Word;
-
-public class WordProcesser  {
-
-    private double threshold;
-
-    public boolean isGood(Word in) {
-        String word = in.getWord();
-        String posTag = in.getPosTag();
-        return isWordGood(word) && isPosTagGood(posTag);
-    }
-
-    // ...
-
-}
-\end{lstlisting}
-
-
-In the experiments we applied this source code analysis to
-the source code of Apache Mahout 0.10 \cite{mahout}, which is an open-source
-library for scalable Machine Learning and Data Mining.
-As on \today, this dataset consists of 1\,560 java classes with 45\,878
-variable declarations. After discarding declarations from the standard Java API,
-primitives and types with generic parameters, only 15\,869 declarations were
-retained.
-
-The following is top-15 variable/type declarations extracted from the Mahout
-source code:
-
-\begin{itemize}
-\item ``conf'', \verb|org.apache.hadoop.conf.Configuration| (491 times)
-\item ``v'', \verb|org.apache.mahout.math.Vector| (224 times)
-\item ``dataModel'', \verb|org.apache.mahout.cf.taste.model.DataModel| (207 times)
-\item ``fs'', \verb|org.apache.hadoop.fs.FileSystem| (207 times)
-\item ``log'', \verb|org.slf4j.Logger| (171 times)
-\item ``output'', \verb|org.apache.hadoop.fs.Path| (152 times)
-\item ``vector'', \verb|org.apache.mahout.math.Vector| (145 times)
-\item ``x'', \verb|org.apache.mahout.math.Vector| (120 times)
-\item ``path'', \verb|org.apache.hadoop.fs.Path| (113 times)
-\item ``measure'', \verb|org.apache.mahout.common.distance.DistanceMeasure| (102 times)
-\item ``input'', \verb|org.apache.hadoop.fs.Path| (101 times)
-\item ``y'', \verb|org.apache.mahout.math.Vector| (87 times)
-\item ``comp'', \verb|org.apache.mahout.math.function.IntComparator| (74 times)
-\item ``job'', \verb|org.apache.hadoop.mapreduce.Job| (71 times)
-\item ``m'', \verb|org.apache.mahout.math.Matrix| (70 times)
-\end{itemize}
-
-We used the ``soft'' association method to incorporate ``definition''
-(i.e. types), and considering each source code file as a document,
-we build an identifier-document matrix of dimensionality
-$1436 \times 1560$. Only identifiers that occur at least twice are used
-to build the matrix.
-
-Previously the best performance was achieved by using LSA and MiniBatch $K$-Means,
-and therefore we apply the same algorithms here. However there are a lot of instances
-of the types \texttt{Vector} and \texttt{Matrix}, and to mediate its influence, we use two variants of TF-IDF:
-with usual TF component and with sublinear TF.
-The best performance is achieved with the rank $k=200$ of SVD and
-number of clusters $K=200$ using sublinear weighting (see fig.~\ref{fig:jlp-perf}).
-% each experiment was repeated 10 times and we record the average
-
-
-\begin{figure}[h!]
-\centering
-\hfill
-\begin{subfigure}[b]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{jlp-lens.pdf}
-  \caption{Usual TF $\times$ IDF weighting}
-  \label{fig:jlp-perf-tf}
-\end{subfigure}
-~
-\begin{subfigure}[b]{0.47\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{jlp-lens-sublin.pdf}
-  \caption{$(\log \text{TF}) \times \text{IDF}$ weighting}
-  \label{fig:jlp-perf-subtf}
-\end{subfigure}
-\caption{The performance MiniBatch $K$-Means on the Mahout dataset.}
-\label{fig:jlp-perf}
-\end{figure}
-
-
-With these parameters the best result is 33 clusters.
-One of such clusters is a cluster about SVD: there are 5 classes
-from the \verb|recommender.svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd}} package
-(\texttt{Factorization}, \texttt{FilePersistenceStrategy}, \texttt{NoPersistenceStrategy}, \texttt{PersistenceStrategy}, \texttt{FilePersistenceStrategyTest})
-and one from \\ \verb|kddcup.track1.svd|\footnote{full name: \texttt{org.apache.mahout.cf.taste.example.kddcup.track1.svd}} package
-(\texttt{Track1SVDRunner}).
-Although this cluster is not 100\% pure, in the sense that not all of
-these classes belong to the same package, these classes are
-clearly related: they are all about SVD.
-The top dimensions with the most influence in this cluster are
-\verb|svd.Factorization|\footnote{full name: \texttt{org.apache.mahout.cf.taste.impl.recommender.svd.Factorization}}
-and \texttt{factorization}.
-
-Another interesting namespace is the distance namespace, with classes mostly 
-from \verb|common.distance|\footnote{full name: \texttt{org.apache.mahout.common.distance}}
-(see table~\ref{tab:mahout-dist-classes}).
-What is interesting, there are mostly tests in this cluster, but because they use 
-classes that they test, they roughly can be seen as documents that refer to
-some concepts defined outside of the cluster (see table~\ref{tab:mahout-dist-ids}). 
-
-
-\begin{table}[h!]
-\centering
-\begin{subtable}{\textwidth}
-\centering
-\begin{tabular}{|c|}
-  \hline
-Class name \\
-\hline
-\verb|org.apache.mahout.math.neighborhood.UpdatableSearcher| \\
-\verb|org.apache.mahout.common.distance.CosineDistanceMeasureTest| \\
-\verb|org.apache.mahout.common.distance.DefaultDistanceMeasureTest| \\
-\verb|org.apache.mahout.common.distance.DefaultWeightedDistanceMeasureTest| \\
-\verb|org.apache.mahout.common.distance.TestChebyshevMeasure| \\
-\verb|org.apache.mahout.common.distance.TestMinkowskiMeasure| \\
-\hline
-\end{tabular}
-\caption{A namespace-defining cluster about Distances.}
-\label{tab:mahout-dist-classes}
-\end{subtable}
-
-\begin{subtable}{\textwidth}
-\centering
-\begin{tabular}{|c|c|}
-  \hline
-  ID & Class  \\
-  \hline
-\verb|chebyshevDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure| \\
-\verb|distanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
-\verb|euclideanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
-\verb|manhattanDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
-\verb|minkowskiDistanceMeasure| &  \verb|org.apache.mahout.common.distance.DistanceMeasure|  \\
-\verb|v| &  \verb|org.apache.mahout.math.Vector|  \\
-\verb|vector| &  \verb|org.apache.mahout.math.Vector| \\
-\hline
-\end{tabular}
-\caption{Definitions in the distance namespace.}
-\label{tab:mahout-dist-ids}
-\end{subtable}
-
-\caption{Namespace ``\texttt{distance}'' extracted from Apache Mahout.}
-\label{tab:mahout-namespaces}
-\end{table}
-
-Note that there is a difference between mathematical namespaces and
-namespaces discovered in the source code. The found ``namespaces'' do not necessarily
-correspond to the real packages in the source code. The reason for this is
-the document-centric view on the namespaces: for documents we assume that the
-namespaces are not directly observed, and instead we can see only the documents where
-these namespaces are used. It is not the case for real namespaces
-in software: we do observe namespaces directly, and documents (that is, classes)
-are also the elements of the namespaces.

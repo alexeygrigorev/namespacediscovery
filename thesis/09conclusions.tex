@@ -1,9 +1,14 @@
 \section{Conclusions} \label{sec:conclusions}
 
 The goal of this work was to discover namespaces in mathematical notation
-given a collection of documents with mathematical formulae. To achieve that,
-we used document clustering techniques on documents, where each document is 
-represented by identifiers, used in its formulae. 
+given a collection of documents with mathematical formulae. 
+This problem could not be performed manually: this task it too time consuming
+and requires a lot of effort. 
+
+To achieve the goal we proposed an automatic method based on cluster analysis. 
+We noted that document representation in terms of identifiers is similar 
+to the classic Vector Space Model. This allowed us to apply traditional 
+document clustering techniques to the namespace discovery problem. 
 
 We expected to discover namespaces, that are homogenies and corresponded
 to the same area of knowledge. The clusters that we discovered are homogenous, 
@@ -16,21 +21,37 @@ but in our results the majority of clusters are not ``pure'': documents inside t
 clusters do not belong to the same category. These clusters are only homogenous in 
 the cluster analysis sense: the within-cluster distances is minimal. 
 
+To prove that namespace discovery is possible in principle, we first applied 
+the proposed  method to a dataset where the ``gold standard'' is known: to Java source code,
+and we were able to partially recover the namespaces using only the information
+about identifiers. 
 
-Nevertheless, the obtained results indicate that there are namespaces in mathematical 
-notation and it is possible to discover them automatically from a collection of 
-documents. We also verified that clustering document is better than random guessing 
-by the factor of ten. We observed that dimensionality reduction techniques 
+%Nevertheless, the obtained results indicate that there are namespaces in mathematical
+%notation and it is possible to discover them automatically from a collection of
+%documents. 
+
+%Then we used our method to extract namespaces from English and Russian Wikipedia.
+%Although the distribution of the most frequent namespaces is different 
+
+Then we used the method to extract namespaces from English Wikipedia,
+and we were able to discover 414 namepaces from this dataset. This result 
+is better than random guessing by the factor of ten. 
+We observed that dimensionality reduction techniques
 are very helpful, and clustering algorithms work better on the reduce space. 
 MiniBatch $K$-Means algorithms shows the best results for discovering 
 namespace-defining clusters.
 
-Finally, to verify our intuition we also applied the developed method to extract 
-namespaces from Java source code, but the conceptual differences between documents 
-and classes make it harder to use Java code for validating the namespace discovery 
-on documents with formulae. 
+Additionally, we applied the same method to the Russian version of Wikipedia, 
+and, although the distribution of most frequent namespaces are different 
+in these two datasets, the overall results are consistent. 
 
-There are many ways in which the present approach can be improved further.
+
+The problem of namespace discovery has not been studied before, and there was 
+no dataset where identifiers were assigned to namespaces. 
+In this work we showed that the automatic namespace discovery is possible,
+and it is a good start. 
+
+However, there are many ways in which the present approach can be improved further.
 In the next section we discuss possible directions.
 
 

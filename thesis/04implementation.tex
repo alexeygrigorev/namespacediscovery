@@ -17,7 +17,7 @@ are written and edited by the community. It contains a large
 amount of articles on a variety of topics, including articles about
 Mathematics and Mathematics-related fields such as Physics. It
 is multilingual and available in several languages, including
-English, German, French, Russian and others. The content of wikipedia pages
+English, German, French, Russian and others. The content of Wikipedia pages
 are authored in a special markup language and the content of the entire
 encyclopedia is freely available for download.
 
@@ -26,7 +26,7 @@ encyclopedia is freely available for download.
 
 The techniques discussed in this work are mainly applied
 to the English version of Wikipedia. At the moment of writing
-(\today) English Wikipedia contains about 4.9 million
+(\today) the English Wikipedia contains about 4.9 million
 articles\footnote{\url{https://en.wikipedia.org/wiki/Wikipedia:Statistics}}.
 However, just a small portion of these articles are math related:
 there are only 30\,000 pages that contain at least one \verb|<math>| tag.
@@ -53,8 +53,8 @@ tag encodes this information.
 Wikipedia is available in other languages, not only English.
 While the most of the analysis is performed on the English Wikipedia,
 we also apply some of the techniques to the Russian version \cite{ruwikidump}
-to compare it with the results obtained on English Wikipedia.
-Russian Wikipedia is smaller that English Wikipedia and contains
+to compare it with the results obtained on the English Wikipedia.
+The Russian Wikipedia is smaller that the English Wikipedia and contains
 1.9 million
 articles\footnote{\url{https://en.wikipedia.org/wiki/Russian_Wikipedia}},
 among which only 15\,000 pages are math-related (i.e. contain at
@@ -268,7 +268,7 @@ units like ``\texttt{mol}'', ``\texttt{dB}'', ``\texttt{mm}''.
 These false identifiers are excluded by a stop list as well: if a
 candidate identifier is in the list, it is filtered out.
 The stop list of false positives is quite similar for
-both English and Russian: for Russian wikipedia we only need
+both English and Russian: for the Russian wikipedia we only need
 to handle the auxiliary words such as ``\texttt{где}'' (``\texttt{where}''),
 ``\texttt{иначе}'' (``\texttt{else}'') and so on. The names for operators and functions
 are more or less consistent across both data sources.
@@ -420,20 +420,18 @@ $d$ & distance & 163 &    &  \\
 $X$ & topological space & 159 & топ. пространство & 46 \\
 \hline
 \end{tabular}
-\caption{Most frequent relations from English Wikipedia and corresponding relations
-from Russian wikipedia.}
+\caption{Most frequent relations from the English Wikipedia and corresponding relations
+from the Russian Wikipedia.}
 \label{tab:top-def}
 \end{table}
 
 Table~\ref{tab:top-def} shows the list of the most common 
-identifier-definition relations extracted English Wikipedia. 
+identifier-definition relations extracted from the English Wikipedia. 
 
-
-
-In Russian Wikipedia only 5\,300 articles contain enough identifiers,
+In the Russian Wikipedia only 5\,300 articles contain enough identifiers,
 and the remaining 9\,500 are discarded.
 
-The identifiers and definitions extracted from the Russain version of
+The identifiers and definitions extracted from the Russian version of
 Wikipedia exhibit the similar properties. The most frequently
 occurring identifier is ``$x$'' with 13\,248 occurrences,
 but the median frequency of an identifer is only 3 times.
@@ -449,9 +447,9 @@ definitions per page.
 
 
 We can compare the most frequent identifier-definition relations extracted 
-from Russian Wikipedia (see table~\ref{tab:top-def}): some of the top relations
+from the Russian Wikipedia (see table~\ref{tab:top-def}): some of the top relations
 appear in both datasets. Other frequent identifier-definition relations 
-extracted from Russian wikipedia include:
+extracted from the Russian Wikipedia include:
 
 \begin{itemize}
 \item $f$: ``функция'' (``function'') (215)
@@ -564,7 +562,7 @@ machine-readable information about categories for each wikipedia article.
 Additionally, categories in wikipedia form a hierarchy, and this hierarchy
 is available as a SKOS ontology.
 
-Unfortunately, there is no information about articles from Russian Wiki\-pedia on
+Unfortunately, there is no information about articles from the Russian Wiki\-pedia on
 DBPedia. However the number of documents is not very large, and therefore
 this information can be retrieved via MediaWiki API\footnote{\url{http://ru.wikipedia.org/w/api.php}} individually for each
 document. This information can be retrieved in chunks for a group of several
@@ -689,12 +687,12 @@ Hyperbolic tangent function is a good choice for such transformation:
 it is near zero for small values and it never exceeds one (see fig.~\ref{fig:tanh})
 But it is quite steep and converges to 1 rather quickly: for a relation 
 with score of 3 it would produce a score of 0.99, which is quite high. 
-Instead, we can use a less steep $\tanh x/2$ (see fig.~\ref{fig:tanh}):
-for 3,  $\tanh 3/2$ produces a score of 0.90, which is better.
+Instead, we can use a less steep $\tanh (x/2)$ (see fig.~\ref{fig:tanh}):
+for 3,  $\tanh (3/2)$ produces a score of 0.90, which is better.
 
 Because the hyperbolic tangent is a monotonously increasing function, larger 
 values of the original score correspond to larger values of the transformed 
-score, and therefore we still can use the output of $\tanh x/2$ to 
+score, and therefore we still can use the output of $\tanh (x/2)$ to 
 rank the relations. 
 
 Thus, after applying this transformation, we obtain the following namespace:

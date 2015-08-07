@@ -3,13 +3,13 @@
 In Computer Science, namespaces help to structure source code and
 organize it into hierarchies. Initially, the concept of namespaces did not
 exist for programming languages, and programmers had to manage the source code themselves
-to ensure there were  no name conflicts. However, nowadays, namespaces are 
+to ensure there were  no name conflicts. However, nowadays, namespaces are
 adopted by the majority of modern programming languages.
 
 The concept of namespaces is beneficial for mathematics as well:
 In mathematics, short one-symbol identifiers are very common,
 and the meaning of these identifiers is hard to understand immediately.
-By introducing namespaces to mathematics, we will be able to organize mathematical 
+By introducing namespaces to mathematics, we will be able to organize mathematical
 identifiers. Also, mathematicians will also benefit from a hierarchical organization of
 knowledge in the same way programmers do. In addition, the structure
 will make it easier to understand the meaning of each identifier in a document.
@@ -33,17 +33,17 @@ discovery.
 To evaluate the results, we use the category information, and look for pure
 ``namespace-defining'' clusters: clusters where all documents are from the same category.
 In the experiments, we look for algorithms that discover as many namespace-defining
-clusters as possible. 
+clusters as possible.
 
 Because the problem is new, there is no gold standard dataset, and it is
-hard to evaluate the performance of our method. To overcome it, we first 
-use Java source code as a dataset for our experiments, since it contains the namespace 
-information. We verify that our method can partially recover namespaces 
+hard to evaluate the performance of our method. To overcome it, we first
+use Java source code as a dataset for our experiments, since it contains the namespace
+information. We verify that our method can partially recover namespaces
 from source code using  only information about identifiers.
 
 The algorithms are evaluated on the English Wikipedia, and the proposed method
-can extract namespaces on a variety of topics. After extraction, the namespaces 
-are organized into a hierarchical structure by using existing classification schemes 
+can extract namespaces on a variety of topics. After extraction, the namespaces
+are organized into a hierarchical structure by using existing classification schemes
 such as MSC, PACS and ACM.
 We also apply it to the Russian Wikipedia, and the results are consistent across
 the languages.
@@ -51,4 +51,24 @@ the languages.
 To our knowledge, the problem of introducing namespaces to mathematics has not
 been studied before, and prior to our work there has been no dataset where identifiers
 are grouped into namespaces. Thus, our result is not only a good start,
-but also a good indicator that automatic namespace discovery is possible.
+but also a good indicator that automatic namespace discovery is possible. 
+
+
+\section*{Zusammenfassung}
+Namespaces in Informatik helfen um den Quellcode zu organisieren.
+Namespaces sind auch f\"ur Mathematik vorteilhaft. Durch die Einführung von Namespaces in der Mathematik, kann mann mathematische Identifikatoren in einer hierarchy organisieren.
+
+In dieser Masterarbeit betrachten wir das Problem der Zuordnung jeder Identifikator eines Dokuments zu einem Namespaces. Im Moment gibt es keine spezielle Datenmenge in der alle Mathematische Identifikatoren zu Namespaces zugeordnet sind. Deshalb m\"ussen wir eine Datenmenge selbst erstellen. Wir schlagen eine automatisierte methode vor f\"ur die Entdeckung von der Zuordnung von Namespaces zu Identifikatoren aus einer Sammlung von Dokumenten.
+
+Um dies zu erreichen, m\"ussen wir Gruppen von Dokumenten finden, die Identifikatoren in der gleichen Weise verwenden.
+Das kann mit Clustering-Algorithmen durchgeführt werden. Wir schlagen vor dass Dokumente repr\"a\-sentiert werden k\"onnen durch die Identifikatoren die sie enthalten. Dieser Ansatz ist \"ahnlich zu der Abbildung von Textinformationen in dem Vektorraummodell.
+Aus diesem Grund k\"onnen wir traditionelle Dokument Clustering-Algorithmen f\"ur Namespace Entdeckung gelten.
+
+Um die Ergebnisse zu bewerten, verwenden wir die Kategorieinformationen, und suchen wir nach reinen ``namespace-definierenden'' Cluster: Cluster, in dem alle Dokumente zu der gleichen Kategorie geh\"oren.
+In die Experimenten suchen wir nach Algorithmen, die so viele reine Cluster wie möglich entdecken.
+
+Die Algorithmen sind auf der Englischen Wikipedia ausgewertet.
+Unsere Methode kann Namespaces auf einer Vielzahl von Themen extrahieren.
+Nach der Extraktion, organisieren wir die Namespaces in einer Hierarchie.
+Wir setzen unsere Methode auch auf der Russischen Wikipedia und finden \"anlische Ergebnisse.
+Unser Ergebnis zeigt, dass die automatische Namespaces Entdeckung m\"oglich ist.

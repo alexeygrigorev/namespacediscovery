@@ -1,17 +1,24 @@
 \section{Evaluation} \label{sec:evaluation}
 
 % Describe  the dataset and experimental setup; describe the results.
-In this chapter we describe the experimental setup and the obtained 
-results. 
+In this chapter we describe the experimental setup and the obtained
+results.
+
+The following software is used for the experiments: 
+Apache Flink 0.8.1 \cite{flink}
+numpy 1.9.2 \cite{walt2011numpy}, scipy 0.15.1 \cite{scipy}, 
+scikit-learn 0.16.1 \cite{scikit-learn} and IPython notebook 3.1.0. 
+The experiments are run on a 64-bit Windows machine with two CPUs of 2.10 GHz 
+and 8 GB of RAM. 
 
 First, section~\ref{sec:jlp} verifies that the namespace discovery is possible
-by applying the proposed technique to Java source code. 
+by applying the proposed technique to Java source code.
 Next, section~\ref{sec:param-tuning} describes parameter tuning: there
-are many possible choices of parameters, and we find the best. 
-Once the best algorithm and its parameters are selected, we analyze 
-the obtained results in section~\ref{sec:result-analysis}. Next, 
-we describe how the discovered clusters can be mapped to a hierarchy 
-in section~\ref{sec:hierarchy}, and finish by summarizing our findings 
+are many possible choices of parameters, and we find the best.
+Once the best algorithm and its parameters are selected, we analyze
+the obtained results in section~\ref{sec:result-analysis}. Next,
+we describe how the discovered clusters can be mapped to a hierarchy
+in section~\ref{sec:hierarchy}, and finish by summarizing our findings
 in section~\ref{sec:evaluation-summary}.
 
 
@@ -20,8 +27,8 @@ in section~\ref{sec:evaluation-summary}.
 \subsection{Java Language Processing} \label{sec:jlp}
 
 There is no ``gold standard'' data set for the namespace discovery problem
-because this problem has not been studied, and it is hard to verify if our 
-approach works or not. 
+because this problem has not been studied, and it is hard to verify if our
+approach works or not.
 
 Previously we have illustrated the idea of identifier namespaces by comparing
 it with namespaces in Computer Science, and it allowed us to develop an intuition
@@ -30,8 +37,8 @@ we motivated the assumption that there exist ``namespace defining''
 groups of documents by arguing that these groups also exist in
 programming languages.
 
-Therefore we try to use source code as a dataset, and see whether our method is able to 
-recover namespace information or not. 
+Therefore we try to use source code as a dataset, and see whether our method is able to
+recover namespace information or not.
 
 If a programming language is statically typed, like Java or Pascal,
 usually it is possible to know the type of a variable from the declaration
@@ -254,10 +261,10 @@ Class name \\
 %in software: we do observe namespaces directly, and documents (that is, classes)
 %are also the elements of the namespaces.
 
-We are able to discover 33 namespaces using the Mahout source code as a dataset. 
+We are able to discover 33 namespaces using the Mahout source code as a dataset.
 There are 150 packages in total. This means that using only identifier information
 it is enough to recover namespace information at least partially (in our case,
-we can recover 22\% of the namespaces). 
+we can recover 22\% of the namespaces).
 
 Therefore, in principle, the approach works and it can be used to discover
 namespaces in mathematics.
@@ -349,7 +356,7 @@ clusters, while the mean value is 23.85.
 \subsubsection{Only Identifiers} \ \\
 
 The first way of building the identifier space is to use only identifiers
-and do not use definitions at all.
+andW not use definitions at all.
 If we do this, the identifier-document matrix is $6075 \times 22512$
 (we keep only identifiers that occur at least twice), and it contains  302\, 541
 records, so the density of this matrix is just 0.002.
@@ -377,10 +384,10 @@ but it was not able to finish in several hours, so we stopped the computation.
 Additionally, the implementation we use from scikit-learn
 requires a dense matrix. But when densified, the identifier-document matrix
 occupies a lot of space: if each element of the matrix is represented with a double
-precision number, then this matrix occupies 1.01 Gb of RAM in total. While
+precision number, then this matrix occupies 1.01 GB of RAM in total. While
 it is small enough to fit into memory, matrices of larger dimensionality might not.
-Therefore we exclude these clustering algorithms from further analysis.
-% Agglomerative: Wald linkage: takes forever never finished
+Therefore, we exclude these clustering algorithms from further analysis.
+
 
 
 \begin{figure}[h!]
@@ -388,7 +395,7 @@ Therefore we exclude these clustering algorithms from further analysis.
 \begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{nodef-dbscan-jac10.pdf}
-  \caption{Number of clusters when 10 nearest neighbors are considered}
+  \caption{Number of clusters when 10 nearest \mbox{neighbors} are considered}
   \label{fig:nodef-dbscan-jac10}
 \end{subfigure}%
 \begin{subfigure}[b]{0.5\textwidth}
@@ -400,7 +407,7 @@ Therefore we exclude these clustering algorithms from further analysis.
 \begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{nodef-dbscan-jac13.pdf}
-  \caption{Number of clusters when 15 nearest neighbors are considered}
+  \caption{Number of clusters when 15 nearest \mbox{neighbors} are considered}
   \label{fig:nodef-dbscan-jac15}
 \end{subfigure}%
 \begin{subfigure}[b]{0.5\textwidth}
@@ -452,7 +459,7 @@ and although their cosine score is 0.92, they have only 3 identifiers in common.
 \begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{nodef-dbscan-cos10.pdf}
-  \caption{Number of clusters when 10 nearest neighbors are considered}
+  \caption{Number of clusters when 10 nearest \mbox{neighbors} are considered}
   \label{fig:nodef-dbscan-cos10}
 \end{subfigure}%
 \begin{subfigure}[b]{0.5\textwidth}
@@ -464,7 +471,7 @@ and although their cosine score is 0.92, they have only 3 identifiers in common.
 \begin{subfigure}[b]{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{nodef-dbscan-cos15.pdf}
-  \caption{Number of clusters when 15 nearest neighbors are considered}
+  \caption{Number of clusters when 15 nearest \mbox{neighbors} are considered}
   \label{fig:nodef-dbscan-cos15}
 \end{subfigure}%
 \begin{subfigure}[b]{0.5\textwidth}
@@ -546,8 +553,8 @@ and fig.~\ref{fig:k-vs-time-minibatch}).
 
 Usual $K$-Means with small $K$ does not find many pure clusters,
 and MiniBatch $K$-Means does even worse: independently of the choice of $K$,
-the number of pure clusters and purity does not change significantly 
-(see fig.~\ref{fig:k-vs-purity2} and fig.~\ref{fig:k-vs-len2}). This is also true 
+the number of pure clusters and purity does not change significantly
+(see fig.~\ref{fig:k-vs-purity2} and fig.~\ref{fig:k-vs-len2}). This is also true
 for larger values of $K$ (see fig.~\ref{fig:k-vs-len-mb}).
 
 
@@ -773,7 +780,7 @@ achieves the best performance (see fig.~\ref{fig:soft-weighing}).
 
 \subsubsection{Strong Association} \ \\
 
-In the case when we use the strong association, the identifier-document 
+In the case when we use the strong association, the identifier-document
 matrix has the dimensionality of $37879 \times 22512$ identifier-document matrix.
 It has 499070 entries, so the density of this matrix is just 0.00058.
 
@@ -818,8 +825,8 @@ with 79171 non-zero elements, so the density of this matrix is 0.0038.
 As usually, we applied SVD with different values of rank $k \in \{150, 250, 350\}$,
 and, similarity to no-definitions case for the English Wikipedia, we do not
 observe significant differences across different values of $k$
-(see fig.~\ref{fig:k-vs-kmeans-rus.pdf}). The best achieved result is 
-105 namespace-defining clusters. 
+(see fig.~\ref{fig:k-vs-kmeans-rus.pdf}). The best achieved result is
+105 namespace-defining clusters.
 
 
 \subsection{Result Analysis} \label{sec:result-analysis}
@@ -827,8 +834,8 @@ observe significant differences across different values of $k$
 \subsubsection{English Wikipedia} \ \\
 
 
-In the previous chapter we have established that the best way to incorporate 
-definitions into Intensifier Vector Space is by using soft association, and the best 
+In the previous chapter we have established that the best way to incorporate
+definitions into Intensifier Vector Space is by using soft association, and the best
 clustering performing method is MiniBatch $K$-Means.
 
 
@@ -970,8 +977,8 @@ $\lambda_i$ & eigenvalue & 0.98 \\
 
 The best result is 414 namespace-defining clusters, it is ten times better
 than the baseline result. The result is achieved by $K$-Means with
-soft association using parameters $K=9750$ and $k=350$. The purity of this 
-clustering is $0.63$. The largest namespace-defining clusters discovered 
+soft association using parameters $K=9750$ and $k=350$. The purity of this
+clustering is $0.63$. The largest namespace-defining clusters discovered
 by this methods are presented in the table~\ref{tab:soft-kmeans-svd}.
 
 Let us consider a ``Linear Algebra'' cluster (table~\ref{tab:soft-kmeans-lsa})
@@ -988,22 +995,22 @@ or in the case of ``Linear Algebra'' cluster where it denotes a matrix.
 Clustering results with sort association are better than results obtained
 with hard association. One of the reasons for that can the the fact that
 definitions may act as keywords that describe the document and they are
-better in describing the semantic content of the document. 
+better in describing the semantic content of the document.
 
-Additionally, we see that clustering on the reduced space works better, 
+Additionally, we see that clustering on the reduced space works better,
 and in our case the best dimensionality reduction method is SVD.
 
-We also note that we do not discover many namespace-defining clusters. The 
+We also note that we do not discover many namespace-defining clusters. The
 best result identifiers 414 clusters, while the desired number of clusters $K$
-is almost 10\,000. It means that information from about 9\,000 clusters is 
-discarded: in total there are 22\,512 documents, but identifiers from only 1\,773 
+is almost 10\,000. It means that information from about 9\,000 clusters is
+discarded: in total there are 22\,512 documents, but identifiers from only 1\,773
 are used, and the rest of the document (about 92\%) are not utilized at all.
 
 
 \subsubsection{Russian Wikipedia} \ \\
 
-For the Russian Wikipedia, the best results is 105 namespace-defining clusters 
-with overall purity of 0.73. It was obtained by $K=3000$ and $k = 250$. 
+For the Russian Wikipedia, the best results is 105 namespace-defining clusters
+with overall purity of 0.73. It was obtained by $K=3000$ and $k = 250$.
 The largest namespace-defining clusters
 are shown in table~\ref{tab:rus-wiki-categories}. Interestingly, there is a cluster
 ``Животные'' (``Animals'') where mathematical formulae are used to describe ``tooth formula''.
@@ -1016,11 +1023,11 @@ Additionally, some of the non-valid definitions seem to result from misclassific
 by the POS-tagger, for example, ``$\Sigma$'' is defined as ``вдоль'' (literally ``along''),
 which do not make much sense.
 Furthermore, we can look at all definitions of ``$\lambda$'' across all discovered namespaces
-(see table~\ref{tab:rus-lambda}). The scores of namespace relations extracted from Russian 
-wikipedia are generally smaller than in English, but it is most likely because 
+(see table~\ref{tab:rus-lambda}). The scores of namespace relations extracted from Russian
+wikipedia are generally smaller than in English, but it is most likely because
 there are fewer relations in the Russian dataset.
 
-For the Russian part of Wikipedia, we also utilize just 382 documents, which is only 7\%, 
+For the Russian part of Wikipedia, we also utilize just 382 documents, which is only 7\%,
 and the rest of the documents (93\%) are filtered out.
 
 \begin{table}[h!]
@@ -1173,11 +1180,11 @@ The second hierarchy is ``Physics and Astronomy Classification Scheme'' (PACS)
 Like in MSC, we remove the top-level category  ``GENERAL''.
 
 Finally, we also use the ACM Classification Scheme \cite{rous2012acm}
-available as a SKOS \cite{miles2005skos} ontology at their 
-website\footnote{\url{https://www.acm.org/about/class/2012}}. The SKOS ontology graph was 
+available as a SKOS \cite{miles2005skos} ontology at their
+website\footnote{\url{https://www.acm.org/about/class/2012}}. The SKOS ontology graph was
 processed with RDFLib \cite{rdflib}. We use the following top level categories:
-``Hardware'', ``Computer systems organization'', ``Networks'', 
-``Software and its engineering'', ``Theory of computation'', ``Information systems'', 
+``Hardware'', ``Computer systems organization'', ``Networks'',
+``Software and its engineering'', ``Theory of computation'', ``Information systems'',
 ``Security and privacy'', ``Human-centered computing'', ``Computing methodologies''.
 
 After obtaining and processing the data, the three hierarchies
@@ -1190,8 +1197,8 @@ a different hierarchy is needed for Russian. One of such hierarchies is
 (ГРНТИ)~-- ``State categorizator of scientific and technical information'', which
 is a state-recommended scheme for categorizing scientific articles published
 in Russian \cite{feodosimov2000grnti}. The hierarchy  is extracted from the
-official website\footnote{\url{http://grnti.ru/}}. It provides a very general categorization 
-and therefore we keep only the following math-related categories: 
+official website\footnote{\url{http://grnti.ru/}}. It provides a very general categorization
+and therefore we keep only the following math-related categories:
 ``Астрономия'' (``Astronomy''), ``Биология'' (``Biology''),
 ``Информатика'' (``Informatics''), ``Математика'' (``Mathematics''),
 ``Механика'' (``Mechanics''), ``Ста\-тис\-тика'' (``Statistics''),
@@ -1277,7 +1284,7 @@ The majority of namespaces are mapped correctly. For example:
 \end{small}
 
 
-However, some of the mapped namespaces are accurate only partially:
+However, some of the mapped namespaces are only partially accurate:
 
 \begin{small}
 \begin{itemize}
@@ -1341,8 +1348,8 @@ Finally, namespaces marked as ``OTHER'' are usually matched incorrectly:
 
 \ \\
 
-For the Russian version of Wikipedia, the majority of namespaces are also mapped correctly. 
-For example: 
+For the Russian version of Wikipedia, the majority of namespaces are also mapped correctly.
+For example:
 
 \begin{small}
 \begin{itemize}
@@ -1397,22 +1404,22 @@ The best clustering algorithm is $K$-Means with $K=9500$
 on the semantic space produced by rank-reduced SVD with $k = 250$
 with TF-IDF weight where TF is sublinear.
 
-We used ``$E = mc^2$'' as a motivating example for namespace discovery. 
-When namespaces are discovered, we can look at how the identifiers 
-``$E$'', ``$m$'', ``$c$'' are used in different namespaces. Additionally, 
-we can look at other common identifiers such as ``$\lambda$'', ``$\sigma$'' and 
-``$\mu$'' (see table~\ref{tab:def-en}). We see that definitions of 
+We used ``$E = mc^2$'' as a motivating example for namespace discovery.
+When namespaces are discovered, we can look at how the identifiers
+``$E$'', ``$m$'', ``$c$'' are used in different namespaces. Additionally,
+we can look at other common identifiers such as ``$\lambda$'', ``$\sigma$'' and
+``$\mu$'' (see table~\ref{tab:def-en}). We see that definitions of
 ``$E$'', ``$m$'', ``$c$'' are correct for the ``General relativity'' namespace,
 and ``$E$'' is ``expectation'' for the ``Probability'' namespace, however
-we have not observed that ``$E$'' is ``Elimination matrix'' for the ``Linear 
+we have not observed that ``$E$'' is ``Elimination matrix'' for the ``Linear
 algebra'' namespaces, but it is just ``matrix''.
 
-We also repeat this experiment for the Russian Wikipedia (table~\ref{tab:def-ru}), but 
-chose slightly different namespaces. 
+We also repeat this experiment for the Russian Wikipedia (table~\ref{tab:def-ru}), but
+chose slightly different namespaces.
 Similarly to English Wikipedia, ``$E$'', ``$m$'', ``$c$'' are discover
 correctly, but nothing is discovered for ``$E$'' in namespaces about probability
-and linear algebra. 
- 
+and linear algebra.
+
 
 
 \begin{table}[h!]
@@ -1432,7 +1439,7 @@ Optics	&		&	order fringe	&	speed of light in vacuum	&	wavelength	&	conductivity	
 Probability	&	expectation	&	sample size	&		&	affine parameter	&	variance	&	mean vector	\\
 \hline													
 \end{tabular}}
-\caption{Definitions for selected identifiers and namespaces extracted 
+\caption{Definitions for selected identifiers and namespaces extracted
 from the English Wikipedia.}
 \label{tab:def-en}
 \end{table}
@@ -1452,7 +1459,7 @@ from the English Wikipedia.}
 Вероятность (Probability)	&		&		&		&		&	дисперсия (variance)	&	среднее (mean)	\\
 \hline													
 \end{tabular}}
-\caption{Definitions for selected identifiers and namespaces extracted 
+\caption{Definitions for selected identifiers and namespaces extracted
 from the Russian Wikipedia.}
 \label{tab:def-ru}
 \end{table}

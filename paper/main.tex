@@ -1,3 +1,4 @@
+% !TeX spellcheck = en_US
 %\documentclass[]{article}
 \documentclass{sig-alternate-2013}
 \usepackage{draftwatermark}
@@ -12,6 +13,8 @@
 
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{tabularx}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}m{#1}}
 %\usepackage{breqn}
 \usepackage{amssymb}
 \usepackage[pdftex]{hyperref}
@@ -233,7 +236,7 @@
 	} 
 %opening
 \title{Discovering Namespaces in Mathematical Notation}
-\author{Moritz, Alexey, Sergey, Marcus?, Howard, Volker}
+\author{Moritz, Alexey, Sergey, Marcus, Howard, Volker}
 
 
 \maketitle
@@ -256,6 +259,27 @@ In addition, we investigate scientific articles from arXiv to test our method on
 \section{Motivation}
 \subsection{The vision of namespaced Mathematics}
 Motivation and introduction goes here
+
+
+Namespaces turned out to be useful for Programming Languages so they'll probably be useful for Mathematics as well.
+
+Use cases:
+
+- Enhance Math Search:
+
+A certain level of semantics is required to search for mathematical expression. Two prototypical problems are identifier disambiguation (does $E$ stand for \emph{Energy} or \emph{Expectation Value}) and canonicalization of synonymously used identifiers such as $\sigma$ or $\operatorname{SD}$, which both denote standard deviation. 
+
+- Enhance Math Paper writing:
+
+Fixed naming conventions simplify the writing process.
+Basis for visual editors.
+Possibility to create semantic \LaTeX sources
+
+- Enhance readers experience:
+
+Annotate meanings of identifiers in equations via tool-tips.
+
+
 
 \section{Background}
 Math meats information retrieval
@@ -285,6 +309,29 @@ A long road ahead
 
 Write future work
 \section{Acknowledgement}
+\appendix
+\onecolumn
+\begin{table}[h!]
+	\centering
+	\makebox[\textwidth][c]{\begin{tabular}{|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|}
+			\hline													
+			&	$E$	&	$m$	&	$c$	&	$\lambda$	&	$\sigma$	&	$\mu$	\\
+			\hline													
+			Linear algebra	&	matrix	&	matrix	&	scalar	&	eigenvalue	&	related permutation	&	algebraic multiplicity	\\
+			\hline
+			General relativity	&	energy	&	mass	&	speed of light	&	length	&	shear	&	reduced mass	\\
+			\hline
+			Coding theory	&	encoding function	&	message	&	transmitted codeword	&		&	natural isomorphisms	&		 \\
+			\hline
+			Optics	&		&	order fringe	&	speed of light in vacuum	&	wavelength	&	conductivity	&	 permeability	\\
+			\hline
+			Probability	&	expectation	&	sample size	&		&	affine parameter	&	variance	&	mean vector	\\
+			\hline													
+		\end{tabular}}
+		\caption{Definitions for selected identifiers and namespaces extracted
+			from the English Wikipedia.}
+		\label{tab:def-en}
+	\end{table}
 
 \end{document}
 

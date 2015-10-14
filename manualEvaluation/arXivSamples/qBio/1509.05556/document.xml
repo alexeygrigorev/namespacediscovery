@@ -1,0 +1,2112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?latexml searchpaths="/home/dopa-user/ms/tmp/tex"?>
+<?latexml package="ids"?>
+<?latexml class="revtex4-1" options="twocolumn,showpacs,preprintnumbers,amsmath,amssymb,pre,superscriptaddress"?>
+<?latexml package="graphicx"?>
+<?latexml package="dcolumn"?>
+<?latexml package="bm"?>
+<?latexml package="subfigure"?>
+<?latexml package="epstopdf"?>
+<?latexml package="color" options="usenames"?>
+<?latexml package="float"?>
+<?latexml package="CJK"?>
+<?latexml RelaxNGSchema="LaTeXML"?>
+<document xmlns="http://dlmf.nist.gov/LaTeXML" class="ltx_authors_1line">
+  <resource src="LaTeXML.css" type="text/css"/>
+  <resource src="ltx-article.css" type="text/css"/>
+  <title>Firing dynamics of an autaptic neuron</title>
+  <creator role="author">
+    <personname>Hengtong Wang</personname>
+    <contact role="affiliation">School of Physics and Information Technology, Shaanxi Normal University, Xi’an 710119, China</contact>
+  </creator>
+  <creator before="  " role="author">
+    <personname>Yong Chen</personname>
+    <contact role="email">ychen@buaa.edu.cn</contact>
+    <contact role="affiliation">Center of soft matter physics and its application, Beihang University, Beijing 100191, China<break/>School of Physics and Nuclear Energy Engineering, Beihang University, Beijing 100191, China</contact>
+  </creator>
+  <abstract name="Abstract">
+    <p>Autapses are synapses that connect a neuron to itself in the nervous system. Previously, both experimental and theoretical studies have demonstrated that autaptic connections in the nervous system have a significant physiological function. Autapses in nature provide self-delayed feedback, thus introducing an additional time scale to neuronal activities and causing many dynamic behaviors in neurons. Recently, theoretical studies have revealed that an autapse provides a control option for adjusting the response of a neuron: e.g., an autaptic connection can cause the electrical activities of the Hindmarsh-Rose neuron to switch between quiescent, periodic, and chaotic firing patterns; an autapse can enhance or suppress the mode-locking status of a neuron injected with sinusoidal current; and the firing frequency and interspike interval distributions of the response spike train can also be modified by the autapse. In this paper, we review recent studies that showed how an autapse affects the response of a single neuron.</p>
+    <break/>
+    <p><text font="bold">Keywords:</text> Autapse, Self-delay feedback, single neuron, firing pattern<break/><!--  %no more than four sets of keywords should be provided --></p>
+    <p><text font="bold">PACS:</text> 87.19.ll, 87.19.ls, 87.18.Sn, 87.19.lg</p>
+  </abstract>
+  <ERROR class="undefined">{CJK}</ERROR>
+  <para xml:id="p1">
+    <p>UTF8gbsn</p>
+  </para>
+<!--  %Title should be concise; avoid abbreviations if possible; and not begin with ‘A’, ‘An’, ‘The’, or ‘Study on’. 
+     %**** cpb˙autapse.tex Line 25 ****-->  <section refnum="1" xml:id="S1">
+    <title><tag close=" ">1</tag>Introduction</title>
+<!--  %“input–0˙introduction.tex˝ -->    <para xml:id="S1.p1">
+      <p>The nervous system is a complex network of neurons, synapses, and other specialized cells, and through this system, neurons receive and transmit information between different parts of the body <cite class="ltx_citemacro_cite">[<bibref bibrefs="kandel" separator="," show="Refnum" yyseparator=","/>]</cite>. The responses of neurons and the function of synapses have received considerable attention because of their status as building blocks of the nervous system <cite class="ltx_citemacro_cite">[<bibref bibrefs="Bartos,Bennett,Connors" separator="," show="Refnum" yyseparator=","/>]</cite>. Nearly a century ago, neuroscientists found a special synaptic structure, the autapse, which is a synapse between different parts of the same neuron <cite class="ltx_citemacro_cite">[<bibref bibrefs="vander,Bekkers1998,yamaguichi" separator="," show="Refnum" yyseparator=","/>]</cite>. Because of its odd structure, the self-synaptic connection has remained poorly understood. However, many recent studies found that autapses are much more widespread in the nervous system than previously thought. Autapses have been reported in various brain areas, such as the neocortex, cerebellum, hippocampus, striatum, and substantia nigra <cite class="ltx_citemacro_cite">[<bibref bibrefs="lubke,Bekkers1998,flight,branco,Kimura,tamas" separator="," show="Refnum" yyseparator=","/>]</cite>. Interestingly, about 80% of cortical pyramidal neurons have autaptic connections <cite class="ltx_citemacro_cite">[<bibref bibrefs="lubke" separator="," show="Refnum" yyseparator=","/>]</cite>. Many studies have revealed that autapses are not merely curiosities, but play an authentic physiological role in the nervous system. Autapses can maintain persistent activity in the nervous system by mediating positive feedback <cite class="ltx_citemacro_cite">[<bibref bibrefs="saada" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+    </para>
+    <para xml:id="S1.p2">
+      <p>Recent experiments also demonstrated that autapses are very important for the processing function of the brain <cite class="ltx_citemacro_cite">[<bibref bibrefs="ikeda" separator="," show="Refnum" yyseparator=","/>]</cite>. Bacci et al. recorded the activity of fast spiking interneurons in acute brain slices of juvenile rats and found that autaptic transmission increased the spike-timing precision <cite class="ltx_citemacro_cite">[<bibref bibrefs="bacci" separator="," show="Refnum" yyseparator=","/>]</cite>. A somatic spike can evoke excitatory postsynaptic currents with various amplitudes through an autapse <cite class="ltx_citemacro_cite">[<bibref bibrefs="Kimura" separator="," show="Refnum" yyseparator=","/>]</cite>. However, the function of autapses and their contribution to information processing are still unclear <cite class="ltx_citemacro_cite">[<bibref bibrefs="ikeda,bekkers09" separator="," show="Refnum" yyseparator=","/>]</cite>. Thus, understanding the effect of autaptic activities on the responses of a neuron is a fundamental step to elucidating the process of information transfer in the nervous system <cite class="ltx_citemacro_cite">[<bibref bibrefs="salinas1,ychen2008,chenyl,quiroga" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+    </para>
+    <para xml:id="S1.p3">
+      <p>In fact, natural autapses are self-feedback connections in the nervous system and may allow a unique type of self-control, similar to the feedback in other systems <cite class="ltx_citemacro_cite">[<bibref bibrefs="ikeda" separator="," show="Refnum" yyseparator=","/>]</cite>. Actually, feedback creates a circuit, or loop, that connects a system to itself and commonly occurs in many systems, e.g., gene regulatory networks <cite class="ltx_citemacro_cite">[<bibref bibrefs="davidson,zhanghui" separator="," show="Refnum" yyseparator=","/>]</cite>, population dynamics <cite class="ltx_citemacro_cite">[<bibref bibrefs="cabrera" separator="," show="Refnum" yyseparator=","/>]</cite>, and climate systems <cite class="ltx_citemacro_cite">[<bibref bibrefs="bonan" separator="," show="Refnum" yyseparator=","/>]</cite>. Feedback is also used extensively to control the state of a nonlinear system, such as to stabilize periodic orbits or to control coherence resonance <cite class="ltx_citemacro_cite">[<bibref bibrefs="post,sethia" separator="," show="Refnum" yyseparator=","/>]</cite>. Feedback is also very commonly used in the design of electric circuit elements <cite class="ltx_citemacro_cite">[<bibref bibrefs="waik" separator="," show="Refnum" yyseparator=","/>]</cite>. In these systems, information about the past or the present influences the same phenomena in the present or future, respectively. Moreover, feedback has a marked effect on the dynamics of nonlinear systems. The frequency at the onset of the oscillation of a nonlinear system can be modified by the feedback loop <cite class="ltx_citemacro_cite">[<bibref bibrefs="Gaudreault" separator="," show="Refnum" yyseparator=","/>]</cite>. Furthermore, self-delayed feedback with a fixed delay time can suppress chaos and also control steady states <cite class="ltx_citemacro_cite">[<bibref bibrefs="Ahlborn,Balanov" separator="," show="Refnum" yyseparator=","/>]</cite>. In a simulation study, Popovych et al. showed that time-delayed feedback has the ability to desynchronize groups of model neurons <cite class="ltx_citemacro_cite">[<bibref bibrefs="popovych" separator="," show="Refnum" yyseparator=","/>]</cite>.
+<!--  %**** cpb˙autapse.tex Line 50 **** --></p>
+    </para>
+    <para xml:id="S1.p4">
+      <p>A neuron with an autaptic connection can provide a distinctive physiological self-feedback model with many dynamic properties. Rusin et al. performed a time-delayed feedback stimulation of a group of cultured neurons and experimentally demonstrated that time-delayed feedback could cause synchronization of the action potentials of a group of neurons <cite class="ltx_citemacro_cite">[<bibref bibrefs="rusin" separator="," show="Refnum" yyseparator=","/>]</cite>. Prager et al. found that time-delayed feedback can facilitate the noise-induced oscillation of a neuronal system <cite class="ltx_citemacro_cite">[<bibref bibrefs="prager" separator="," show="Refnum" yyseparator=","/>]</cite>. Autaptic delayed feedback was found to modify the bursting in the distribution of interspike intervals of a stochastic Hodgkin-Huxley (HH) neuron <cite class="ltx_citemacro_cite">[<bibref bibrefs="liyy" separator="," show="Refnum" yyseparator=","/>]</cite>. Such autaptic delayed feedback can also reduce the spontaneous spiking activity of a stochastic neuron at the characteristic frequencies. The effect of an autapse on the spike rate of a single neuronal system shows dependence on the duration of the autapse activity <cite class="ltx_citemacro_cite">[<bibref bibrefs="hashemi" separator="," show="Refnum" yyseparator=","/>]</cite>. Modulation of autaptic delay feedback can cause the dynamic behaviors of a Hindmarsh-Rose (HR) neuron to switch between quiescent, periodic, and chaotic firing patterns <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+    </para>
+    <para xml:id="S1.p5">
+      <p>In this article, we review the current stat of knowledge of the effect of an autapse on single neurons.</p>
+    </para>
+  </section>
+  <section refnum="2" xml:id="S2">
+    <title><tag close=" ">2</tag>Autaptic connection</title>
+    <para xml:id="S2.p1">
+      <p>Scientists have long investigated the functions and properties of neurons and synapses. Neurons vary widely with different sizes and forms, and neuron responses are also involved in many dynamic behaviors. A synapse is a structure in the nervous system that permits a neuron (or nerve cell) to transmit an electrical or chemical signal to another cell (neural or otherwise) <cite class="ltx_citemacro_cite">[<bibref bibrefs="schacter" separator="," show="Refnum" yyseparator=","/>]</cite>. The self-synapse, or the autapse, was first described as a synapse between the axon of a pyramidal cell and its own dendrites by Van der Loos and Glaser in 1972 <cite class="ltx_citemacro_cite">[<bibref bibrefs="vander" separator="," show="Refnum" yyseparator=","/>]</cite>. Before the report by Van der loos et al., other terms, such as ’self-excitation’ and ’self-sensing’, were used to describe the self-synaptic structure. For a long time, autapses in the nervous system seemed like anatomical curiosities with questionable functional significance. However, recent experiments began to reveal how autapses might play an important role in brain function. Some reports also suggested that autapses are connected to some neural diseases <cite class="ltx_citemacro_cite">[<bibref bibrefs="jang" separator="," show="Refnum" yyseparator=","/>]</cite>. Neurobiology experiments have always focused on excitatory (glutamate-releasing) and inhibitory (GABA-releasing) autapses. To date, autaptic structures have been found in almost all parts of the nervous system <cite class="ltx_citemacro_cite">[<bibref bibrefs="Bekkers1998" separator="," show="Refnum" yyseparator=","/>]</cite>. Fig. <ref labelref="LABEL:autapse2"/> shows photos of the many autapses of a single rat hippocampal neuron.</p>
+    </para>
+    <figure frefnum="Figure 1" labels="LABEL:autapse2" refnum="1" xml:id="S2.F1">
+      <graphics candidates="fig1_autapse.eps" class="ltx_centering" graphic="fig1_autapse.eps" options="width=216.81pt" xml:id="S2.F1.g1"/>
+      <toccaption><tag close=" ">1</tag>A single rat hippocampal neuron (arrowed, left) grown in culture on a Â­âmicrodotâ of glia (flat gray cells), showing abundant autapses labeled with an antibody (small dark spots, right) <cite class="ltx_citemacro_cite">[<bibref bibrefs="ikeda" separator="," show="Refnum" yyseparator=","/>]</cite>.</toccaption>
+      <caption><tag close=": ">Figure 1</tag>A single rat hippocampal neuron (arrowed, left) grown in culture on a Â­âmicrodotâ of glia (flat gray cells), showing abundant autapses labeled with an antibody (small dark spots, right) <cite class="ltx_citemacro_cite">[<bibref bibrefs="ikeda" separator="," show="Refnum" yyseparator=","/>]</cite>.</caption>
+    </figure>
+    <figure frefnum="Figure 2" labels="LABEL:autapse3" refnum="2" xml:id="S2.F2">
+      <graphics candidates="fig2_autapse.eps" class="ltx_centering" graphic="fig2_autapse.eps" options="width=195.129pt" xml:id="S2.F2.g1"/>
+      <toccaption><tag close=" ">2</tag>Schematic drawing of a neuron with autaptic feedback. The structure in the circle represents an autaptic connection between dendritic and axonal terminals. </toccaption>
+      <caption><tag close=": ">Figure 2</tag>Schematic drawing of a neuron with autaptic feedback. The structure in the circle represents an autaptic connection between dendritic and axonal terminals. </caption>
+    </figure>
+<!--  %**** cpb˙autapse.tex Line 75 **** -->    <para xml:id="S2.p2">
+      <p>In nature, autaptic connections enable self-feedback of a neuron. Thus, in almost all current autapse studies, the model of a neuron with an autaptic connection contains a single compartment that exhibits a self-delayed feedback mechanism, as shown in Fig. <ref labelref="LABEL:autapse3"/>. The delay time represents the elapsed time associated with the axonal propagation prior to the reintroduction of the signal into the neuron. The delay time is also believed to be one of the important properties of autaptic connections. Mathematical models of an autapse in previous studies of the effect of self-synapses on neurons fall into two main categories: one has linear self-coupling and describes a gap junction, and the other has nonlinear self-coupling and describes a chemical synapse, which may be an excitatory or inhibitory synapse. The specific mathematical form of the autapse depends on the chosen neuronal model.</p>
+    </para>
+    <para xml:id="S2.p3">
+      <p>The autaptic connection of a simplified neuron model (such as the HR neuron, FitzHugh-Nagumo neuron, Izhikevich neuron and others) can often be described by one of the following formulas <cite class="ltx_citemacro_cite">[<bibref bibrefs="hashemi,wht2014a,majun1" separator="," show="Refnum" yyseparator=","/>]</cite>:</p>
+    </para>
+    <para xml:id="S2.p4">
+      <itemize xml:id="I1">
+        <item xml:id="I1.i1">
+          <tag>•</tag>
+          <para xml:id="I1.i1.p1">
+            <p>Linear coupling gives as electrical diffusive-type:</p>
+            <equation frefnum="(1)" labels="LABEL:eq1" refnum="1" xml:id="S2.E1">
+              <Math mode="display" tex="I_{aut}=g_{aut}[u(t-\tau)-u(t)]." text="I _ (a * u * t) = g _ (a * u * t) * delimited-[]@(u * (t - tau) - u * t)" xml:id="S2.E1.m1">
+                <XMath>
+                  <XMApp punctuation=".">
+                    <XMTok meaning="equals" role="RELOP">=</XMTok>
+                    <XMApp>
+                      <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                      <XMTok font="italic" role="UNKNOWN">I</XMTok>
+                      <XMApp>
+                        <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                      </XMApp>
+                    </XMApp>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMApp>
+                        <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                        <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                        </XMApp>
+                      </XMApp>
+                      <XMDual>
+                        <XMApp>
+                          <XMTok meaning="delimited-[]"/>
+                          <XMRef idref="S2.E1.m1.2"/>
+                        </XMApp>
+                        <XMWrap>
+                          <XMTok role="OPEN" stretchy="false">[</XMTok>
+                          <XMApp xml:id="S2.E1.m1.2">
+                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E1.m1.2.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMApp xml:id="S2.E1.m1.2.1">
+                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                    <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E1.m1.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN" xml:id="S2.E1.m1.1">t</XMTok>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMApp>
+                          <XMTok role="CLOSE" stretchy="false">]</XMTok>
+                        </XMWrap>
+                      </XMDual>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>
+            </equation>
+            <p><Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="I1.i1.p1.m1">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> is the autaptic conductivity. <Math mode="inline" tex="\tau" text="tau" xml:id="I1.i1.p1.m2">
+                <XMath>
+                  <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                </XMath>
+              </Math> is the delay time. This form of autaptic current is proportional to the difference between the membrane potential at <Math mode="inline" tex="t" text="t" xml:id="I1.i1.p1.m3">
+                <XMath>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                </XMath>
+              </Math> and that at an earlier time point <Math mode="inline" tex="t-\tau" text="t - tau" xml:id="I1.i1.p1.m4">
+                <XMath>
+                  <XMApp>
+                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                  </XMApp>
+                </XMath>
+              </Math>.</p>
+          </para>
+        </item>
+        <item xml:id="I1.i2">
+          <tag>•</tag>
+          <para xml:id="I1.i2.p1">
+            <p>The chemical synapse function is modeled using the so-called fast threshold modulation (FTM) scheme <cite class="ltx_citemacro_cite">[<bibref bibrefs="Belykh,buric" separator="," show="Refnum" yyseparator=","/>]</cite>:</p>
+            <equationgroup class="ltx_eqn_eqnarray" xml:id="A0.EGx1">
+              <equation frefnum="(2)" refnum="2" xml:id="S2.E2">
+                <MathFork>
+                  <Math tex="\displaystyle I_{aut}(t)=-g_{aut}(u(t)-V_{syn})S(t-\tau)," text="I _ (a * u * t) * t = - g _ (a * u * t) * (u * t - V _ (s * y * n)) * S * (t - tau)" xml:id="S2.E2.m4">
+                    <XMath>
+                      <XMApp punctuation=",">
+                        <XMTok meaning="equals" role="RELOP">=</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMApp>
+                            <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                            <XMTok font="italic" role="UNKNOWN">I</XMTok>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                            </XMApp>
+                          </XMApp>
+                          <XMDual>
+                            <XMRef idref="S2.E2.m4.1"/>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                              <XMTok font="italic" role="UNKNOWN" xml:id="S2.E2.m4.1">t</XMTok>
+                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                        <XMApp>
+                          <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                          <XMApp>
+                            <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                            <XMApp>
+                              <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                              <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                              <XMApp>
+                                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                              </XMApp>
+                            </XMApp>
+                            <XMDual>
+                              <XMRef idref="S2.E2.m4.3"/>
+                              <XMWrap>
+                                <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                <XMApp xml:id="S2.E2.m4.3">
+                                  <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                  <XMApp>
+                                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                    <XMDual>
+                                      <XMRef idref="S2.E2.m4.2"/>
+                                      <XMWrap>
+                                        <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN" xml:id="S2.E2.m4.2">t</XMTok>
+                                        <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                      </XMWrap>
+                                    </XMDual>
+                                  </XMApp>
+                                  <XMApp>
+                                    <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                    <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                                    <XMApp>
+                                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                                    </XMApp>
+                                  </XMApp>
+                                </XMApp>
+                                <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                              </XMWrap>
+                            </XMDual>
+                            <XMTok font="italic" role="UNKNOWN">S</XMTok>
+                            <XMDual>
+                              <XMRef idref="S2.E2.m4.4"/>
+                              <XMWrap>
+                                <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                <XMApp xml:id="S2.E2.m4.4">
+                                  <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                  <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                </XMApp>
+                                <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                              </XMWrap>
+                            </XMDual>
+                          </XMApp>
+                        </XMApp>
+                      </XMApp>
+                    </XMath>
+                  </Math>
+                  <MathBranch>
+                    <tr>
+                      <td align="right"><Math mode="inline" tex="\displaystyle I_{aut}(t)" text="I _ (a * u * t) * t" xml:id="S2.E2.m1">
+                          <XMath>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMApp>
+                                <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                <XMTok font="italic" role="UNKNOWN">I</XMTok>
+                                <XMApp>
+                                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                </XMApp>
+                              </XMApp>
+                              <XMDual>
+                                <XMRef idref="S2.E2.m1.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN" xml:id="S2.E2.m1.1">t</XMTok>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                      <td align="center"><Math mode="inline" tex="\displaystyle=" text="=" xml:id="S2.E2.m2">
+                          <XMath>
+                            <XMTok meaning="equals" role="RELOP">=</XMTok>
+                          </XMath>
+                        </Math></td>
+                      <td align="left"><Math mode="inline" tex="\displaystyle-g_{aut}(u(t)-V_{syn})S(t-\tau)," text="- g _ (a * u * t) * (u * t - V _ (s * y * n)) * S * (t - tau)" xml:id="S2.E2.m3">
+                          <XMath>
+                            <XMApp punctuation=",">
+                              <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                              <XMApp>
+                                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                <XMApp>
+                                  <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                  <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                                  <XMApp>
+                                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                  </XMApp>
+                                </XMApp>
+                                <XMDual>
+                                  <XMRef idref="S2.E2.m3.2"/>
+                                  <XMWrap>
+                                    <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                    <XMApp xml:id="S2.E2.m3.2">
+                                      <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                      <XMApp>
+                                        <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                        <XMDual>
+                                          <XMRef idref="S2.E2.m3.1"/>
+                                          <XMWrap>
+                                            <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                            <XMTok font="italic" role="UNKNOWN" xml:id="S2.E2.m3.1">t</XMTok>
+                                            <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                          </XMWrap>
+                                        </XMDual>
+                                      </XMApp>
+                                      <XMApp>
+                                        <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                        <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                                        <XMApp>
+                                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                                        </XMApp>
+                                      </XMApp>
+                                    </XMApp>
+                                    <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                  </XMWrap>
+                                </XMDual>
+                                <XMTok font="italic" role="UNKNOWN">S</XMTok>
+                                <XMDual>
+                                  <XMRef idref="S2.E2.m3.3"/>
+                                  <XMWrap>
+                                    <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                    <XMApp xml:id="S2.E2.m3.3">
+                                      <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                      <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                    </XMApp>
+                                    <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                  </XMWrap>
+                                </XMDual>
+                              </XMApp>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                    </tr>
+                  </MathBranch>
+                </MathFork>
+              </equation>
+              <equation frefnum="(3)" refnum="3" xml:id="S2.E3">
+                <MathFork>
+                  <Math tex="\displaystyle S(t-\tau)=1/\{1+\exp[-k(u(t-\tau)-\theta)]\}," text="S * (t - tau) = 1 / set@(1 + exponential@(- k * (u * (t - tau) - theta)))" xml:id="S2.E3.m4">
+                    <XMath>
+                      <XMApp punctuation=",">
+                        <XMTok meaning="equals" role="RELOP">=</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">S</XMTok>
+                          <XMDual>
+                            <XMRef idref="S2.E3.m4.2"/>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                              <XMApp xml:id="S2.E3.m4.2">
+                                <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                              </XMApp>
+                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                        <XMApp>
+                          <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                          <XMTok meaning="1" role="NUMBER">1</XMTok>
+                          <XMDual>
+                            <XMApp>
+                              <XMTok meaning="set"/>
+                              <XMRef idref="S2.E3.m4.3"/>
+                            </XMApp>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">{</XMTok>
+                              <XMApp xml:id="S2.E3.m4.3">
+                                <XMTok meaning="plus" role="ADDOP">+</XMTok>
+                                <XMTok meaning="1" role="NUMBER">1</XMTok>
+                                <XMDual>
+                                  <XMApp>
+                                    <XMRef idref="S2.E3.m4.1"/>
+                                    <XMRef idref="S2.E3.m4.3.1"/>
+                                  </XMApp>
+                                  <XMApp>
+                                    <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E3.m4.1">exp</XMTok>
+                                    <XMWrap>
+                                      <XMTok role="OPEN" stretchy="false">[</XMTok>
+                                      <XMApp xml:id="S2.E3.m4.3.1">
+                                        <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                        <XMApp>
+                                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">k</XMTok>
+                                          <XMDual>
+                                            <XMRef idref="S2.E3.m4.3.1.1"/>
+                                            <XMWrap>
+                                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                              <XMApp xml:id="S2.E3.m4.3.1.1">
+                                                <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                                <XMApp>
+                                                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                                  <XMDual>
+                                                    <XMRef idref="S2.E3.m4.3.1.1.1"/>
+                                                    <XMWrap>
+                                                      <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                                      <XMApp xml:id="S2.E3.m4.3.1.1.1">
+                                                        <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                                        <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                                        <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                                      </XMApp>
+                                                      <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                                    </XMWrap>
+                                                  </XMDual>
+                                                </XMApp>
+                                                <XMTok font="italic" name="theta" role="UNKNOWN">θ</XMTok>
+                                              </XMApp>
+                                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                            </XMWrap>
+                                          </XMDual>
+                                        </XMApp>
+                                      </XMApp>
+                                      <XMTok role="CLOSE" stretchy="false">]</XMTok>
+                                    </XMWrap>
+                                  </XMApp>
+                                </XMDual>
+                              </XMApp>
+                              <XMTok role="CLOSE" stretchy="false">}</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                      </XMApp>
+                    </XMath>
+                  </Math>
+                  <MathBranch>
+                    <tr>
+                      <td align="right"><Math mode="inline" tex="\displaystyle S(t-\tau)" text="S * (t - tau)" xml:id="S2.E3.m1">
+                          <XMath>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">S</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E3.m1.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMApp xml:id="S2.E3.m1.1">
+                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                    <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                      <td align="center"><Math mode="inline" tex="\displaystyle=" text="=" xml:id="S2.E3.m2">
+                          <XMath>
+                            <XMTok meaning="equals" role="RELOP">=</XMTok>
+                          </XMath>
+                        </Math></td>
+                      <td align="left"><Math mode="inline" tex="\displaystyle 1/\{1+\exp[-k(u(t-\tau)-\theta)]\}," text="1 / set@(1 + exponential@(- k * (u * (t - tau) - theta)))" xml:id="S2.E3.m3">
+                          <XMath>
+                            <XMApp punctuation=",">
+                              <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                              <XMTok meaning="1" role="NUMBER">1</XMTok>
+                              <XMDual>
+                                <XMApp>
+                                  <XMTok meaning="set"/>
+                                  <XMRef idref="S2.E3.m3.2"/>
+                                </XMApp>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">{</XMTok>
+                                  <XMApp xml:id="S2.E3.m3.2">
+                                    <XMTok meaning="plus" role="ADDOP">+</XMTok>
+                                    <XMTok meaning="1" role="NUMBER">1</XMTok>
+                                    <XMDual>
+                                      <XMApp>
+                                        <XMRef idref="S2.E3.m3.1"/>
+                                        <XMRef idref="S2.E3.m3.2.1"/>
+                                      </XMApp>
+                                      <XMApp>
+                                        <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E3.m3.1">exp</XMTok>
+                                        <XMWrap>
+                                          <XMTok role="OPEN" stretchy="false">[</XMTok>
+                                          <XMApp xml:id="S2.E3.m3.2.1">
+                                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                            <XMApp>
+                                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                              <XMTok font="italic" role="UNKNOWN">k</XMTok>
+                                              <XMDual>
+                                                <XMRef idref="S2.E3.m3.2.1.1"/>
+                                                <XMWrap>
+                                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                                  <XMApp xml:id="S2.E3.m3.2.1.1">
+                                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                                    <XMApp>
+                                                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                                      <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                                      <XMDual>
+                                                        <XMRef idref="S2.E3.m3.2.1.1.1"/>
+                                                        <XMWrap>
+                                                          <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                                          <XMApp xml:id="S2.E3.m3.2.1.1.1">
+                                                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                                            <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                                            <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+                                                          </XMApp>
+                                                          <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                                        </XMWrap>
+                                                      </XMDual>
+                                                    </XMApp>
+                                                    <XMTok font="italic" name="theta" role="UNKNOWN">θ</XMTok>
+                                                  </XMApp>
+                                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                                </XMWrap>
+                                              </XMDual>
+                                            </XMApp>
+                                          </XMApp>
+                                          <XMTok role="CLOSE" stretchy="false">]</XMTok>
+                                        </XMWrap>
+                                      </XMApp>
+                                    </XMDual>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">}</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                    </tr>
+                  </MathBranch>
+                </MathFork>
+              </equation>
+            </equationgroup>
+            <p>where <Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="I1.i2.p1.m1">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> is the autaptic intensity, and <Math mode="inline" tex="V_{syn}" text="V _ (s * y * n)" xml:id="I1.i2.p1.m2">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> is the synaptic reversal potential. <Math mode="inline" tex="V_{syn}" text="V _ (s * y * n)" xml:id="I1.i2.p1.m3">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>=2 and <Math mode="inline" tex="V_{syn}" text="V _ (s * y * n)" xml:id="I1.i2.p1.m4">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>=-2 correspond to excitatory and inhibitory autapses, respectively.</p>
+          </para>
+        </item>
+      </itemize>
+    </para>
+    <para xml:id="S2.p5">
+      <p>For a conductance-based neuron model (such as the HH neuron, Morris-Lecar neuron, Connor-Stevens neuron and others), the mathematic model of the autapse is often given as follows <cite class="ltx_citemacro_cite">[<bibref bibrefs="liyy,hashemi,wht_jtb,wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite></p>
+      <itemize xml:id="I2">
+        <item xml:id="I2.i1">
+          <tag>•</tag>
+          <para xml:id="I2.i1.p1">
+            <p>Linear coupling is also always set as electrical diffusive-type and has the same form as Eq. <ref labelref="LABEL:eq1"/>.</p>
+          </para>
+        </item>
+        <item xml:id="I2.i2">
+          <tag>•</tag>
+          <para xml:id="I2.i2.p1">
+            <p>Conductance-based chemical autapses can be described using a bi-exponential function, which has been reported to fit well with experiment results <cite class="ltx_citemacro_cite">[<bibref bibrefs="william" separator="," show="Refnum" yyseparator=","/>]</cite>,</p>
+            <equation frefnum="(4)" labels="LABEL:chemsyn" refnum="4" xml:id="S2.E4">
+              <Math mode="display" tex="I_{aut}(t)=G(t-t_{delay})(V-E_{syn})," text="I _ (a * u * t) * t = G * (t - t _ (d * e * l * a * y)) * (V - E _ (s * y * n))" xml:id="S2.E4.m1">
+                <XMath>
+                  <XMApp punctuation=",">
+                    <XMTok meaning="equals" role="RELOP">=</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMApp>
+                        <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+<!--  %**** cpb_autapse.tex Line 100 **** -->                        <XMTok font="italic" role="UNKNOWN">I</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                        </XMApp>
+                      </XMApp>
+                      <XMDual>
+                        <XMRef idref="S2.E4.m1.1"/>
+                        <XMWrap>
+                          <XMTok role="OPEN" stretchy="false">(</XMTok>
+                          <XMTok font="italic" role="UNKNOWN" xml:id="S2.E4.m1.1">t</XMTok>
+                          <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                        </XMWrap>
+                      </XMDual>
+                    </XMApp>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">G</XMTok>
+                      <XMDual>
+                        <XMRef idref="S2.E4.m1.2"/>
+                        <XMWrap>
+                          <XMTok role="OPEN" stretchy="false">(</XMTok>
+                          <XMApp xml:id="S2.E4.m1.2">
+                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                            <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                            <XMApp>
+                              <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                              <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                              <XMApp>
+                                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">l</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                              </XMApp>
+                            </XMApp>
+                          </XMApp>
+                          <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                        </XMWrap>
+                      </XMDual>
+                      <XMDual>
+                        <XMRef idref="S2.E4.m1.3"/>
+                        <XMWrap>
+                          <XMTok role="OPEN" stretchy="false">(</XMTok>
+                          <XMApp xml:id="S2.E4.m1.3">
+                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                            <XMTok font="italic" role="UNKNOWN">V</XMTok>
+                            <XMApp>
+                              <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                              <XMTok font="italic" role="UNKNOWN">E</XMTok>
+                              <XMApp>
+                                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                              </XMApp>
+                            </XMApp>
+                          </XMApp>
+                          <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                        </XMWrap>
+                      </XMDual>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>
+            </equation>
+            <p>where <Math mode="inline" tex="G(t-t_{delay})" text="G * (t - t _ (d * e * l * a * y))" xml:id="I2.i2.p1.m1">
+                <XMath>
+                  <XMApp>
+                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">G</XMTok>
+                    <XMDual>
+                      <XMRef idref="I2.i2.p1.m1.1"/>
+                      <XMWrap>
+                        <XMTok role="OPEN" stretchy="false">(</XMTok>
+                        <XMApp xml:id="I2.i2.p1.m1.1">
+                          <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                          <XMApp>
+                            <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                            <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">l</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                            </XMApp>
+                          </XMApp>
+                        </XMApp>
+                        <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                      </XMWrap>
+                    </XMDual>
+                  </XMApp>
+                </XMath>
+              </Math> is the autaptic conductance, and <Math mode="inline" tex="E_{syn}" text="E _ (s * y * n)" xml:id="I2.i2.p1.m2">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">E</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> is the autaptic reversal potential. In this equation, we used <Math mode="inline" tex="E_{syn}=0\;\mathrm{mV}" text="E _ (s * y * n) = 0 * mV" xml:id="I2.i2.p1.m3">
+                <XMath>
+                  <XMApp>
+                    <XMTok meaning="equals" role="RELOP">=</XMTok>
+                    <XMApp>
+                      <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                      <XMTok font="italic" role="UNKNOWN">E</XMTok>
+                      <XMApp>
+                        <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">s</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                        <XMTok font="italic" role="UNKNOWN">n</XMTok>
+                      </XMApp>
+                    </XMApp>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok meaning="0" role="NUMBER" rpadding="2.8pt">0</XMTok>
+                      <XMTok role="UNKNOWN">mV</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> for excitatory neurons and -80 <Math mode="inline" tex="\mathrm{mV}" text="mV" xml:id="I2.i2.p1.m4">
+                <XMath>
+                  <XMTok role="UNKNOWN">mV</XMTok>
+                </XMath>
+              </Math> for inhibitory neurons. The autaptic conductance is defined as</p>
+            <equationgroup class="ltx_eqn_eqnarray" xml:id="A0.EGx2">
+              <equation frefnum="(5)" refnum="5" xml:id="S2.E5">
+                <MathFork>
+                  <Math tex="\displaystyle G(t)=g_{aut}\sigma(t-t_{fire})" text="G * t = g _ (a * u * t) * sigma * (t - t _ (f * i * r * e))" xml:id="S2.E5.m4">
+                    <XMath>
+                      <XMApp>
+                        <XMTok meaning="equals" role="RELOP">=</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMTok font="italic" role="UNKNOWN">G</XMTok>
+                          <XMDual>
+                            <XMRef idref="S2.E5.m4.1"/>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                              <XMTok font="italic" role="UNKNOWN" xml:id="S2.E5.m4.1">t</XMTok>
+                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMApp>
+                            <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                            <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                            </XMApp>
+                          </XMApp>
+                          <XMTok font="italic" name="sigma" role="UNKNOWN">σ</XMTok>
+                          <XMDual>
+                            <XMRef idref="S2.E5.m4.2"/>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                              <XMApp xml:id="S2.E5.m4.2">
+                                <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                <XMApp>
+                                  <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                  <XMApp>
+                                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">f</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">i</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                                  </XMApp>
+                                </XMApp>
+                              </XMApp>
+                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                      </XMApp>
+                    </XMath>
+                  </Math>
+                  <MathBranch>
+                    <tr>
+                      <td align="right"><Math mode="inline" tex="\displaystyle G(t)" text="G * t" xml:id="S2.E5.m1">
+                          <XMath>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">G</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E5.m1.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN" xml:id="S2.E5.m1.1">t</XMTok>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                      <td align="center"><Math mode="inline" tex="\displaystyle=" text="=" xml:id="S2.E5.m2">
+                          <XMath>
+                            <XMTok meaning="equals" role="RELOP">=</XMTok>
+                          </XMath>
+                        </Math></td>
+                      <td align="left"><Math mode="inline" tex="\displaystyle g_{aut}\sigma(t-t_{fire})" text="g _ (a * u * t) * sigma * (t - t _ (f * i * r * e))" xml:id="S2.E5.m3">
+                          <XMath>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMApp>
+                                <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                                <XMApp>
+                                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                </XMApp>
+                              </XMApp>
+                              <XMTok font="italic" name="sigma" role="UNKNOWN">σ</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E5.m3.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMApp xml:id="S2.E5.m3.1">
+                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                    <XMApp>
+                                      <XMTok role="SUBSCRIPTOP" scriptpos="post9"/>
+                                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                      <XMApp>
+                                        <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">f</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">i</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                                      </XMApp>
+                                    </XMApp>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                    </tr>
+                  </MathBranch>
+                </MathFork>
+              </equation>
+              <equation frefnum="(6)" refnum="6" xml:id="S2.E6">
+                <MathFork>
+                  <Math tex="\displaystyle\sigma(t)=\frac{\exp(-t/t_{d})-\exp(-t/t_{r})}{t_{d}-t_{r}}" text="sigma * t = (exponential@(- t / t _ d) - exponential@(- t / t _ r)) / (t _ d - t _ r)" xml:id="S2.E6.m4">
+                    <XMath>
+                      <XMApp>
+                        <XMTok meaning="equals" role="RELOP">=</XMTok>
+                        <XMApp>
+                          <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                          <XMTok font="italic" name="sigma" role="UNKNOWN">σ</XMTok>
+                          <XMDual>
+                            <XMRef idref="S2.E6.m4.5"/>
+                            <XMWrap>
+                              <XMTok role="OPEN" stretchy="false">(</XMTok>
+                              <XMTok font="italic" role="UNKNOWN" xml:id="S2.E6.m4.5">t</XMTok>
+                              <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                            </XMWrap>
+                          </XMDual>
+                        </XMApp>
+                        <XMApp>
+                          <XMTok mathstyle="display" meaning="divide" role="MULOP"/>
+                          <XMApp>
+                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                            <XMDual>
+                              <XMApp>
+                                <XMRef idref="S2.E6.m4.1"/>
+                                <XMRef idref="S2.E6.m4.3"/>
+                              </XMApp>
+                              <XMApp>
+                                <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E6.m4.1">exp</XMTok>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMApp xml:id="S2.E6.m4.3">
+                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                    <XMApp>
+                                      <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                      <XMApp>
+                                        <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                        <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                                      </XMApp>
+                                    </XMApp>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMApp>
+                            </XMDual>
+                            <XMDual>
+                              <XMApp>
+                                <XMRef idref="S2.E6.m4.2"/>
+                                <XMRef idref="S2.E6.m4.4"/>
+                              </XMApp>
+                              <XMApp>
+                                <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E6.m4.2">exp</XMTok>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMApp xml:id="S2.E6.m4.4">
+                                    <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                    <XMApp>
+                                      <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                      <XMApp>
+                                        <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                        <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                        <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                                      </XMApp>
+                                    </XMApp>
+                                  </XMApp>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMApp>
+                            </XMDual>
+                          </XMApp>
+                          <XMApp>
+                            <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                            <XMApp>
+                              <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                              <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                            </XMApp>
+                            <XMApp>
+                              <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                              <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                              <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                            </XMApp>
+                          </XMApp>
+                        </XMApp>
+                      </XMApp>
+                    </XMath>
+                  </Math>
+                  <MathBranch>
+                    <tr>
+                      <td align="right"><Math mode="inline" tex="\displaystyle\sigma(t)" text="sigma * t" xml:id="S2.E6.m1">
+                          <XMath>
+                            <XMApp>
+                              <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                              <XMTok font="italic" name="sigma" role="UNKNOWN">σ</XMTok>
+                              <XMDual>
+                                <XMRef idref="S2.E6.m1.1"/>
+                                <XMWrap>
+                                  <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN" xml:id="S2.E6.m1.1">t</XMTok>
+                                  <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                </XMWrap>
+                              </XMDual>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                      <td align="center"><Math mode="inline" tex="\displaystyle=" text="=" xml:id="S2.E6.m2">
+                          <XMath>
+                            <XMTok meaning="equals" role="RELOP">=</XMTok>
+                          </XMath>
+                        </Math></td>
+                      <td align="left"><Math mode="inline" tex="\displaystyle\frac{\exp(-t/t_{d})-\exp(-t/t_{r})}{t_{d}-t_{r}}" text="(exponential@(- t / t _ d) - exponential@(- t / t _ r)) / (t _ d - t _ r)" xml:id="S2.E6.m3">
+                          <XMath>
+                            <XMApp>
+                              <XMTok mathstyle="display" meaning="divide" role="MULOP"/>
+                              <XMApp>
+                                <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                <XMDual>
+                                  <XMApp>
+                                    <XMRef idref="S2.E6.m3.1"/>
+                                    <XMRef idref="S2.E6.m3.3"/>
+                                  </XMApp>
+                                  <XMApp>
+                                    <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E6.m3.1">exp</XMTok>
+                                    <XMWrap>
+                                      <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                      <XMApp xml:id="S2.E6.m3.3">
+                                        <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                        <XMApp>
+                                          <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                          <XMApp>
+                                            <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                            <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                            <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                                          </XMApp>
+                                        </XMApp>
+                                      </XMApp>
+                                      <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                    </XMWrap>
+                                  </XMApp>
+                                </XMDual>
+                                <XMDual>
+                                  <XMApp>
+                                    <XMRef idref="S2.E6.m3.2"/>
+                                    <XMRef idref="S2.E6.m3.4"/>
+                                  </XMApp>
+                                  <XMApp>
+                                    <XMTok meaning="exponential" role="OPFUNCTION" xml:id="S2.E6.m3.2">exp</XMTok>
+                                    <XMWrap>
+                                      <XMTok role="OPEN" stretchy="false">(</XMTok>
+                                      <XMApp xml:id="S2.E6.m3.4">
+                                        <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                        <XMApp>
+                                          <XMTok mathstyle="inline" meaning="divide" role="MULOP">/</XMTok>
+                                          <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                          <XMApp>
+                                            <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                            <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                            <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                                          </XMApp>
+                                        </XMApp>
+                                      </XMApp>
+                                      <XMTok role="CLOSE" stretchy="false">)</XMTok>
+                                    </XMWrap>
+                                  </XMApp>
+                                </XMDual>
+                              </XMApp>
+                              <XMApp>
+                                <XMTok meaning="minus" role="ADDOP">-</XMTok>
+                                <XMApp>
+                                  <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                                </XMApp>
+                                <XMApp>
+                                  <XMTok role="SUBSCRIPTOP" scriptpos="post10"/>
+                                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                                  <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                                </XMApp>
+                              </XMApp>
+                            </XMApp>
+                          </XMath>
+                        </Math></td>
+                    </tr>
+                  </MathBranch>
+                </MathFork>
+              </equation>
+            </equationgroup>
+            <p>with presynaptic spikes occurring at <Math mode="inline" tex="t_{fire}" text="t _ (f * i * r * e)" xml:id="I2.i2.p1.m5">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">f</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">i</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>. The parameters <Math mode="inline" tex="t_{d}" text="t _ d" xml:id="I2.i2.p1.m6">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                  </XMApp>
+                </XMath>
+              </Math> and <Math mode="inline" tex="t_{r}" text="t _ r" xml:id="I2.i2.p1.m7">
+                <XMath>
+                  <XMApp>
+                    <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                    <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                  </XMApp>
+                </XMath>
+              </Math> represent the decay and rise times of the function, respectively, and these parameters determine the duration of the response. The autaptic rise and decay times were set to <Math mode="inline" tex="t_{r}=0.1\;\mathrm{ms}" text="t _ r = 0.1 * ms" xml:id="I2.i2.p1.m8">
+                <XMath>
+                  <XMApp>
+                    <XMTok meaning="equals" role="RELOP">=</XMTok>
+                    <XMApp>
+                      <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">r</XMTok>
+                    </XMApp>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok meaning="0.1" role="NUMBER" rpadding="2.8pt">0.1</XMTok>
+                      <XMTok role="UNKNOWN">ms</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math> and <Math mode="inline" tex="t_{d}=3\;\mathrm{ms}" text="t _ d = 3 * ms" xml:id="I2.i2.p1.m9">
+                <XMath>
+                  <XMApp>
+                    <XMTok meaning="equals" role="RELOP">=</XMTok>
+                    <XMApp>
+                      <XMTok role="SUBSCRIPTOP" scriptpos="post3"/>
+                      <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                      <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                    </XMApp>
+                    <XMApp>
+                      <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                      <XMTok meaning="3" role="NUMBER" rpadding="2.8pt">3</XMTok>
+                      <XMTok role="UNKNOWN">ms</XMTok>
+                    </XMApp>
+                  </XMApp>
+                </XMath>
+              </Math>, respectively.</p>
+          </para>
+        </item>
+      </itemize>
+    </para>
+    <para xml:id="S2.p6">
+      <p>In the following sections, we will review the two main forms of an autapse. Studies have shown that autapses that exhibit delayed feedback provide a control option for adjusting neuron responses.</p>
+    </para>
+  </section>
+  <section refnum="3" xml:id="S3">
+    <title><tag close=" ">3</tag>Firing pattern transition in a bursting neuron</title>
+<!--  %“input–cnsns/HR˙autapse.tex˝ -->    <para xml:id="S3.p1">
+      <p>Experimental observations have indicated that action potentials can occur with different firing patterns, and the primary firing patterns are spiking and bursting <cite class="ltx_citemacro_cite">[<bibref bibrefs="cocatre,mainen,izikevich2000,kepecs2002,guhuaguang,yuht" separator="," show="Refnum" yyseparator=","/>]</cite>. Bursting is an extremely diverse general phenomenon in firing patterns exhibited by neurons in the central nervous system and spinal cord <cite class="ltx_citemacro_cite">[<bibref bibrefs="wagenaar,wangj" separator="," show="Refnum" yyseparator=","/>]</cite>. Previous studies on a bursting neuron with an autapse showed the novel dynamics and the transition of firing patterns induced by an autapse <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+    </para>
+    <para xml:id="S3.p2">
+      <p>The simplified model of Hindmarsh and Rose has turned out to capture the features of experimentally measured electrical data quite accurately, particularly for studies of the spiking-bursting behavior of neuron membrane potentials.</p>
+    </para>
+    <para xml:id="S3.p3">
+      <p>Without an autapse, HR neurons exhibit many dynamic behaviors, including quiescent, regular spiking, periodic, and chaotic bursting firing patterns (see Fig. 1 in Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite> and Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="tang" separator="," show="Refnum" yyseparator=","/>]</cite>).</p>
+    </para>
+<!--  %**** cpb˙autapse.tex Line 125 **** -->    <para xml:id="S3.p4">
+      <p>The presence of an autapse completely changes the firing patterns of the original HR neuron. The firing pattern can be adjusted from a periodic or chaotic pattern to another periodic pattern or to a chaotic bursting pattern as the autaptic parameters change, independently of the original firing pattern. Fig. <ref labelref="LABEL:fig3_hr_e1"/> shows the time courses of the membrane potentials of an HR neuron with an electrical autapse as an example. Importantly, the maximum action potential is increased by the electrical autapse.</p>
+    </para>
+    <figure frefnum="Figure 3" labels="LABEL:fig3_hr_e1" refnum="3" xml:id="S3.F3">
+      <graphics candidates="fig3_electrical_all_v.eps" class="ltx_centering" graphic="fig3_electrical_all_v.eps" options="width=216.81pt" xml:id="S3.F3.g1"/>
+      <toccaption><tag close=" ">3</tag>Time courses of the membrane potentials in response to different <Math mode="inline" tex="I_{ext}" text="I _ (e * x * t)" xml:id="S3.F3.m1">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post4"/>
+              <XMTok font="italic" role="UNKNOWN">I</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                <XMTok font="italic" role="UNKNOWN">x</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math> with <Math mode="inline" tex="g_{aut}=0.5" text="g _ (a * u * t) = 0.5" xml:id="S3.F3.m2">
+          <XMath>
+            <XMApp>
+              <XMTok meaning="equals" role="RELOP">=</XMTok>
+              <XMApp>
+                <XMTok role="SUBSCRIPTOP" scriptpos="post4"/>
+                <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                <XMApp>
+                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                </XMApp>
+              </XMApp>
+              <XMTok meaning="0.5" role="NUMBER">0.5</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>. The blue curves represent the time course of the HR neuron with an autapse, and the red curves indicate that without autapse.</toccaption>
+      <caption><tag close=": ">Figure 3</tag>Time courses of the membrane potentials in response to different <Math mode="inline" tex="I_{ext}" text="I _ (e * x * t)" xml:id="S3.F3.m3">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post4"/>
+              <XMTok font="italic" role="UNKNOWN">I</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                <XMTok font="italic" role="UNKNOWN">x</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math> with <Math mode="inline" tex="g_{aut}=0.5" text="g _ (a * u * t) = 0.5" xml:id="S3.F3.m4">
+          <XMath>
+            <XMApp>
+              <XMTok meaning="equals" role="RELOP">=</XMTok>
+              <XMApp>
+                <XMTok role="SUBSCRIPTOP" scriptpos="post4"/>
+                <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                <XMApp>
+                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                </XMApp>
+              </XMApp>
+              <XMTok meaning="0.5" role="NUMBER">0.5</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>. The blue curves represent the time course of the HR neuron with an autapse, and the red curves indicate that without autapse.</caption>
+    </figure>
+    <figure frefnum="Figure 4" labels="LABEL:hr_e2" refnum="4" xml:id="S3.F4">
+      <graphics candidates="fig4_bifurcation.eps" class="ltx_centering" graphic="fig4_bifurcation.eps" options="width=195.129pt" xml:id="S3.F4.g1"/>
+      <toccaption><tag close=" ">4</tag>Bifurcation diagram of the interspike interval of an HR neuron with an autapse versus the autaptic delay time <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>. From left to right, the panels show the results of the electrical autapse, excitatory chemical autapse, and inhibitory chemical autapse.</toccaption>
+      <caption><tag close=": ">Figure 4</tag>Bifurcation diagram of the interspike interval of an HR neuron with an autapse versus the autaptic delay time <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>. From left to right, the panels show the results of the electrical autapse, excitatory chemical autapse, and inhibitory chemical autapse.</caption>
+    </figure>
+    <para xml:id="S3.p5">
+      <p>The ISI plot bifurcation diagrams of the HR neuron clearly show the transition between periodic and aperiodic firing. For an electrical autapse, the periodic state transits to the chaotic state exhibiting an alternating behavior as the time delay increased. With higher autaptic intensity, this alternating behavior is more noticeable and occurs more frequently. For shorter delay times, the firing pattern of the HR neuron showed periodic spiking independent of the external DC input. The neuron with an excitatory chemical autapse exhibits chaotic firing patterns in a larger area of <Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="S3.p5.m1">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post2"/>
+              <XMTok font="italic" role="UNKNOWN">g</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math>-<Math mode="inline" tex="\tau" text="tau" xml:id="S3.p5.m2">
+          <XMath>
+            <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+          </XMath>
+        </Math> space than that of the neuron with an electrical autapse. For strong external stimuli, the chaotic region of the combinational parameters in the <Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="S3.p5.m3">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post2"/>
+              <XMTok font="italic" role="UNKNOWN">g</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math>-<Math mode="inline" tex="\tau" text="tau" xml:id="S3.p5.m4">
+          <XMath>
+            <XMTok font="italic" name="tau" role="UNKNOWN">τ</XMTok>
+          </XMath>
+        </Math> space is enlarged. The excitatory autapse plays a positive role in generating and enhancing chaos as a whole. As neurons with an inhibitory autaptic connection, the chaotic spiking of the HR neuron can be decreased and suppressed. With the proper inhibitory autaptic parameters, the HR neuron could be driven to a resting state. Fig. <ref labelref="LABEL:hr_e2"/> shows the bifurcation of the ISIs of an HR neuron for the three types of autapses.</p>
+    </para>
+    <figure frefnum="Figure 5" labels="LABEL:cnsns_returnmap1" refnum="5" xml:id="S3.F5">
+      <graphics candidates="fig5_ways_trasition_chaos.eps" class="ltx_centering" graphic="fig5_ways_trasition_chaos.eps" options="width=216.81pt" xml:id="S3.F5.g1"/>
+      <toccaption class="ltx_centering"><tag close=" ">5</tag>An example of the two ways of transition (the discontinuous transition [upper] and the continuous transition [bottom]) into chaos from periodic firing <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>.
+External stimuli is set as <Math mode="inline" tex="I_{ext}" text="I _ (e * x * t)" xml:id="S3.F5.m1">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post5"/>
+              <XMTok font="italic" role="UNKNOWN">I</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                <XMTok font="italic" role="UNKNOWN">x</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math>=2.67.</toccaption>
+      <caption class="ltx_centering"><tag close=": ">Figure 5</tag>An example of the two ways of transition (the discontinuous transition [upper] and the continuous transition [bottom]) into chaos from periodic firing <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>.
+External stimuli is set as <Math mode="inline" tex="I_{ext}" text="I _ (e * x * t)" xml:id="S3.F5.m2">
+          <XMath>
+            <XMApp>
+              <XMTok role="SUBSCRIPTOP" scriptpos="post5"/>
+              <XMTok font="italic" role="UNKNOWN">I</XMTok>
+              <XMApp>
+                <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                <XMTok font="italic" role="UNKNOWN">x</XMTok>
+                <XMTok font="italic" role="UNKNOWN">t</XMTok>
+              </XMApp>
+            </XMApp>
+          </XMath>
+        </Math>=2.67.</caption>
+<!--  %**** cpb˙autapse.tex Line 150 **** -->    </figure>
+    <para xml:id="S3.p6">
+      <p>Without an autapse, the firing pattern of an HR neuron switches from silent to periodic bursting and then to chaotic firing with period-doubling bifurcation as the DC current increased <cite class="ltx_citemacro_cite">[<bibref bibrefs="wangxj,gnzalez,innocenti,innocenti2009" separator="," show="Refnum" yyseparator=","/>]</cite>. For neurons with an autapse, the firing pattern can switch into any other firing pattern, regardless of the original pattern. As a whole, there are two main approaches to transition from a periodic to a chaotic firing pattern: discontinuous and continuous. The interspike interval return map is a useful approach to characterizing the transition to chaos. Fig. <ref labelref="LABEL:cnsns_returnmap1"/> shows an example of the two approaches for the transition of a neuron to chaos. In the discontinuous transition, the neuron has a periodic bursting firing pattern because the delay time is short. When the delay time increases, the system suddenly enters a chaotic firing state. In the continuous transition, the neuron first displays a periodic firing pattern. As the autaptic parameters change, the number of spikes in the single burst as well as the period of the periodic bursting increase almost continuously, and the neuron transitions into the chaotic state.</p>
+    </para>
+  </section>
+  <section refnum="4" xml:id="S4">
+    <title><tag close=" ">4</tag>Mode-locking behavior of a regular spiking neuron</title>
+<!--  %“input–jtb/wht˙autapse˙JTB.tex˝ -->    <para xml:id="S4.p1">
+      <p>When excited by a periodic stimulus, neurons respond with various mode-locking firing patterns and quasi-periodic states <cite class="ltx_citemacro_cite">[<bibref bibrefs="leesg,chey,wanght,fellous,wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>. When an autapse is present, the mode-locking firing of a neuron can be switched to another state, depending on the chosen autapse parameters. An autapse provides self-feedback and contributes an additional time scale to the dynamic neuronal system. Thus, the neuron-autapse system may exhibit very complex dynamics, due to the interplay between autaptic delayed feedback, an external periodic stimulus, and the intrinsic activity of the neuron.</p>
+    </para>
+    <para xml:id="S4.p2">
+      <p>In previous studies, the model neuron-autapse system often contained an HH neuron and an autapse. The HH model is a conductance-based model that describes how action potentials in neurons are initiated and propagated <cite class="ltx_citemacro_cite">[<bibref bibrefs="hodgkin" separator="," show="Refnum" yyseparator=","/>]</cite>. In this section, we review the mode-locking firing pattern of an HH neuron with an electrical autapse that has the same mathematical form as Eq. (<ref labelref="LABEL:eq1"/>).</p>
+    </para>
+    <figure frefnum="Figure 6" labels="LABEL:jtb_fig1" refnum="6" xml:id="S4.F6">
+      <graphics candidates="fig6a.eps" class="ltx_centering" graphic="fig6a.eps" options="width=99.7326pt" xml:id="S4.F6.g1"/>
+      <graphics candidates="fig6b.eps" class="ltx_centering" graphic="fig6b.eps" options="width=99.7326pt" xml:id="S4.F6.g2"/>
+      <graphics candidates="fig6c.eps" class="ltx_centering" graphic="fig6c.eps" options="width=99.7326pt" xml:id="S4.F6.g3"/>
+      <graphics candidates="fig6d.eps" class="ltx_centering" graphic="fig6d.eps" options="width=99.7326pt" xml:id="S4.F6.g4"/>
+      <toccaption><tag close=" ">6</tag>Mode-locking of responses of an HH autaptic neuron with different delay times <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>. The lines with different markers denote the firing rate of the neuron excited by different input frequencies. </toccaption>
+      <caption><tag close=": ">Figure 6</tag>Mode-locking of responses of an HH autaptic neuron with different delay times <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>. The lines with different markers denote the firing rate of the neuron excited by different input frequencies. </caption>
+<!--  %**** cpb˙autapse.tex Line 175 **** -->    </figure>
+    <para xml:id="S4.p3">
+      <p>Without an autapse, the mode-locking behaviors depend on the values of the stimulus frequencies and amplitudes. As shown in Fig. 1 in Ref <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>, the Arnold tongues in the frequency and amplitude space show the overall features of various phase-locked states and provide the different <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p3.m1">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> (denoting output action potentials per input spikes) mode-locking regions. Ref <cite class="ltx_citemacro_cite">[<bibref bibrefs="leesg" separator="," show="Refnum" yyseparator=","/>]</cite> also shows the bifurcation mechanisms that create the boundaries of the complex mode-locking structure.</p>
+    </para>
+    <para xml:id="S4.p4">
+      <p>The presence of an autapse substantially modifies the mode-locking patterns of the neuron. For the same sinusoidal stimulus, the neuron with an autapse can fire more or fewer action potentials than that of a neuron without an autapse. The activities of the neuron can also be driven into sub-threshold oscillation. The electrical autapse displays a regulating function that controls the mode-locking firing of the neuron. The time courses of the membrane potentials of the neuron with and without an autapse are shown in Fig. 2 of Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>. With an autapse, the modification of the mode-locking firing pattern depends on the autaptic conductivity and the delay time. When the synaptic conductivity is small, the mode-locking <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p4.m1">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> is similar to that without an autaptic connection. When the synaptic conductivity is large, the neuron displays very complex mode-locking firing. The <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p4.m2">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> value of mode-locked firing increases from zero to a very large value when the frequency of the sinusoidal current increases from zero to the ”threshold” frequency (the minimal input frequency for which the neuron fires an action potential given a fixed input amplitude). For further increases in the frequency of the sinusoidal current, the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p4.m3">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> value of mode-locking firing decreases. In the case of extremely strong autaptic conductivity [see Fig. 3 (d) in Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_jtb" separator="," show="Refnum" yyseparator=","/>]</cite>], the autaptic activities completely disrupt the original mode-locking firing of the neuron without an autapse.</p>
+    </para>
+    <para xml:id="S4.p5">
+      <p>For continuous changes in the delay time, the model-locked firing of the neuron is also quite interesting. Fig. <ref labelref="LABEL:jtb_fig1"/> shows the dependence of the mode-locking state on the delay time for different input frequencies and autaptic conductivities. For weak autaptic conductivities [Fig. <ref labelref="LABEL:jtb_fig1"/>(a)], the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p5.m1">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> values of mode-locking are similar to those without self-feedback for the short delay time. As the delay time increases, the values of <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p5.m2">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> mode-locking begin to fluctuate. The smaller the input frequency is, the larger the resulting fluctuation. For strong autaptic intensities [shown in Fig. <ref labelref="LABEL:jtb_fig1"/>(b-d)], the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p5.m3">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> values of mode-locking decrease with increasing delay time in a stepwise manner. With further increases in the delay time, the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p5.m4">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> values of mode-locking suddenly jump to a very large value (larger than that without autaptic self-feedback) and then decrease smoothly. As the delay time increases, the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p5.m5">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> value of mode-locking of a neuron with a high autaptic intensity exhibits periodic behavior.</p>
+    </para>
+    <para xml:id="S4.p6">
+      <p>With autaptic self-feedback, the responses of an HH neuron to a sinusoidal stimulus can have higher or lower <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p6.m1">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> mode-locking responses than that of a neuron without an autapse. These dynamical behaviors depend on the autaptic intensity and the delay time. Moreover, the presence of an autapse increases the range of values for which the HH neuron spiking is locked with the sinusoidal current. When the autaptic intensity is weak, the mode-locking behaviors show no marked changes. That is, an autapse with a weak intensity will have a negligible effect on the response of the neuron. For stronger autaptic intensities, the <Math mode="inline" tex="p:q" text="p colon q" xml:id="S4.p6.m2">
+          <XMath>
+            <XMApp>
+              <XMTok name="colon" role="METARELOP">:</XMTok>
+              <XMTok font="italic" role="UNKNOWN">p</XMTok>
+              <XMTok font="italic" role="UNKNOWN">q</XMTok>
+            </XMApp>
+          </XMath>
+        </Math> value of the mode-locking increases and then decreases as the delay time increases, exhibiting nearly periodic behaviors. Thus, for sufficiently strong autaptic intensity, changing the delay time provides better regulation of mode-locking than does changing the autaptic intensity. The autaptic connection may also provide a control option for adjusting mode-locked firing in a neural information process.</p>
+    </para>
+  </section>
+  <section refnum="5" xml:id="S5">
+    <title><tag close=" ">5</tag>Responses of a regular spiking neuron</title>
+<!--  %“input–chaos/wht˙autapse˙properties.tex˝ -->    <subsection refnum="5.1" xml:id="S5.SS1">
+      <title><tag close=" ">5.1</tag>Response to DC currents</title>
+      <figure frefnum="Figure 7" labels="LABEL:dc5" refnum="7" xml:id="S5.F7">
+        <graphics candidates="fig7a.eps" class="ltx_centering" graphic="fig7a.eps" options="width=102.33432pt" xml:id="S5.F7.g1"/>
+        <graphics candidates="fig7b.eps" class="ltx_centering" graphic="fig7b.eps" options="width=102.33432pt" xml:id="S5.F7.g2"/>
+        <graphics candidates="fig7c.eps" class="ltx_centering" graphic="fig7c.eps" options="width=102.33432pt" xml:id="S5.F7.g3"/>
+        <graphics candidates="fig7d.eps" class="ltx_centering" graphic="fig7d.eps" options="width=102.33432pt" xml:id="S5.F7.g4"/>
+        <toccaption class="ltx_centering"><tag close=" ">7</tag>(Color online) Firing frequencies ( (a),(c)) and ISI distribution ((b), (d)) of a neuron with a chemical autapse (upper panels: excitatory autapse; lower panels: inhibitory autapse) excited by a DC current <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. Dotted lines gives the odd multiples of half the intrinsic period of a single HH neuron excited by the corresponding DC current.</toccaption>
+        <caption class="ltx_centering"><tag close=": ">Figure 7</tag>(Color online) Firing frequencies ( (a),(c)) and ISI distribution ((b), (d)) of a neuron with a chemical autapse (upper panels: excitatory autapse; lower panels: inhibitory autapse) excited by a DC current <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. Dotted lines gives the odd multiples of half the intrinsic period of a single HH neuron excited by the corresponding DC current.</caption>
+<!--  %**** cpb˙autapse.tex Line 200 **** -->      </figure>
+      <para xml:id="S5.SS1.p1">
+        <p>When injected with a DC current, an HH neuron without an autapse displays regular spiking when the current intensity is larger than a critical current value. As for most neuronal models, increases in the current will increase the firing rate of the neuron, and the HH neuron undergoes a Hopf bifurcation.
+In the presence of an autapse, the output frequency can be higher or lower than the intrinsic frequency (the firing frequency of an HH neuron without an autapse) when the autaptic conductance and delay time are changed. Interestingly, the output frequency, as well as the output ISI distribution, shows periodic behaviors as the autaptic delay time increases. This periodicity of the changes in the output frequency (ISI distributions) in response to changes in the delay time is also similar to the intrinsic period of the neuron. When an HH neuron is connected to an electrical or excitatory chemical autapse, the firing rate and the ISI distribution of the response spike trains can both be either amplified or depressed. When the delay time approaches the odd multiples of the intrinsic half period of the firing of an HH neuron with an electrical or excitatory chemical autapse, the ISIs of the spike train are very different from the intrinsic ISIs. When the delay time approaches a multiple of the intrinsic period, the ISIs of the spike train are similar to the intrinsic ISIs. However, the inhibitory chemical autapse can only suppress the firing responses of the neuron. The ISIs of the response spike train of a neuron with an inhibitory autapse are always greater than the intrinsic period, whereas the corresponding response frequency is not less than the intrinsic response frequency. Current neurobiological experiments also reveal that autapses in the nervous system can be either self-inhibitory or self-excitatory, depending on their location on the neuron <cite class="ltx_citemacro_cite">[<bibref bibrefs="Bekkers1998,bekkers2003,gulledge1,gulledge2" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+      </para>
+      <para xml:id="S5.SS1.p2">
+        <p>Because autaptic pulses perturb neural spiking through a process that is similar to that of an oscillating system with a fixed-delay feedback, the phase-response curve (PRC) theory can provide useful insight into the phenomena of the neuron-autapse system <cite class="ltx_citemacro_cite">[<bibref bibrefs="glass1,glass2,glass3,glass4" separator="," show="Refnum" yyseparator=","/>]</cite>. For an oscillating system, the PRC describes the phase shift that occurs in response to a brief external stimulus <cite class="ltx_citemacro_cite">[<bibref bibrefs="Carmen1,Carmen2" separator="," show="Refnum" yyseparator=","/>]</cite>. Fig. <ref labelref="LABEL:rep_fig2"/> gives the phase-response curves of the three types of autapses. The PRCs of a neuron with an electrical autapse or an excitatory chemical autapse can be negative or positive, depending on the stimulus phase (delay time). Thus, an electrical autapse or excitatory chemical autapse could delay or advance the next spike. Therefore, the firing rate of a neuron with an electrical autapse or an excitatory chemical autapse can be higher or smaller than that of the neuron without an autapse. For the inhibitory chemical autapse, however, the PRC is always positive, because the delay time increased. That is, an inhibitory autapse always postpones the next spike. Thus, the firing rate of an HH neuron with an inhibitory autapse is not larger than that of the neuron without an autapse.</p>
+      </para>
+      <figure frefnum="Figure 8" labels="LABEL:rep_fig2" refnum="8" xml:id="S5.F8">
+        <graphics candidates="fig8_prc_electrical_all.eps" class="ltx_centering" graphic="fig8_prc_electrical_all.eps" options="width=97.13088pt" xml:id="S5.F8.g1"/>
+        <graphics candidates="fig8_prc_excitatory_all.eps" class="ltx_centering" graphic="fig8_prc_excitatory_all.eps" options="width=97.13088pt" xml:id="S5.F8.g2"/>
+        <graphics candidates="fig8_prc_inhibitory_autapse_all.eps" class="ltx_centering" graphic="fig8_prc_inhibitory_autapse_all.eps" options="width=97.13088pt" xml:id="S5.F8.g3"/>
+        <toccaption class="ltx_centering"><tag close=" ">8</tag>(Color online) The phase-response curve of three types of autapses with different autaptic conductivity <Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="S5.F8.m1">
+            <XMath>
+              <XMApp>
+                <XMTok role="SUBSCRIPTOP" scriptpos="post5"/>
+                <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                <XMApp>
+                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                </XMApp>
+              </XMApp>
+            </XMath>
+          </Math>, (a) electrical autapse, (b) excitatory chemical autapse, and (c) inhibitory chemical autapse. The external DC stimuli is set as 26 <Math mode="inline" tex="\mu" text="mu" xml:id="S5.F8.m2">
+            <XMath>
+              <XMTok font="italic" name="mu" role="UNKNOWN">μ</XMTok>
+            </XMath>
+          </Math>A/cm<Math mode="inline" tex="{}^{2}" text="^2" xml:id="S5.F8.m3">
+            <XMath>
+              <XMApp role="FLOATSUPERSCRIPT" scriptpos="5">
+                <XMTok meaning="2" role="NUMBER">2</XMTok>
+              </XMApp>
+            </XMath>
+          </Math>.</toccaption>
+        <caption class="ltx_centering"><tag close=": ">Figure 8</tag>(Color online) The phase-response curve of three types of autapses with different autaptic conductivity <Math mode="inline" tex="g_{aut}" text="g _ (a * u * t)" xml:id="S5.F8.m4">
+            <XMath>
+              <XMApp>
+                <XMTok role="SUBSCRIPTOP" scriptpos="post5"/>
+                <XMTok font="italic" role="UNKNOWN">g</XMTok>
+                <XMApp>
+                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">u</XMTok>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                </XMApp>
+              </XMApp>
+            </XMath>
+          </Math>, (a) electrical autapse, (b) excitatory chemical autapse, and (c) inhibitory chemical autapse. The external DC stimuli is set as 26 <Math mode="inline" tex="\mu" text="mu" xml:id="S5.F8.m5">
+            <XMath>
+              <XMTok font="italic" name="mu" role="UNKNOWN">μ</XMTok>
+            </XMath>
+          </Math>A/cm<Math mode="inline" tex="{}^{2}" text="^2" xml:id="S5.F8.m6">
+            <XMath>
+              <XMApp role="FLOATSUPERSCRIPT" scriptpos="5">
+                <XMTok meaning="2" role="NUMBER">2</XMTok>
+              </XMApp>
+            </XMath>
+          </Math>.</caption>
+      </figure>
+      <para xml:id="S5.SS1.p3">
+        <p>When the DC current increases, the HH neuron without an autapse undergoes a Hopf bifurcation from a quiescent state to a periodic spiking state. Although the limit cycle and the oscillation period of the neuron have been disturbed by the autaptic current, the neuron-autapse system still undergoes the Hopf bifurcation, generating a stable periodic orbit. Interestingly, an HH neuron with some special autaptic parameters does not fire regular action potentials and is attracted to the quiescent state. This result reveals the phenomenon of spiking death that is induced by an autaptic connection, which is more clearly shown in the membrane potential and autaptic current traces in Fig. <ref labelref="LABEL:rfig4_v"/>. With an upper-threshold DC current, the neuron fires action potentials at first. After the delay time, the subsequent autaptic pulse reaches the neuron and drives the neuron to a fixed point. Moreover, the spiking death induced by the autapse is independent of the initial conditions of the neuron. As shown in the inset of Fig. <ref labelref="LABEL:rfig4_v"/> (a), the neuron-autapse system can return to the fixed point even when the input is a brief external perturbation. The figure also shows that the spiking death induced by the autapse is stable. The Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="sjw" separator="," show="Refnum" yyseparator=","/>]</cite> also shows a similar phenomenon: an HH neuron transitions from a limit cycle to a fixed point when the neuron is perturbed by an excitatory chemical synaptic pulse.</p>
+      </para>
+      <figure frefnum="Figure 9" labels="LABEL:rfig4_v" refnum="9" xml:id="S5.F9">
+        <graphics candidates="fig9_bifurcation_stable_point.eps" class="ltx_centering" graphic="fig9_bifurcation_stable_point.eps" options="width=216.81pt" xml:id="S5.F9.g1"/>
+        <toccaption class="ltx_centering"><tag close=" ">9</tag>(Color online) (a) Traces of the membrane potential (dashed lines) and autaptic current (solid lines) <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. (b) The phase portrait corresponds to (a). (c) and (d) are the enlarged plots of (a) and (b), respectively. The different colors indicate different integral initial conditions (The specific set of parameters can be found in Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>). The inset in (a): The membrane potential of HH neuron-autapse system perturbed by a brief step pause (black solid line).</toccaption>
+        <caption class="ltx_centering"><tag close=": ">Figure 9</tag>(Color online) (a) Traces of the membrane potential (dashed lines) and autaptic current (solid lines) <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. (b) The phase portrait corresponds to (a). (c) and (d) are the enlarged plots of (a) and (b), respectively. The different colors indicate different integral initial conditions (The specific set of parameters can be found in Ref. <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>). The inset in (a): The membrane potential of HH neuron-autapse system perturbed by a brief step pause (black solid line).</caption>
+<!--  %**** cpb˙autapse.tex Line 225 **** -->      </figure>
+    </subsection>
+    <subsection refnum="5.2" xml:id="S5.SS2">
+      <title><tag close=" ">5.2</tag>Response to a random synaptic pulse-like input</title>
+      <para xml:id="S5.SS2.p1">
+        <p>The assumed <Math mode="inline" tex="\alpha" text="alpha" xml:id="S5.SS2.p1.m1">
+            <XMath>
+              <XMTok font="italic" name="alpha" role="UNKNOWN">α</XMTok>
+            </XMath>
+          </Math> form of the postsynaptic current model that is used in many works is perfect for generating pulse-like currents that are similar to the synaptic pulses observed experimentally and also enables easy modification of the ISI of the input current to investigate the input-output properties conveniently <cite class="ltx_citemacro_cite">[<bibref bibrefs="wanght" separator="," show="Refnum" yyseparator=","/>]</cite>. Injecting this type of synaptic pulse-like signal with different ISIs into the HH neuron, Hideo et al. have reported that the mean firing frequency decreases as the mean input ISI increases <cite class="ltx_citemacro_cite">[<bibref bibrefs="Hideo,Borkowski" separator="," show="Refnum" yyseparator=","/>]</cite>. When a neuron is injected with a synaptic-like pulsed current with random ISIs, the neuron displays interesting autapse-induced response behaviors <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. As the delay time increases, the frequency of the neuron with a sufficient electrical or excitatory chemical autapse shows nearly periodic behaviors. Such periodicity is not changed when the mean ISIs of the input synaptic current changes. When given the input synaptic pulses with a large mean value of ISIs, however, the response frequency of a neuron with an inhibitory autapse does not show periodic behavior when the autaptic delay time increases.</p>
+      </para>
+      <para xml:id="S5.SS2.p2">
+        <p>Autaptic activities also influence the detailed response of the ISI distribution. For a short autaptic delay time, the output ISIs are distributed in an area [blue bars in Fig. <ref labelref="LABEL:returnmap"/>] that is smaller than the input area (red lines in Fig. <ref labelref="LABEL:returnmap"/>). When the delay time increases, the region in which the output ISIs are distributed does not change much compared with that for the neuron without an autapse (green lines in Fig. <ref labelref="LABEL:returnmap"/>). For further increases in the delay time, the distribution of the output ISIs suddenly decreases almost to a single point (<Math mode="inline" tex="t_{delay}=8.5" text="t _ (d * e * l * a * y) = 8.5" xml:id="S5.SS2.p2.m1">
+            <XMath>
+              <XMApp>
+                <XMTok meaning="equals" role="RELOP">=</XMTok>
+                <XMApp>
+                  <XMTok role="SUBSCRIPTOP" scriptpos="post2"/>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                  <XMApp>
+                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">l</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                  </XMApp>
+                </XMApp>
+                <XMTok meaning="8.5" role="NUMBER">8.5</XMTok>
+              </XMApp>
+            </XMath>
+          </Math> ms in Fig. <ref labelref="LABEL:returnmap"/>). For these autaptic parameters, the responding spike train is strongly regulated.
+Then, the size of the distribution of ISIs increases slowly as the delay time is increased further.</p>
+      </para>
+      <para xml:id="S5.SS2.p3">
+        <p>When the size of the distribution of the output ISIs increases to its maximum (this maximum distribution area is smaller than the area for the low delay time condition <Math mode="inline" tex="t_{delay}&lt;5.5\mathrm{ms}" text="t _ (d * e * l * a * y) less 5.5 * ms" xml:id="S5.SS2.p3.m1">
+            <XMath>
+              <XMApp>
+                <XMTok meaning="less-than" role="RELOP">&lt;</XMTok>
+                <XMApp>
+                  <XMTok role="SUBSCRIPTOP" scriptpos="post2"/>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                  <XMApp>
+                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">l</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                  </XMApp>
+                </XMApp>
+                <XMApp>
+                  <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                  <XMTok meaning="5.5" role="NUMBER">5.5</XMTok>
+                  <XMTok role="UNKNOWN">ms</XMTok>
+                </XMApp>
+              </XMApp>
+            </XMath>
+          </Math>), the distribution suddenly shrinks nearly to a point again (see <Math mode="inline" tex="t_{delay}=20.5" text="t _ (d * e * l * a * y) = 20.5" xml:id="S5.SS2.p3.m2">
+            <XMath>
+              <XMApp>
+                <XMTok meaning="equals" role="RELOP">=</XMTok>
+                <XMApp>
+                  <XMTok role="SUBSCRIPTOP" scriptpos="post2"/>
+                  <XMTok font="italic" role="UNKNOWN">t</XMTok>
+                  <XMApp>
+                    <XMTok meaning="times" role="MULOP">⁢</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">d</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">e</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">l</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">a</XMTok>
+                    <XMTok font="italic" role="UNKNOWN">y</XMTok>
+                  </XMApp>
+                </XMApp>
+                <XMTok meaning="20.5" role="NUMBER">20.5</XMTok>
+              </XMApp>
+            </XMath>
+          </Math> ms in Fig. <ref labelref="LABEL:returnmap"/>). For the entire range of delay times, the distribution of the output ISIs periodically exhibits the above behaviors when the delay time increases. Thus, the delayed feedback activities of an autapse can act as a regulator that adjusts the ISIs of the output spike train. For some specific autaptic parameters, the resulting spike train of a neuron can be modified to obtain an almost regular spiking, even for a very random ISI input.</p>
+      </para>
+      <figure frefnum="Figure 10" labels="LABEL:returnmap" refnum="10" xml:id="S5.F10">
+        <graphics candidates="fig10.eps" class="ltx_centering" graphic="fig10.eps" options="width=195.129pt" xml:id="S5.F10.g1"/>
+        <toccaption class="ltx_centering"><tag close=" ">10</tag>(Color online) Histograms of output (blue bars) ISIs of a neuron with an electrical autapse <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. The green lines gives the output ISI of a neuron without an autapse and the red lines give the ISI of the random input pulse train.</toccaption>
+        <caption class="ltx_centering"><tag close=": ">Figure 10</tag>(Color online) Histograms of output (blue bars) ISIs of a neuron with an electrical autapse <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. The green lines gives the output ISI of a neuron without an autapse and the red lines give the ISI of the random input pulse train.</caption>
+      </figure>
+      <para xml:id="S5.SS2.p4">
+        <p>Without an autapse, the neuron will filter the spikes with a short ISI and thus show low-pass filtering behavior when the neuron is injected with a random synaptic pulse-like current <cite class="ltx_citemacro_cite">[<bibref bibrefs="Hideo" separator="," show="Refnum" yyseparator=","/>]</cite>. For a neuron with an autapse, long ISI pulses can be filtered in addition to the short ISI spikes. Thus, the neuron-autapse system displays complex filtering behaviors, including low-pass filtering and band-filtering behaviors.</p>
+      </para>
+      <para xml:id="S5.SS2.p5">
+        <p>When the delay time is short, an HH neuron with an electrical or excitatory chemical autapse acts as a low-pass filter similar to a neuron without an autapse and removes the spikes with short ISIs. When the autaptic delay time is long enough, the neuron displays band-pass filtering behavior and removes both the short- and long-ISI spikes. The cut-off value for the ISIs (either the minimum or the maximum ISIs that will be retained in the output spike train) can be changed by changing the autaptic parameters. For some specific autaptic parameters, the neuron can filter most of the input pulse, and the output spike train can be altered into a nearly regular spike train, even for an input with highly random ISIs. More interestingly, a neuron with an inhibitory chemical autapse can only act as a low-pass filter. Thus, the inhibitory chemical autapse does not have a significant effect on the frequency of the output spike train.</p>
+      </para>
+<!--  %**** cpb˙autapse.tex Line 250 **** -->      <para xml:id="S5.SS2.p6">
+        <p>It can be conjectured that the filtering properties depend on the intrinsic properties of both the neuron and the autapse. For electrical or excitatory chemical autapses, the delay time will act as a border or as a cut-off value for the ISI filtering of synaptic pulses with a long ISI. The intrinsic filtering property of neurons removes the short input ISI pulses, and the time delay of the electrical or excitatory chemical autapse removes the long input ISI pulses. However, an inhibitory autapse delays the spikes of a neuron and thus filters the spikes that have short ISI pulses. Thus, the firing frequency of a neuron with an inhibitory autapse is not higher than that of a neuron without an autapse.</p>
+      </para>
+    </subsection>
+  </section>
+  <section refnum="6" xml:id="S6">
+    <title><tag close=" ">6</tag>Effect of noise on the firing dynamics of a neuron</title>
+<!--  %“input–noise/wht˙autapse˙noise.tex˝ -->    <para xml:id="S6.p1">
+      <p>Neuronal noise is random electrical fluctuations within neuronal networks and affects the patterns of neural activity in a determinant way <cite class="ltx_citemacro_cite">[<bibref bibrefs="white,Jacobson,wanghuiqiao,Destexhe" separator="," show="Refnum" yyseparator=","/>]</cite>. In the presence of noise, autapses can also substantially affect the response of a neuron. In this section, we review previous studies on the interplay of autapses and noise on the firing of an autaptic neuron.</p>
+    </para>
+    <para xml:id="S6.p2">
+      <p>Considering the subthreshold dynamics of a neuron with interaction between autaptic-delayed feedback and noise, Masoller et al. investigated the firing patterns of an HH model of a thermoreceptor neuron with an electrical autaptic feedback in the presence of a Gaussian white noise <cite class="ltx_citemacro_cite">[<bibref bibrefs="masoller" separator="," show="Refnum" yyseparator=","/>]</cite>. In their studies, the neuron displays only subthreshold oscillations in the absence of feedback and noise. Their results show that the interaction among weak autaptic feedback, noise, and the subthreshold intrinsic activity is nontrivial. The subthreshold oscillation amplitude can be enhanced by the autapse in the presence of external noise, and this enhancement is more pronounced for certain delay values. For negative autaptic delay feedback, the firing rate can be lower than that of the noise-free situation, depending on the delay. This is because noise inhibits feedback-induced spikes by driving the neuronal oscillations away from the firing threshold. For positive autaptic delay feedback, there are regions of delay values where the noise-induced spikes are inhibited by the feedback; in this case, the autaptic feedback drives the neuronal oscillations away from the threshold.</p>
+    </para>
+    <para xml:id="S6.p3">
+      <p>Li and his co-workers analyzed the effects of electrical autapses on the spiking dynamics of a stochastic HH neuron <cite class="ltx_citemacro_cite">[<bibref bibrefs="liyy" separator="," show="Refnum" yyseparator=","/>]</cite>, considering the stochastic gating of ion channels or the so-called intrinsic channel noise is considered. They found that the delayed feedback manifests itself in the occurrence of bursting and a rich multimodal interspike interval distribution, exhibiting a delay-induced reduction in the spontaneous spiking activity at characteristic frequencies. For small numbers of ion channels, the channel noise is sizable and the excitatory dynamics remain practically unaffected by the delay. However, smaller noise levels and stronger autaptic intensities induce different synchronization phenomena between the delay time and the intrinsic time scales. The delay time and the intrinsic time scales determine the number of spikes that will be induced and become subsequently locked during one delay epoch.</p>
+    </para>
+    <para xml:id="S6.p4">
+      <p>Recently, Yilmaz and Ozer showed that the electrical autaptic delayed feedback either enhances or suppresses the weak signal detection, depending on the parameters of autapse and channel noise <cite class="ltx_citemacro_cite">[<bibref bibrefs="ozer" separator="," show="Refnum" yyseparator=","/>]</cite>. When the delay time is close to integer multiples of the period of the intrinsic oscillations, the autapse enhances the weak periodic signal detection for the optimal values of the intrinsic noise and the autaptic intensity. The system response also exhibits stochastic resonance behavior, depending on the autaptic intensity. Moreover, the weak signal detection capability of the HH neuron is strongly dependent on the cell size and autaptic strength.</p>
+    </para>
+  </section>
+  <section refnum="7" xml:id="S7">
+    <title><tag close=" ">7</tag>Conclusion and outlook</title>
+<!--  %“input–4˙conclusion.tex˝ -->    <para xml:id="S7.p1">
+      <p>Self-delayed feedback significantly affects nonlinear dynamic systems because such self-feedback loops introduce a new time scale into the dynamics of the system <cite class="ltx_citemacro_cite">[<bibref bibrefs="soriano,park,soriano" separator="," show="Refnum" yyseparator=","/>]</cite>. The system of a neuron with an autapse contains two time scales: the intrinsic time scale of the neuron and the time scale of the autapse. However, the situation is more complex in the nervous system, because there are many more time scales, including the time scales of the neurons, the synapse, the environment, and the autaptic connections. This complexity raises the question of how the activity time of an autapse influences the activities of coupled neurons in the nervous system.</p>
+    </para>
+    <para xml:id="S7.p2">
+      <p>Autapses provide self-feedback circuits that are common in the nervous system. Since the naming of autapses, many experimental studies have revealed that autapses play important roles in brain function <cite class="ltx_citemacro_cite">[<bibref bibrefs="Bekkers1998,ikeda,bacci,Kimura,salinas1,ychen2008,quiroga" separator="," show="Refnum" yyseparator=","/>]</cite>. The current theoretical studies on the topic of autaptic connections also reported the importance of autapses and the many novel dynamic behaviors induced by the autapse <cite class="ltx_citemacro_cite">[<bibref bibrefs="rusin,liyy,hashemi,wht2014a,wht_jtb,wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. Autapses provide a control option that can sufficiently adjust the firing behaviors of a neuron for any form of input stimulus, regardless of the neuron type.</p>
+    </para>
+<!--  %**** cpb˙autapse.tex Line 275 **** -->    <para xml:id="S7.p3">
+      <p>Autapses offer a new mechanism for switching between quiescent, periodic and chaotic firing patterns in bursting neurons <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht2014a" separator="," show="Refnum" yyseparator=","/>]</cite>. Additionally, the nervous system responds rapidly to an external stimulus based on the transition between neuron firing patterns <cite class="ltx_citemacro_cite">[<bibref bibrefs="Belykh,erichsen" separator="," show="Refnum" yyseparator=","/>]</cite>. Thus, the results of the firing pattern transition induced by an autapse also indicate that an autapse could act as an efficient tool for controlling the transition among different relevant neuronal activities in the nervous system.</p>
+    </para>
+    <para xml:id="S7.p4">
+      <p>For an HH neuron with an autapse, the firing frequency and interspike interval distributions of the output spike train show periodic behavior when the delay time is increased <cite class="ltx_citemacro_cite">[<bibref bibrefs="wht_chaos" separator="," show="Refnum" yyseparator=","/>]</cite>. When specific autaptic parameters are chosen, the response spike trains are nearly regular, and the ISI distribution covers a small area, even with a highly random input. This phenomenon emphassises the autapse-induced filtering behaviors of the neuron. These results about the autapse are useful for studying the control of a nonlinear system.</p>
+    </para>
+    <para xml:id="S7.p5">
+      <p>In neuronal systems, an autapse can take the form of recurrent excitation, i.e., the discharge of a neuron, possibly after passing through the axon, can subsequently induce an excitatory response in the same neuron. This self-excitation mechanism is important for maintaining persistent activity, particularly the feeding behavior in sea slugs. Leonel et al. also reported that such processes play functional roles in amplifying activity in neuronal assemblies, causing reverberating activity, inducing some form of memory, or generating rhythmic patterns, such as those in central pattern generators <cite class="ltx_citemacro_cite">[<bibref bibrefs="gomez" separator="," show="Refnum" yyseparator=","/>]</cite>. The previous experimental data also indicate that the brain tissue expresses a novel form of self inhibition, namely autaptic inhibitory transmission in Fast-Spike (FS) cells slow self activities in interneurons <cite class="ltx_citemacro_cite">[<bibref bibrefs="Pawelzik" separator="," show="Refnum" yyseparator=","/>]</cite>. Ma et al. also investigated the activities of a two-dimensional neural network containing autapses with different time delays and found that the autapses induced many novel collective behaviors <cite class="ltx_citemacro_cite">[<bibref bibrefs="majun2" separator="," show="Refnum" yyseparator=","/>]</cite>. The effect of autapse on the synchronization of neural network have also been conducted in a group of HH neurons with small world network structure <cite class="ltx_citemacro_cite">[<bibref bibrefs="wu" separator="," show="Refnum" yyseparator=","/>]</cite>. It was found that the neurons exhibit synchronization transitions as autaptic delay feedback is varied, and fine synchronized network activities occur when an optimal autaptic strength is chosen.
+Alberto Bacci and his colleagues studied the autaptic self-inhibition of basket cells and the role of the autaptic connections of disinhibition within cortical circuits and argued that autaptic feedback could have a dual function in temporally coordinating parvalbumin basket cells during cortical network activity <cite class="ltx_citemacro_cite">[<bibref bibrefs="deleuze" separator="," show="Refnum" yyseparator=","/>]</cite>. Another study also indicated that fast spiking neurons with autapses showed the strongest asynchronous release in brain slices obtained from patients with intractable epilepsy, and that such discharges may be involved in generating and regulating network activities, including epileptic activity <cite class="ltx_citemacro_cite">[<bibref bibrefs="jang" separator="," show="Refnum" yyseparator=","/>]</cite>.</p>
+    </para>
+    <para xml:id="S7.p6">
+      <p>Although there are many studies on the topic of the autapse, the precise function of autapses and their contribution to information processing are remain unclear. There are also many open questions both in the experimental and theoretical areas: 1) What is the role of autapses in coordinating network activities? i.e., FS cell autapses in adjusting fast network synchrony. 2) What are the molecular mechanisms underlying autaptic asynchronous release and what is its relevance during physiological and pathological network activities? 3) What are the functions of autapses in the information propagation in the neural circuit and neural network? Addressing these questions will also facilitate our understanding of the fundamental mechanisms governing several core functions of cortical activities.</p>
+    </para>
+  </section>
+  <bibliography xml:id="bib">
+    <title>References</title>
+    <biblist>
+      <bibitem key="kandel" xml:id="bib.bib1">
+        <bibtag role="refnum">1</bibtag>
+        <bibblock> Kandel E R, Schwartz J H, Jessell T M, Siegelbaum S A and Hudspeth A J 2000 <text font="italic">Principles of Neural Science</text> (New York: McGraw-Hill Medical)
+</bibblock>
+      </bibitem>
+      <bibitem key="Bartos" xml:id="bib.bib2">
+        <bibtag role="refnum">2</bibtag>
+        <bibblock> Bartos M, Vida I and Jonas P 2007 <text font="italic">Nat. Rev. Neurosci.</text> <text font="bold">8</text> 45
+</bibblock>
+      </bibitem>
+      <bibitem key="Bennett" xml:id="bib.bib3">
+        <bibtag role="refnum">3</bibtag>
+        <bibblock> Bennett M V L and Zukin R S 2004 <text font="italic">Neuron</text> <text font="bold">41</text> 495
+</bibblock>
+      </bibitem>
+      <bibitem key="Connors" xml:id="bib.bib4">
+        <bibtag role="refnum">4</bibtag>
+        <bibblock> Connors B W and Long M A 2004 <text font="italic">Annu. Rev. Neurosci.</text> <text font="bold">27</text> 393
+</bibblock>
+      </bibitem>
+      <bibitem key="vander" xml:id="bib.bib5">
+        <bibtag role="refnum">5</bibtag>
+        <bibblock>Van der Loos H and Glaser E M 1972 <text font="italic">Brain Res.</text> <text font="bold">48</text> 355
+</bibblock>
+      </bibitem>
+      <bibitem key="Bekkers1998" xml:id="bib.bib6">
+        <bibtag role="refnum">6</bibtag>
+        <bibblock> Bekkers J M 1998 <text font="italic">Curr. Biol.</text> <text font="bold">8</text> R52
+</bibblock>
+      </bibitem>
+      <bibitem key="yamaguichi" xml:id="bib.bib7">
+        <bibtag role="refnum">7</bibtag>
+        <bibblock> Yamaguchi K 2008 <text font="italic">Autapse Encyclopedia of Neuroscience</text> (M. D. Binder ed.), N Hirokawa and U Windhorst (Springer Berlin Heidelberg) pp 229-32
+<!--  %**** cpb˙autapse.tex Line 300 **** --></bibblock>
+      </bibitem>
+      <bibitem key="lubke" xml:id="bib.bib8">
+        <bibtag role="refnum">8</bibtag>
+        <bibblock> Lübke J, Markram H, Frotscher M and Sakmann B 1996 <text font="italic">J. Neurosci. </text> <text font="bold">16</text> 3209
+</bibblock>
+      </bibitem>
+      <bibitem key="flight" xml:id="bib.bib9">
+        <bibtag role="refnum">9</bibtag>
+        <bibblock> Flight M H 2009 <text font="italic">Nat. Rev. Neurosci. </text> <text font="bold">10</text> 316
+</bibblock>
+      </bibitem>
+      <bibitem key="branco" xml:id="bib.bib10">
+        <bibtag role="refnum">10</bibtag>
+        <bibblock> Branco T and Staras K 2009 <text font="italic">Nat. Rev. Neurosci.</text> <text font="bold">10</text> 373
+</bibblock>
+      </bibitem>
+      <bibitem key="Kimura" xml:id="bib.bib11">
+        <bibtag role="refnum">11</bibtag>
+        <bibblock> Kimura F, Otsu Y and Tsumoto T 1997 <text font="italic">J. Neurophysiol.</text> <text font="bold">77</text> 2805
+</bibblock>
+      </bibitem>
+      <bibitem key="tamas" xml:id="bib.bib12">
+        <bibtag role="refnum">12</bibtag>
+        <bibblock> Tamás G, Buhl E H and Somogyi P 1997 <text font="italic">J. Neurosci.</text> <text font="bold">17</text> 6352
+</bibblock>
+      </bibitem>
+      <bibitem key="saada" xml:id="bib.bib13">
+        <bibtag role="refnum">13</bibtag>
+        <bibblock> Saada R, Miller N, Hurwitz I and Susswein A J 2009 <text font="italic">Curr. Biol. </text> <text font="bold">19</text> 479
+</bibblock>
+      </bibitem>
+      <bibitem key="ikeda" xml:id="bib.bib14">
+        <bibtag role="refnum">14</bibtag>
+        <bibblock> Ikeda K and Bekkers J M 2006 <text font="italic">Curr. Biol. </text> <text font="bold">16</text> R308
+</bibblock>
+      </bibitem>
+      <bibitem key="bacci" xml:id="bib.bib15">
+        <bibtag role="refnum">15</bibtag>
+        <bibblock> Bacci A and Huguenard J R 2006 <text font="italic">Neuron</text> <text font="bold">49</text> 119
+</bibblock>
+      </bibitem>
+      <bibitem key="bekkers09" xml:id="bib.bib16">
+        <bibtag role="refnum">16</bibtag>
+        <bibblock> Bekkers J M 2009 <text font="italic">Curr. Biol.</text> <text font="bold">19</text>, R296
+</bibblock>
+      </bibitem>
+      <bibitem key="salinas1" xml:id="bib.bib17">
+        <bibtag role="refnum">17</bibtag>
+        <bibblock> Salinas E and Sejnowski T J 2001 <text font="italic">Nat. Rev. Neurosci.</text> <text font="bold">2</text> 539
+</bibblock>
+      </bibitem>
+      <bibitem key="ychen2008" xml:id="bib.bib18">
+        <bibtag role="refnum">18</bibtag>
+        <bibblock>Chen Y, Yu L and Qin S M 2008 <text font="italic">Phys. Rev. E</text> <text font="bold">78</text> 051909
+</bibblock>
+      </bibitem>
+      <bibitem key="chenyl" xml:id="bib.bib19">
+        <bibtag role="refnum">19</bibtag>
+        <bibblock> Chen Y, Zhang H, Wang H, Yu L and Chen Y 2013 <text font="italic">PLoS ONE</text> <text font="bold">8</text> e56822
+</bibblock>
+      </bibitem>
+      <bibitem key="quiroga" xml:id="bib.bib20">
+        <bibtag role="refnum">20</bibtag>
+        <bibblock> Quiroga R Q and Panzeri S 2009 <text font="italic">Nat. Rev. Neurosci.</text> <text font="bold">10</text> 173
+<!--  %**** cpb˙autapse.tex Line 325 **** --></bibblock>
+      </bibitem>
+      <bibitem key="davidson" xml:id="bib.bib21">
+        <bibtag role="refnum">21</bibtag>
+        <bibblock> Davidson E. and Levin M. 2005 <text font="italic">Proc. Natl. Acad. Sci. U.S.A.</text> <text font="bold">102</text> 4935
+</bibblock>
+      </bibitem>
+      <bibitem key="zhanghui" xml:id="bib.bib22">
+        <bibtag role="refnum">22</bibtag>
+        <bibblock> Zhang H, Chen Y and Chen Y 2012 <text font="italic">PLoS ONE</text> <text font="bold">7</text> e51840
+</bibblock>
+      </bibitem>
+      <bibitem key="cabrera" xml:id="bib.bib23">
+        <bibtag role="refnum">23</bibtag>
+        <bibblock> Cabrera J L and Milton J G 2002 <text font="italic">Phys. Rev. Lett.</text> <text font="bold">89</text> 158702
+</bibblock>
+      </bibitem>
+      <bibitem key="bonan" xml:id="bib.bib24">
+        <bibtag role="refnum">24</bibtag>
+        <bibblock> Bonan G B 2008 <text font="italic">Science</text> <text font="bold">320</text> 1444
+</bibblock>
+      </bibitem>
+      <bibitem key="post" xml:id="bib.bib25">
+        <bibtag role="refnum">25</bibtag>
+        <bibblock> Postlethwaite C M and Silber M 2007 <text font="italic">Phys. Rev. E</text> <text font="bold">76</text> 056214
+</bibblock>
+      </bibitem>
+      <bibitem key="sethia" xml:id="bib.bib26">
+        <bibtag role="refnum">26</bibtag>
+        <bibblock> Sethia G C, Kurths J, and Sen A 2007 <text font="italic">Phys. Lett. A</text> <text font="bold">364</text> 227
+</bibblock>
+      </bibitem>
+      <bibitem key="waik" xml:id="bib.bib27">
+        <bibtag role="refnum">27</bibtag>
+        <bibblock> Chen W-K 2005 <text font="italic">Circuit Analysis and Feedback Amplifier Theory</text> (Bocan Raton, FL: CRC Press)
+</bibblock>
+      </bibitem>
+      <bibitem key="Gaudreault" xml:id="bib.bib28">
+        <bibtag role="refnum">28</bibtag>
+        <bibblock> Gaudreault M, Drolet F and ViÃ±als J 2012 <text font="italic">Phys. Rev. E</text> <text font="bold">85</text> 056214
+</bibblock>
+      </bibitem>
+      <bibitem key="Ahlborn" xml:id="bib.bib29">
+        <bibtag role="refnum">29</bibtag>
+        <bibblock> Ahlborn A and Parlitz U 2004 <text font="italic">Phys. Rev. Lett.</text> <text font="bold">93</text> 264101
+</bibblock>
+      </bibitem>
+      <bibitem key="Balanov" xml:id="bib.bib30">
+        <bibtag role="refnum">30</bibtag>
+        <bibblock> Balanov A G, Janson N B and Schöll E 2005 <text font="italic">Phys. Rev. E</text> <text font="bold">71</text> 016222
+</bibblock>
+      </bibitem>
+      <bibitem key="popovych" xml:id="bib.bib31">
+        <bibtag role="refnum">31</bibtag>
+        <bibblock> Popovych O V, Hauptmann C and Tass P A 2006 <text font="italic">Biol. Cybern.</text> <text font="bold">95</text> 69
+</bibblock>
+      </bibitem>
+      <bibitem key="rusin" xml:id="bib.bib32">
+        <bibtag role="refnum">32</bibtag>
+        <bibblock> Rusin C G, Johnson S E, Kapur J and Hudson J L 2011 <text font="italic">Phys. Rev. E</text> <text font="bold">84</text> 066202
+<!--  %**** cpb˙autapse.tex Line 350 **** --></bibblock>
+      </bibitem>
+      <bibitem key="prager" xml:id="bib.bib33">
+        <bibtag role="refnum">33</bibtag>
+        <bibblock> Prager T, Lerch H P, Schimansky-Geier L and Schöll E 2007 <text font="italic">J. Phys. A</text> <text font="bold">40</text> 11045
+</bibblock>
+      </bibitem>
+      <bibitem key="liyy" xml:id="bib.bib34">
+        <bibtag role="refnum">34</bibtag>
+        <bibblock> Li Y, Schmid G, HÃ¤nggi P and Schimansky-Geier L 2010 <text font="italic">Phys. Rev. E</text> <text font="bold">82</text> 061907
+</bibblock>
+      </bibitem>
+      <bibitem key="hashemi" xml:id="bib.bib35">
+        <bibtag role="refnum">35</bibtag>
+        <bibblock> Hashemi M, Valizadeh A and Azizi Y 2012 <text font="italic">Phys. Rev. E</text> <text font="bold">85</text> 021917
+</bibblock>
+      </bibitem>
+      <bibitem key="wht2014a" xml:id="bib.bib36">
+        <bibtag role="refnum">36</bibtag>
+        <bibblock> Wang H, Ma J, Chen Y and Chen Y 2014 <text font="italic">Commun. Nonlinear Sci. Numer. Simul.</text> <text font="bold">19</text> 3242
+</bibblock>
+      </bibitem>
+      <bibitem key="schacter" xml:id="bib.bib37">
+        <bibtag role="refnum">37</bibtag>
+        <bibblock> Schacter D L, Gilbert D T, Wegner D M and Nock M K 2014 <text font="italic">Psychology</text> (New York, NY: Worth Publishers)
+</bibblock>
+      </bibitem>
+      <bibitem key="jang" xml:id="bib.bib38">
+        <bibtag role="refnum">38</bibtag>
+        <bibblock> Jiang M, Zhu J, Liu Y, Yang M, Tian C, Jiang S, Wang Y, Guo H, Wang K and Shu Y 2012 <text font="italic">PLoS Biol.</text> <text font="bold">10</text> e1001324
+</bibblock>
+      </bibitem>
+      <bibitem key="majun1" xml:id="bib.bib39">
+        <bibtag role="refnum">39</bibtag>
+        <bibblock> Jun Ma H Q 2015 <text font="italic">Int. J. of Mod. Phys. B</text> <text font="bold">29</text> 1450239
+</bibblock>
+      </bibitem>
+      <bibitem key="Belykh" xml:id="bib.bib40">
+        <bibtag role="refnum">40</bibtag>
+        <bibblock> Belykh I, de Lange E and Hasler M 2005 <text font="italic">Phys. Rev. Lett.</text> <text font="bold">94</text> 188101
+</bibblock>
+      </bibitem>
+      <bibitem key="buric" xml:id="bib.bib41">
+        <bibtag role="refnum">41</bibtag>
+        <bibblock> Burić N, Todorović K and Vasović N 2008 <text font="italic">Phys. Rev. E</text> <text font="bold">78</text> 036211
+</bibblock>
+      </bibitem>
+      <bibitem key="wht_jtb" xml:id="bib.bib42">
+        <bibtag role="refnum">42</bibtag>
+        <bibblock> Wang H, Sun Y, Li Y and Chen Y 2014 <text font="italic">J. Theor. Biol.</text> <text font="bold">358</text> 25
+</bibblock>
+      </bibitem>
+      <bibitem key="wht_chaos" xml:id="bib.bib43">
+        <bibtag role="refnum">43</bibtag>
+        <bibblock> Wang H, Wang L, Chen Y and Chen Y 2014 <text font="italic">Chaos</text> <text font="bold">24</text> 033122
+<!--  %**** cpb˙autapse.tex Line 375 **** --></bibblock>
+      </bibitem>
+      <bibitem key="william" xml:id="bib.bib44">
+        <bibtag role="refnum">44</bibtag>
+        <bibblock>Connelly W M and Lees G 2010 <text font="italic">J. Physiol.</text> <text font="bold">588</text>, 2047
+</bibblock>
+      </bibitem>
+      <bibitem key="cocatre" xml:id="bib.bib45">
+        <bibtag role="refnum">45</bibtag>
+        <bibblock>Cocatre-Zilgien JH, Delcomyn F 1992 <text font="italic">J. Neurosci. Meth.</text> <text font="bold">41</text> 19
+</bibblock>
+      </bibitem>
+      <bibitem key="mainen" xml:id="bib.bib46">
+        <bibtag role="refnum">46</bibtag>
+        <bibblock> Mainen Z F and Sejnowski T J 1996 <text font="italic">Nature</text> <text font="bold">382</text> 363
+</bibblock>
+      </bibitem>
+      <bibitem key="izikevich2000" xml:id="bib.bib47">
+        <bibtag role="refnum">47</bibtag>
+        <bibblock> Izhikevich E M 2000 <text font="italic">Int. J. Bifurcat. Chaos</text> <text font="bold">10</text> 1171
+</bibblock>
+      </bibitem>
+      <bibitem key="kepecs2002" xml:id="bib.bib48">
+        <bibtag role="refnum">48</bibtag>
+        <bibblock> Kepecs A, Wang X-J and Lisman J 2002 <text font="italic">J. Neurosci.</text> <text font="bold">22</text> 9053
+</bibblock>
+      </bibitem>
+      <bibitem key="guhuaguang" xml:id="bib.bib49">
+        <bibtag role="refnum">49</bibtag>
+        <bibblock> Gu Hua-Guang,Zhu Zhou,Jia Bing. 2011 <text font="italic">Acta Physica Sinica</text> <text font="bold">60</text> 100505
+</bibblock>
+      </bibitem>
+      <bibitem key="yuht" xml:id="bib.bib50">
+        <bibtag role="refnum">50</bibtag>
+        <bibblock> Yu H-T, Wang J, Deng B and Wei X-L 2013 <text font="italic">Chin. Phys. B</text> <text font="bold">22</text> 018701
+</bibblock>
+      </bibitem>
+      <bibitem key="wagenaar" xml:id="bib.bib51">
+        <bibtag role="refnum">51</bibtag>
+        <bibblock> Wagenaar D A, Pine J and Potter S M 2006 <text font="italic"> BMC Neurosci.</text> <text font="bold">7</text> 11
+</bibblock>
+      </bibitem>
+      <bibitem key="wangj" xml:id="bib.bib52">
+        <bibtag role="refnum">52</bibtag>
+        <bibblock> Yu H, Wang J, Deng B, Wei X, Wong Y K, Chan W L, Tsang K M, Ziqi Y. et al. 2011 <text font="italic">Chaos</text> <text font="bold">21</text> 013127
+</bibblock>
+      </bibitem>
+      <bibitem key="tang" xml:id="bib.bib53">
+        <bibtag role="refnum">53</bibtag>
+        <bibblock> Tang G, Xu K and Jiang L 2011 <text font="italic">Phys. Rev. E</text> <text font="bold">84</text> 046207
+</bibblock>
+      </bibitem>
+      <bibitem key="wangxj" xml:id="bib.bib54">
+        <bibtag role="refnum">54</bibtag>
+        <bibblock> Wang X-J 1993 <text font="italic">Physica D</text> <text font="bold">62</text> 263
+</bibblock>
+      </bibitem>
+      <bibitem key="gnzalez" xml:id="bib.bib55">
+        <bibtag role="refnum">55</bibtag>
+        <bibblock> Jm G-M 2003 <text font="italic">Chaos</text> <text font="bold">13</text> 845
+<!--  %**** cpb˙autapse.tex Line 400 **** --></bibblock>
+      </bibitem>
+      <bibitem key="innocenti" xml:id="bib.bib56">
+        <bibtag role="refnum">56</bibtag>
+        <bibblock> Innocenti G, Morelli A, Genesio R and Torcini A 2007 <text font="italic">Chaos</text> <text font="bold">17</text> 043128
+</bibblock>
+      </bibitem>
+      <bibitem key="innocenti2009" xml:id="bib.bib57">
+        <bibtag role="refnum">57</bibtag>
+        <bibblock> Innocenti G and Genesio R 2009 <text font="italic">Chaos</text> <text font="bold">19</text> 023124
+</bibblock>
+      </bibitem>
+      <bibitem key="leesg" xml:id="bib.bib58">
+        <bibtag role="refnum">58</bibtag>
+        <bibblock> Lee S-G and Kim S 2006 <text font="italic">Phys. Rev. E</text> <text font="bold">73</text> 041924
+</bibblock>
+      </bibitem>
+      <bibitem key="chey" xml:id="bib.bib59">
+        <bibtag role="refnum">59</bibtag>
+        <bibblock> Che Y-Q, Wang J, Si W-J and Fei X-Y 2009 <text font="italic">Chaos, Solitons</text> &amp; <text font="italic">Fractals</text> <text font="bold">39</text> 454
+</bibblock>
+      </bibitem>
+      <bibitem key="wanght" xml:id="bib.bib60">
+        <bibtag role="refnum">60</bibtag>
+        <bibblock> Wang H, Wang L, Yu L and Chen Y 2011 <text font="italic">Phys. Rev. E.</text> <text font="bold">83</text> 021915
+</bibblock>
+      </bibitem>
+      <bibitem key="fellous" xml:id="bib.bib61">
+        <bibtag role="refnum">61</bibtag>
+        <bibblock> Fellous J-M, Houweling, A R, Modi, R H, Rao, R P N, Tiesinga P H E and Sejnowski T J2001 <text font="italic">J Neurophysiol.</text> <text font="bold">85</text> 1782
+</bibblock>
+      </bibitem>
+      <bibitem key="hodgkin" xml:id="bib.bib62">
+        <bibtag role="refnum">62</bibtag>
+        <bibblock> Hodgkin A L and Huxley A F 1952 <text font="italic">The J. of Physiol. </text> <text font="bold">117</text> 500
+</bibblock>
+      </bibitem>
+      <bibitem key="bekkers2003" xml:id="bib.bib63">
+        <bibtag role="refnum">63</bibtag>
+        <bibblock>Bekkers J M 2003 <text font="italic">Curr. Biol.</text> <text font="bold">13</text>, R433
+</bibblock>
+      </bibitem>
+      <bibitem key="gulledge1" xml:id="bib.bib64">
+        <bibtag role="refnum">64</bibtag>
+        <bibblock>Gulledge A T and Stuart G J 2003 <text font="italic">Neuron</text> <text font="bold">37</text>, 299
+</bibblock>
+      </bibitem>
+      <bibitem key="gulledge2" xml:id="bib.bib65">
+        <bibtag role="refnum">65</bibtag>
+        <bibblock>Saada-Madar R, Miller N and Susswein A J 2012 <text font="italic">J. Mol. Histol.</text> <text font="bold">43</text> 431
+</bibblock>
+      </bibitem>
+      <bibitem key="glass1" xml:id="bib.bib66">
+        <bibtag role="refnum">66</bibtag>
+        <bibblock> Lewis J, Bachoo M, Glass L, and Polosa C 1987 <text font="italic">Phys. Lett. A </text> <text font="bold">125</text>, 119
+</bibblock>
+      </bibitem>
+      <bibitem key="glass2" xml:id="bib.bib67">
+        <bibtag role="refnum">67</bibtag>
+        <bibblock> Glass L and Zeng W-Z 1990 <text font="italic">Ann.NY Acad.Sci. </text> <text font="bold">591</text> 316
+<!--  %**** cpb˙autapse.tex Line 425 **** --></bibblock>
+      </bibitem>
+      <bibitem key="glass3" xml:id="bib.bib68">
+        <bibtag role="refnum">68</bibtag>
+        <bibblock> Lewis J E, Glass L, Bachoo M, and Polosa C 1992 <text font="italic">J. Theor. Biol.</text> <text font="bold">159</text> 491
+</bibblock>
+      </bibitem>
+      <bibitem key="glass4" xml:id="bib.bib69">
+        <bibtag role="refnum">69</bibtag>
+        <bibblock> Kunysz A M, Shrier A, and Glass L 1997 <text font="italic">Am. J. Physiol.</text> <text font="bold">273</text> C331
+</bibblock>
+      </bibitem>
+      <bibitem key="Carmen1" xml:id="bib.bib70">
+        <bibtag role="refnum">70</bibtag>
+        <bibblock>Smeal R M, Ermentrout G B, and White J A 2010 <text font="italic">Trans. R. Soc. B</text> <text font="bold">365</text> 2407
+</bibblock>
+      </bibitem>
+      <bibitem key="Carmen2" xml:id="bib.bib71">
+        <bibtag role="refnum">71</bibtag>
+        <bibblock> Krogh-Madsen T, Butera R, Ermentrout G B, and Glass L, in Phase Response Curves in Neuroscience, edited by N.W. Schultheiss, Prinz A A., and Butera R J (Springer New York, 2012), pp. 33
+</bibblock>
+      </bibitem>
+      <bibitem key="sjw" xml:id="bib.bib72">
+        <bibtag role="refnum">72</bibtag>
+        <bibblock> Wang S-J, Xu X-J, Wu Z-X, Huang Z-G, and Wang Y-H 2008 <text font="italic">Phys. Rev. E</text> <text font="bold">78</text> 061906
+</bibblock>
+      </bibitem>
+      <bibitem key="Hideo" xml:id="bib.bib73">
+        <bibtag role="refnum">73</bibtag>
+        <bibblock> Hasegawa H 2000 <text font="italic">Phys. Rev. E</text> <text font="bold">61</text> 718
+</bibblock>
+      </bibitem>
+      <bibitem key="Borkowski" xml:id="bib.bib74">
+        <bibtag role="refnum">74</bibtag>
+        <bibblock> Borkowski L S <text font="italic">Phys. Rev. E</text> <text font="bold">80</text> 051914
+</bibblock>
+      </bibitem>
+      <bibitem key="white" xml:id="bib.bib75">
+        <bibtag role="refnum">75</bibtag>
+        <bibblock> White J A, Rubinstein J T and Kay A R 2000 <text font="italic">Trends in Neurosci.</text> <text font="bold">23</text> 131
+</bibblock>
+      </bibitem>
+      <bibitem key="Jacobson" xml:id="bib.bib76">
+        <bibtag role="refnum">76</bibtag>
+        <bibblock> Jacobson G A, et al. 2005 <text font="italic">J. Physiol.</text> <text font="bold">564</text> 145
+</bibblock>
+      </bibitem>
+      <bibitem key="wanghuiqiao" xml:id="bib.bib77">
+        <bibtag role="refnum">77</bibtag>
+        <bibblock> Wang H, Yu L and Chen Y 2009 <text font="italic">Acta Phys. Sin.</text> <text font="bold">58</text> 5070
+</bibblock>
+      </bibitem>
+      <bibitem key="Destexhe" xml:id="bib.bib78">
+        <bibtag role="refnum">78</bibtag>
+        <bibblock> Destexhe A and Rudolph-Lilith M 2012 Neuronal Noise (New York: Springer)
+</bibblock>
+      </bibitem>
+      <bibitem key="masoller" xml:id="bib.bib79">
+        <bibtag role="refnum">79</bibtag>
+        <bibblock> Masoller C, Torrent M C and Garcia-Ojalvo J 2008 <text font="italic">Phys. Rev. E</text> <text font="bold">78</text> 041907
+</bibblock>
+      </bibitem>
+      <bibitem key="ozer" xml:id="bib.bib80">
+        <bibtag role="refnum">80</bibtag>
+        <bibblock> Yilmaz E and Ozer M 2015 <text font="italic">Physica A</text> <text font="bold">421</text> 455
+<!--  %**** cpb˙autapse.tex Line 450 **** --></bibblock>
+      </bibitem>
+      <bibitem key="soriano" xml:id="bib.bib81">
+        <bibtag role="refnum">81</bibtag>
+        <bibblock> Soriano M C, Garcia-Ojalvo J, Mirasso C R and Fischer I 2013 <text font="italic">Rev. Mod. Phys.</text> <text font="bold">85</text> 421
+</bibblock>
+      </bibitem>
+      <bibitem key="park" xml:id="bib.bib82">
+        <bibtag role="refnum">82</bibtag>
+        <bibblock> Park J-H, Huh S-H, Kim S-H, Seo S-J and Park G-T 2005 <text font="italic">IEEE Trans. Neural. Netw.</text> <text font="bold">16</text> 414
+</bibblock>
+      </bibitem>
+      <bibitem key="erichsen" xml:id="bib.bib83">
+        <bibtag role="refnum">83</bibtag>
+        <bibblock> Erichsen R J, Brunnet L G. 2008 <text font="italic">Phys. Rev. E</text> <text font="bold">78</text> 061917
+</bibblock>
+      </bibitem>
+      <bibitem key="gomez" xml:id="bib.bib84">
+        <bibtag role="refnum">84</bibtag>
+        <bibblock> Gómez L, Budelli R and Pakdaman K 2001 <text font="italic">Phys. Rev. E</text> <text font="bold">64</text> 061910
+</bibblock>
+      </bibitem>
+      <bibitem key="Pawelzik" xml:id="bib.bib85">
+        <bibtag role="refnum">85</bibtag>
+        <bibblock> Pawelzik H, Hughes D I and Thomson A M 2003 <text font="italic">J Physiol</text> <text font="bold">546</text> 701
+</bibblock>
+      </bibitem>
+      <bibitem key="majun2" xml:id="bib.bib86">
+        <bibtag role="refnum">86</bibtag>
+        <bibblock> Qin H, Wu Y, Wang C and Ma J 2015 <text font="italic">Commun. Nonlinear. Sci. Numer. Simulat.</text> <text font="bold">23</text> 164
+</bibblock>
+      </bibitem>
+      <bibitem key="wu" xml:id="bib.bib87">
+        <bibtag role="refnum">87</bibtag>
+        <bibblock> Wu Y, Gong Y and Wang Q 2015 <text font="italic">Chaos</text> <text font="bold">25</text> 043113
+</bibblock>
+      </bibitem>
+      <bibitem key="deleuze" xml:id="bib.bib88">
+        <bibtag role="refnum">88</bibtag>
+        <bibblock> Deleuze C, Pazienti A and Bacci A 2014 <text font="italic">Curr. Opin. Neurobiol.</text> <text font="bold">26</text> 64
+</bibblock>
+      </bibitem>
+    </biblist>
+  </bibliography>
+</document>

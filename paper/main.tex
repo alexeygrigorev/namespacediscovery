@@ -1,0 +1,366 @@
+% !TeX spellcheck = en_US
+%\documentclass[]{article}
+\documentclass{sig-alternate-2013}
+\usepackage{draftwatermark}
+%\documentclass{zzz}
+%\usepackage{graphics,epsfig,color}
+%\usepackage{mathrsfs}
+%\usepackage{hyperref}
+%\usepackage{url}
+% Set letter paper size:
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tabularx}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}m{#1}}
+%\usepackage{breqn}
+\usepackage{amssymb}
+\usepackage[pdftex]{hyperref}
+\usepackage{graphics,epsfig,color}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{color}
+\usepackage[T1]{fontenc}
+%\usepackage{todonotes}
+%\usepackage[numbers]{natbib}
+%\usepackage{booktabs}
+\usepackage{latexml}
+\usepackage{floatrow}
+\usepackage[rightcaption]{sidecap}
+\renewcommand{\thetable}{\hspace{-1mm}Table 1}
+%\usepackage{caption}
+%\captionsetup[table]{name=Table}
+
+%\numberwithin{equation}{section}
+%\numberwithin{theorem}{section}
+%\numberwithin{proposition}{section}
+%\numberwithin{lemma}{section}
+%\numberwithin{corollary}{section}
+%\numberwithin{definition}{section}
+%\numberwithin{example}{section}
+%\numberwithin{remark}{section}
+%\numberwithin{note}{section}
+
+%\newcommand{\hyp}[5]{\,\mbox{}_{#1}F_{#2}\!\left(
+%  \genfrac{}{}{0pt}{}{#3}{#4};#5\right)}
+
+\hypersetup{
+	colorlinks = true,
+	urlcolor = blue,
+	linkcolor = red,
+	citecolor = green
+}
+
+\newcommand{\bfx}{{\bf x}}
+\newcommand{\bfxp}{{{\bf x}^\prime}}
+\newcommand{\N}{{\mathbf N}}
+\newcommand{\M}{{\mathbf M}}
+\newcommand{\Q}{{\mathbf Q}}
+\newcommand{\R}{{\mathbf R}}
+\newcommand{\Si}{{\mathbf S}}
+\newcommand{\Hi}{{\mathbf H}}
+\newcommand{\h}{{\mathfrak h}}
+\newcommand{\g}{{\mathfrak g}}
+\newcommand{\li}{{\mathfrak l}}
+\newcommand{\E}{{\mathbf E}}
+\newcommand{\Z}{{\mathbf Z}}
+\newcommand{\C}{{\mathbf C}}
+\newcommand{\RR}{{\rm R}}
+
+\newcommand{\Rmu}{{\rm Re}\, \mu}
+\newcommand{\Rz}{{\rm Re}\, z}
+
+\newcommand{\sn}{{\mbox{sn\,}}}
+\newcommand{\cn}{{\mbox{cn\,}}}
+\newcommand{\dn}{{\mbox{dn\,}}}
+
+\newcommand{\cb}{{\cal B}}
+\newcommand{\cc}{{\cal C}}
+\newcommand{\mcc}{{\cal C}}
+\newcommand{\cd}{{\cal D}}
+\newcommand{\ce}{{\cal E}}
+\newcommand{\cf}{{\cal F}}
+\newcommand{\cg}{{\cal G}}
+\newcommand{\ch}{{\cal H}}
+\newcommand{\ci}{{\cal I}}
+\newcommand{\ck}{{\cal K}}
+\newcommand{\cl}{{\cal L}}
+\newcommand{\cm}{{\cal M}}
+\newcommand{\co}{{\cal O}}
+\newcommand{\cs}{{\cal S}}
+\newcommand{\ct}{{\cal T}}
+\newcommand{\cx}{{\cal X}}
+\newcommand{\cy}{{\cal Y}}
+\newcommand{\cz}{{\cal Z}}
+
+%\newcommand{\qhyp}[5]{\,\mbox{}_{#1}\phi_{#2}\!\left(
+%\genfrac{}{}{0pt}{}{#3}{#4}\Bigg|#5\right)}
+
+\newcommand{\mcI}{{\mathcal I}}
+\newcommand{\mch}{{\mathcal H}}
+\newcommand{\mcg}{{\mathcal G}}
+\newcommand{\mcz}{{\mathcal Z}}
+\newcommand{\mcn}{{\mathcal N}}
+
+\newcommand{\myref}[1]{(\ref{#1})}
+\def\cprime{$'$}
+
+%%\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{thm}[lemma]{Theorem}
+%\newtheorem{cor}[lemma]{Corollary}
+%\newtheorem{voorb}[lemma]{Example}
+%\newtheorem{rem}[lemma]{Remark}
+%\newtheorem{prop}[lemma]{Proposition}
+%\newtheorem{stat}[lemma]{{\hspace{-5pt}}}
+%\newtheorem{example}[lemma]{Example}
+%\newtheorem{defn}[lemma]{Definition}
+
+%\makeatletter
+%\def\eqnarray{\stepcounter{equation}\let\@currentlabel=\theequation
+%\global\@eqnswtrue
+%\tabskip\@centering\let\\=\@eqncr
+%$$\halign to \displaywidth\bgroup\hfil\global\@eqcnt\z@
+%  $\displaystyle\tabskip\z@{##}$&\global\@eqcnt\@ne
+%  \hfil$\displaystyle{{}##{}}$\hfil
+%  &\global\@eqcnt\tw@ $\displaystyle{##}$\hfil
+%  \tabskip\@centering&\llap{##}\tabskip\z@\cr}
+%
+%\def\endeqnarray{\@@eqncr\egroup
+%      \global\advance\c@equation\m@ne$$\global\@ignoretrue}
+%
+%\def\@yeqncr{\@ifnextchar [{\@xeqncr}{\@xeqncr[5pt]}}
+%\makeatother
+
+\parskip=0pt
+
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+
+%\lstset{
+%  upquote=true,
+%  basicstyle=\ttfamily,
+%  columns=fullflexible,
+%  showstringspaces=false,
+%  commentstyle=\color{gray}\upshape,
+%  breaklines=true, 
+%  numbers=left,
+%  breakatwhitespace=false         % sets if automatic breaks should only happen at whitespac  
+%}
+
+%\lstdefinelanguage{XML}
+%{
+%  morestring=[b]",
+%  morestring=[s]{>}{<},
+%  morecomment=[s]{<?}{?>},
+%  morecomment=[s]{!--}{--},
+%  morecomment=[s][\color{red}]{\$}{\$},
+%  commentstyle=\color{darkgreen},
+%  stringstyle=\color{black},
+%  identifierstyle=\color{darkblue},
+%  keywordstyle=\color{cyan},
+%  basicstyle=\footnotesize, 
+%  morekeywords={xmlns,version,type}% list your attributes here
+%}
+\newcounter{subeqn} \renewcommand{\thesubeqn}{\theequation\alph{subeqn}}%
+\makeatletter
+\@addtoreset{subeqn}{equation}
+\makeatother
+\newcommand{\subeqn}{%
+	\refstepcounter{subeqn}% Step subequation number
+	\tag{\thesubeqn}% Label equation
+}
+\newcommand*\rot{\rotatebox{90}}
+\newfont{\mycrnotice}{ptmr8t at 7pt}
+\newfont{\myconfname}{ptmri8t at 7pt}
+\let\crnotice\mycrnotice%
+\let\confname\myconfname%
+\permission{Publication rights licensed to ACM. ACM acknowledges that this contribution was authored or co-authored by an employee, contractor or affiliate of the US Government. As such, the Government retains a nonexclusive, royalty-free right to publish or reproduce this article, or to allow others to do so, for Government purposes only.}
+%\conferenceinfo{SIGIR'15,}{August 09-13, 2015, Santiago, Chile.\\*
+%	\mycrnotice{Copyright is held by the owner/author(s). Publication rights licensed to ACM.}}}
+%\copyrightetc{ACM \the\acmcopyr}
+%\crdata{978-1-4503-3621-5/15/08. \\
+%	DOI: http://dx.doi.org/10.1145/2766462.2767787}
+
+\clubpenalty=10000
+\widowpenalty = 10000
+
+\begin{document}
+	%\lstset{language=XML}
+	\numberofauthors{2}
+	%\renewcommand{\PaperNumber}{***}
+	
+	%\FirstPageHeading
+	
+	%\ShortArticleName{
+	%Generalizations of
+	%generating function
+	%for
+	%basic hypergeometric orthogonal polynomials}
+	
+	\title{Challenges of Mathematical Information Retrieval \\
+		in the NTCIR-11 Math Wikipedia Task}
+	%\numberofauthors{1} 
+	\author{
+		\alignauthor
+		Moritz Schubotz\\
+		%\affaddr{Database Systems and Information Management Group}\\
+		%\affaddr{Technische Universit\"{a}t Berlin}\\
+		\affaddr{TU Berlin, Germany}\\
+		%\affaddr{Berlin, Germany}\\
+		\email{schubotz@tu-berlin.de}
+		\alignauthor
+		Abdou Youssef\\
+		%\affaddr{Department of Computer Science}\\
+		\affaddr{The George Washington University, USA}\\
+		%\affaddr{Washington, DC 20052, USA}\\
+		\email{ayoussef@gwu.edu}
+		\and
+		\alignauthor
+		Volker Markl\\
+		%\affaddr{Database Systems and Information Management Group}\\
+		\affaddr{TU Berlin, Germany}\\
+		%\affaddr{Technische Universit\"{a}t Berlin}\\
+		%\affaddr{Berlin, Germany}\\
+		\email{volker.markl@tu-berlin.de}
+		\alignauthor
+		Howard S.~Cohl\\
+		\affaddr{Applied and Computational Mathematics Division}\\
+		\affaddr{National Institute of Standards and Technology}\\
+		%\affaddr{Gaithersburg, MD 20899-8910, USA}\\
+		\email{howard.cohl@nist.gov}
+	} 
+%opening
+\title{Discovering Namespaces in Mathematical Notation}
+\author{Moritz, Alexey, Sergey, Marcus, Howard, Volker}
+
+
+\maketitle
+
+\begin{abstract}
+While modern programming languages use name-spaces for means of modularity and expandability, mathematical notation has no such concept.
+However, in most scientific communities a standard notation for mathematics has been established.
+We claim that the sharing of notation corresponds to the taxonomic distance of the research fields.
+Nowadays, where digital communication plays a significant role in the transportation of concepts and ideas expressed using mathematical notion, we see advantages in using name-spaces for mathematical notation to reduce ambiguity and increase the widespread of ideas across community boarders.
+In this paper, we extract identifier-definition-tuples from Wikipedia, and map them to classification sachems for mathematics and physics. Thereby, we get a hierarchy of identifier definition tuples for pairs.
+In addition, we investigate scientific articles from arXiv to test our method on a more specialized corpus.
+\end{abstract}
+
+
+
+
+
+
+
+\section{Motivation}
+\subsection{The vision of namespaced Mathematics}
+Motivation and introduction goes here
+
+
+Namespaces turned out to be useful for Programming Languages so they'll probably be useful for Mathematics as well.
+
+Use cases:
+
+- Enhance Math Search:
+
+A certain level of semantics is required to search for mathematical expression. Two prototypical problems are identifier disambiguation (does $E$ stand for \emph{Energy} or \emph{Expectation Value}) and canonicalization of synonymously used identifiers such as $\sigma$ or $\operatorname{SD}$, which both denote standard deviation. 
+
+- Enhance Math Paper writing:
+
+Fixed naming conventions simplify the writing process.
+Basis for visual editors.
+Possibility to create semantic \LaTeX sources
+
+- Enhance readers experience:
+
+Annotate meanings of identifiers in equations via tool-tips.
+
+
+
+\section{Background}
+Math meats information retrieval
+
+Keep this section brief. Find additional references from other research fields like linguistics?
+
+\section{Our Method}
+\subsection{The Machinery for Namespace Discovery}
+Brief description of the tools
+\subsection{The Wikipedia Case Study}
+Result of the Master Thesis
+Fuse bilingual result.
+\subsection{Name spacing the ArXiv}
+Needs to be done. In general this follows the same pattern.
+
+Discuss with Deyan Ginev to get the full HTML5 corpus.
+
+See if clustering methods can cope with the data volume? 100M formula probably 1 billion identifiers.
+\section{Results}
+\section{Discussion}
+\subsection{Learning outcome: Namespaced Identifiers}
+Write evaluation
+
+\section{Conclusion}
+
+A long road ahead
+
+Write future work
+\section{Acknowledgement}
+\appendix
+\onecolumn
+\begin{table}[h!]
+	\centering
+	\makebox[\textwidth][c]{\begin{tabular}{|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|x{2cm}|}
+			\hline													
+			&	$E$	&	$m$	&	$c$	&	$\lambda$	&	$\sigma$	&	$\mu$	\\
+			\hline													
+			Linear algebra	&	matrix	&	matrix	&	scalar	&	eigenvalue	&	related permutation	&	algebraic multiplicity	\\
+			\hline
+			General relativity	&	energy	&	mass	&	speed of light	&	length	&	shear	&	reduced mass	\\
+			\hline
+			Coding theory	&	encoding function	&	message	&	transmitted codeword	&		&	natural isomorphisms	&		 \\
+			\hline
+			Optics	&		&	order fringe	&	speed of light in vacuum	&	wavelength	&	conductivity	&	 permeability	\\
+			\hline
+			Probability	&	expectation	&	sample size	&		&	affine parameter	&	variance	&	mean vector	\\
+			\hline													
+		\end{tabular}}
+		\caption{Definitions for selected identifiers and namespaces extracted
+			from the English Wikipedia.}
+		\label{tab:def-en}
+	\end{table}
+
+\end{document}
+
+
+
+Preliminary Call for Full Papers
+
+The Annual ACM SIGIR Conference is the major international forum for the presentation of new research results and for the demonstration of new systems and techniques in the broad field of information retrieval (IR). The Conference and Program Chairs invite all those working in areas related to IR to submit high-impact original papers for review. The 39th ACM SIGIR Conference welcomes contributions related to any aspect of IR theory and foundations, techniques, or applications.  Relevant topics include, but are not limited to:
+
+Document Representation and Content Analysis (text representation, document structure, linguistic analysis, NLP for IR, cross- and multi-lingual IR, information extraction, sentiment analysis, clustering, classification, topic models, facets, text streams).
+Queries and Query Analysis (query intent, query suggestion and prediction, query representation and reformulation, query log analysis, conversational search and dialogue, spoken queries, summarization, question answering).
+Retrieval Models and Ranking (IR theory, language models, probabilistic retrieval models, learning to rank, combining searches, diversity and aggregated search).
+Search Engine Architectures and Scalability (indexing, compression, distributed IR, P2P IR, mobile IR, cloud IR).
+Users and Interactive IR (user studies, user and task models, interaction analysis, session analysis, exploratory search, personalized search, social and collaborative search, search interface, whole session support).
+Filtering and Recommending (content-based filtering, collaborative filtering, recommender systems).
+Evaluation (test collections, experimental design, effectiveness measures, session-based evaluation, simulation).
+Web IR and Social Media Search (link analysis, click models/behavioral modeling, social tagging, social network analysis, blog and microblog search, forum search, community-based QA, adversarial IR and spam, vertical and local search).
+IR and Structured Data (XML search, ranking in databases, desktop search, entity search).
+Multimedia IR (image search, video search, speech/audio search, music search).
+Search applied to the Internet of Things (billions of devices, sensors, and actuators are now connected to the Web, which will affect how people search and browse the Web).
+Other Applications (digital libraries, enterprise search, genomics IR, legal IR, patent search, text reuse, new retrieval problems).
+
+Submissions of long papers must be in English, in PDF format, and should not exceed ten pages in SIGIR two-column format (including references and figures). Suitable LaTeX and Word templates for SIGIR are available from the ACM Website.  Full papers must describe work that is not previously published, not accepted for publication elsewhere, and not currently under review elsewhere (including as a short-paper submission for SIGIR).
+Program Chairs
+
+Javed Aslam (Northeastern University, US)
+Ian Ruthven (University of Strathclyde, UK)
+Justin Zobel (University of Melbourne, Australia)
+email: sigir2016-pchairs [AT] isti.cnr.it 
+
+January 14, 2016	Abstracts for full research papers due
+January 21, 2016	Full research papers due

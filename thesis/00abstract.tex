@@ -2,7 +2,8 @@
 
 In Computer Science, namespaces help to structure source code and
 organize it into hierarchies. Initially, the concept of namespaces did not
-exist for programming languages, and programmers had to manage the source code themselves
+exist for programming languages, and programmers had to manage the source code % namin conventions?
+ themselves
 to ensure there were  no name conflicts. However, nowadays, namespaces are
 adopted by the majority of modern programming languages.
 
@@ -16,7 +17,8 @@ will make it easier to understand the meaning of each identifier in a document.
 
 In this thesis, we look at the problem of assigning each identifier of a document
 to a namespace. At the moment, there does not exist a special dataset where
-all identifiers are grouped to namespaces, and therefore we need to create
+all identifiers are grouped %is grouping enough?
+ to namespaces, and therefore we need to create
 such a dataset ourselves.
 
 Namespaces are hard to prepare manually: building them requires a lot of time and effort.
@@ -25,7 +27,8 @@ a method for automatic namespace discovery from a collection of documents.
 
 To do that, we need to find groups of documents that use identifiers in the same way.
 This can be done with cluster analysis methods.
-We argue that documents can be represented by the identifiers they contain, and this
+We argue that documents can be represented %what does that represent?
+by the identifiers they contain, and this
 approach is similar to representing textual information in the Vector Space Model.
 Because of this, we can apply traditional document clustering techniques for namespace
 discovery.
@@ -39,7 +42,7 @@ Because the problem is new, there is no gold standard dataset, and it is
 hard to evaluate the performance of our method. To overcome it, we first
 use Java source code as a dataset for our experiments, since it contains the namespace
 information. We verify that our method can partially recover namespaces
-from source code using  only information about identifiers.
+from source code using  only information about identifiers. %recover namespaces? what's about ns def clusters here?
 
 The algorithms are evaluated on the English Wikipedia, and the proposed method
 can extract namespaces on a variety of topics. After extraction, the namespaces
@@ -72,3 +75,4 @@ Unsere Methode kann Namespaces auf einer Vielzahl von Themen extrahieren.
 Nach der Extraktion, organisieren wir die Namespaces in einer Hierarchie.
 Wir setzen unsere Methode auch auf der Russischen Wikipedia und finden \"anlische Ergebnisse.
 Unser Ergebnis zeigt, dass die automatische Namespaces Entdeckung m\"oglich ist.
+%This German summary is not acceptable.

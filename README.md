@@ -1,7 +1,10 @@
 # Automatic Namespace Discovery 
 This is a Master Thesis by A. Grigorev 
 
-You can look at the pdf version here: https://github.com/alexeygrigorev/namespacediscovery/raw/master/thesis/thesis.pdf
+You can look at the pdf version here:
+
+- https://github.com/alexeygrigorev/namespacediscovery/raw/master/thesis/thesis.pdf
+- http://arxiv.org/abs/1601.03354
 
 
 ## Related projects:
